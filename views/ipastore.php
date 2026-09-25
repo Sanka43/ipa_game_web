@@ -33,15 +33,7 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
 
     <div class="apphero-stage" aria-hidden="true">
       <div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div>
-      <figure class="app-phone">
-        <div class="app-screen">
-          <div class="app-bar"><img src="<?= asset('img/logo-128.webp') ?>" alt=""><span>IPA<b>STORE</b></span></div>
-          <div class="app-search"></div>
-          <div class="app-grid">
-            <?php foreach ($icons as $i => $g): ?><img src="<?= e(img($g['icon'], '120x120')) ?>" alt="" loading="<?= $i < 8 ? 'eager' : 'lazy' ?>" style="--i:<?= $i ?>"><?php endforeach; ?>
-          </div>
-        </div>
-      </figure>
+      <img class="app-shot" src="<?= asset('img/ipastore-app-screen.webp') ?>" alt="IPAStore app showing the Games screen on iPhone" width="675" height="1200" fetchpriority="high">
       <img class="app-logo-float" src="<?= asset('img/logo-512.png') ?>" alt="" width="220" height="220">
     </div>
   </div>

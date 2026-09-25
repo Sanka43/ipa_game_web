@@ -3,7 +3,6 @@
 $app   = cfg('ipastore_app');
 $file  = ipastore_profile();
 $total = games_count('1=1');
-$icons = games_where('1=1', 'rating_count DESC', 16);
 
 // Edit these to match what the app actually does.
 $features = [
@@ -26,7 +25,7 @@ $faq = [
 
 $crumbs = [['Home', url()], ['Download IPAStore', url('download-ipastore/')]];
 
-render('ipastore', compact('app', 'file', 'total', 'icons', 'features', 'faq', 'crumbs'), [
+render('ipastore', compact('app', 'file', 'total', 'features', 'faq', 'crumbs'), [
     'title'       => 'Download IPAStore – IPA Store App for iPhone & iPad',
     'description' => "Download the IPAStore app for iPhone and iPad. Browse $total+ IPA games and get the latest versions, straight from your Home Screen. Free, installs in seconds.",
     'canonical'   => abs_url('download-ipastore/'),
