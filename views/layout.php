@@ -126,7 +126,7 @@ $nav       = $meta['nav'] ?? '';
     </div>
     <div class="foot-bottom">
       <p>© <?= date('Y') ?> <?= e(SITE_NAME) ?>. Not affiliated with Apple Inc. App names, icons and screenshots belong to their developers. iPhone, iPad and App Store are trademarks of Apple Inc.</p>
-      <nav aria-label="Legal"><a href="<?= url('about/') ?>">About</a><a href="<?= url('dmca/') ?>">DMCA</a><a href="<?= url('disclaimer/') ?>">Disclaimer</a><a href="<?= url('privacy/') ?>">Privacy</a><a href="<?= url('contact/') ?>">Contact</a><a href="<?= url('sitemap/') ?>">Sitemap</a></nav>
+      <nav aria-label="Legal"><a href="<?= url('about/') ?>">About</a><a href="<?= url('dmca/') ?>">DMCA</a><a href="<?= url('disclaimer/') ?>">Disclaimer</a><a href="<?= url('privacy/') ?>">Privacy</a><a href="<?= url('contact/') ?>">Contact</a></nav>
     </div>
   </div>
 </footer>
