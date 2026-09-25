@@ -11,7 +11,7 @@ foreach (array_keys(categories()) as $s)
 echo $row(abs_url('download-ipastore/'), null, '0.9');
 echo $row(abs_url('guides/'), null, '0.8');
 foreach (guides() as $s => $g) echo $row(abs_url("guides/$s/"), null, '0.8');
-foreach (db()->query("SELECT slug, category, updated_at FROM games WHERE status='published' ORDER BY id") as $g)
+foreach (db()->query("SELECT slug, category, updated_at FROM games WHERE status='published' AND type='game' ORDER BY id") as $g)
     echo $row($rel(game_url($g)), $g['updated_at'], '0.6');
 foreach (['about', 'dmca', 'disclaimer', 'privacy', 'contact'] as $p) echo $row(abs_url("$p/"), null, '0.2');
 echo "</urlset>\n";

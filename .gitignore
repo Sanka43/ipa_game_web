@@ -2,3 +2,4 @@ config.live.php
 web.zip
 *.zip
 *.ipa
+database/export/

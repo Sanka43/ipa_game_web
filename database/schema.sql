@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS games (
   min_ios             VARCHAR(16)  NOT NULL DEFAULT '',
   content_rating      VARCHAR(16)  NOT NULL DEFAULT '',
   languages           VARCHAR(500) NOT NULL DEFAULT '',
+  tags                VARCHAR(500) NOT NULL DEFAULT '',
   is_iphone           TINYINT(1)   NOT NULL DEFAULT 1,
   is_ipad             TINYINT(1)   NOT NULL DEFAULT 0,
   is_offline          TINYINT(1)   NOT NULL DEFAULT 0,

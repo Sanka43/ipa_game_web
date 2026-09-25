@@ -17,13 +17,13 @@ $d  = fn($s) => $s ? date('Y-m-d', strtotime($s)) : null;
 
 $upsert = $pdo->prepare('INSERT INTO games
   (slug,type,name,category,developer,bundle_id,app_store_id,app_store_url,price,icon,short_description,description,
-   min_ios,content_rating,languages,is_iphone,is_ipad,is_offline,is_popular,is_editors_choice,rating_value,rating_count,
+   min_ios,content_rating,languages,tags,is_iphone,is_ipad,is_offline,is_popular,is_editors_choice,rating_value,rating_count,
    license_type,ipa_url,ipa_sha256,latest_version,latest_size_mb,latest_release_date,seo_title,seo_description,status,created_at,updated_at)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
   ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), type=VALUES(type), name=VALUES(name), category=VALUES(category),
    developer=VALUES(developer), bundle_id=VALUES(bundle_id), app_store_id=VALUES(app_store_id), app_store_url=VALUES(app_store_url),
    price=VALUES(price), icon=VALUES(icon), short_description=VALUES(short_description), description=VALUES(description),
-   min_ios=VALUES(min_ios), content_rating=VALUES(content_rating), languages=VALUES(languages), is_iphone=VALUES(is_iphone),
+   min_ios=VALUES(min_ios), content_rating=VALUES(content_rating), languages=VALUES(languages), tags=VALUES(tags), is_iphone=VALUES(is_iphone),
    is_ipad=VALUES(is_ipad), is_offline=VALUES(is_offline), rating_value=VALUES(rating_value), rating_count=VALUES(rating_count),
    ipa_url=COALESCE(VALUES(ipa_url), ipa_url), ipa_sha256=COALESCE(VALUES(ipa_sha256), ipa_sha256),
    latest_version=VALUES(latest_version), latest_size_mb=VALUES(latest_size_mb), latest_release_date=VALUES(latest_release_date),
@@ -36,7 +36,6 @@ $addVer   = $pdo->prepare('INSERT INTO game_versions (game_id,version,release_da
 $counts = ['published' => 0, 'review' => 0];
 $pdo->beginTransaction();
 foreach ($data['items'] as $it) {
-    if (($it['type'] ?? 'game') !== 'game') continue;          // games-only store
     // URLs are built as /ipa-games/{cat}/{slug}-ipa/, so store the slug without the suffix.
     $it['slug'] = preg_replace('/-ipa$/', '', $it['slug']);
     $versions = $it['versions'] ?? [];
@@ -55,7 +54,7 @@ foreach ($data['items'] as $it) {
         $it['slug'], $it['type'] ?? 'game', $it['name'], $it['category'], $it['developer'] ?? '',
         $it['bundle_id'] ?? null, $it['app_store_id'] ?? null, $it['app_store_url'] ?? null, $it['price'] ?? 0,
         $it['icon'] ?? '', mb_substr($it['short_description'] ?? '', 0, 500), $it['description'] ?? '',
-        $it['min_ios'] ?? '', $it['content_rating'] ?? '', implode(',', $it['languages'] ?? []),
+        $it['min_ios'] ?? '', $it['content_rating'] ?? '', implode(',', $it['languages'] ?? []), implode(',', $it['tags'] ?? []),
         (int) in_array('iphone', $compat, true), (int) in_array('ipad', $compat, true), (int) $offline,
         (int) !empty($it['featured']['popular']), (int) !empty($it['featured']['editors_choice']),
         $it['rating']['value'] ?? 0, $it['rating']['count'] ?? 0,
