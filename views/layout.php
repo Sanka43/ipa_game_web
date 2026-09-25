@@ -35,6 +35,10 @@ $nav       = $meta['nav'] ?? '';
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="<?= asset('css/app.css') ?>">
 <?php foreach ($meta['schema'] ?? [] as $s) echo json_ld($s), "\n"; ?>
+<?php if (($gaId = cfg('ga_id')) && !cfg('debug')): ?>
+<script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($gaId) ?>"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',<?= json_encode($gaId) ?>);</script>
+<?php endif; ?>
 </head>
 <body class="<?= e($bodyClass) ?>">
 <a class="skip" href="#main">Skip to content</a>
