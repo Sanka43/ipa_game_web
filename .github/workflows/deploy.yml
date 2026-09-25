@@ -1,0 +1,52 @@
+name: CI/CD - Deploy to FTP
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  lint:
+    name: PHP syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Lint all PHP files
+        run: |
+          find . -name '*.php' -not -path './.git/*' -print0 \
+            | xargs -0 -n1 php -l > /dev/null
+
+  deploy:
+    name: Deploy to ipagame.store
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload changed files over FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftp.rubiksacademy.live
+          username: web@ipagame.store
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          server-dir: ./
+          # Only files this action uploaded are ever deleted, so server-only files
+          # (config.live.php, IPA files in downloads/) are left alone.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            web.zip
+            **/*.zip
+            config.live.example.php
