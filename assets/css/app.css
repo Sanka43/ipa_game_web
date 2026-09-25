@@ -710,3 +710,18 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
   .gate-actions .btn { flex: 1; }
   .qr-box img, .qr-box canvas { width: 170px !important; height: 170px !important; }
 }
+
+/* ── HTML sitemap ─────────────────────────────────────────── */
+.sitemap { padding-top: 32px; }
+.sm-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-bottom: 8px; }
+.sm-tools input { flex: 1 1 260px; max-width: 380px; padding: 11px 16px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line-2); color: var(--text); font: inherit; font-size: .92rem; }
+.sm-tools input:focus { outline: none; border-color: var(--cyan); }
+.sm-tabs .chip { cursor: pointer; font: inherit; font-size: .85rem; }
+.sm-tabs .chip span { opacity: .6; font-size: .78rem; }
+.sm-table td { vertical-align: middle; }
+.sm-table td a { color: var(--text); font-weight: 600; }
+.sm-table td a:hover { color: var(--cyan); }
+.sm-table td small { display: block; color: var(--dim); font-size: .78rem; margin-top: 2px; word-break: break-all; }
+.sm-table .pill { background: rgba(139,92,255,.15); color: #c4b0ff; }
+.sm-n, .sm-d { color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+@media (max-width: 640px) { .sm-table th:nth-child(1), .sm-table td:nth-child(1), .sm-table th:nth-child(3), .sm-table td:nth-child(3), .sm-table th:nth-child(5), .sm-table td:nth-child(5) { display: none; } .sm-table th, .sm-table td { padding: 10px 12px; } }

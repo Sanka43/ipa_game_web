@@ -87,6 +87,11 @@ try {
             require __DIR__ . '/routes/sitemap.php';
             break;
 
+        case 'sitemap':
+            if (count($seg) > 1) not_found();
+            require __DIR__ . '/routes/sitemap_page.php';
+            break;
+
         case 'robots.txt':
             header('Content-Type: text/plain; charset=utf-8');
             echo "User-agent: *\nDisallow: /search/\nDisallow: /out/\nDisallow: /dl/\nDisallow: /downloads/\nDisallow: /api/\n\nSitemap: " . abs_url('sitemap.xml') . "\n";
