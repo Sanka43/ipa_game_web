@@ -62,7 +62,7 @@
       void bars[i]?.offsetWidth;                          // restart the progress animation
       bars[i]?.classList.add('run');
       clearTimeout(timer);
-      if (!reduced) timer = setTimeout(() => show(i + 1), MS);
+      timer = setTimeout(() => show(i + 1), MS);   // a crossfade, so it runs with reduced motion too
     };
     bars.forEach((b, k) => b.addEventListener('click', () => show(k)));
     if (bgs.length) show(0);

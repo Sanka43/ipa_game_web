@@ -535,10 +535,15 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
   .bigsearch .btn { width: 100%; }
 }
 
+/* Reduced motion: keep fades and the slideshow crossfade, drop anything that
+   moves, zooms, loops or slides. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-  .js .reveal { opacity: 1; transform: none; filter: none; }
   .grain { display: none; }
+  .hero-bg-img.on, .ghero-bg, .scroll-cue span, .marquee-track, .orbit,
+  .app-shot, .app-logo-float, .app-final img, .gate-phone { animation: none; }
+  .js .reveal { transform: none; filter: none; transition: opacity .8s ease; }
+  .phone { transition: none; }
+  .phones:not(.on) .phone.p0 { transform: translate(-50%,-50%) translateZ(80px); }
 }
 
 /* ═══ DOWNLOAD PAGE ══════════════════════════════════════════ */
