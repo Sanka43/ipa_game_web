@@ -79,6 +79,7 @@ $nav       = $meta['nav'] ?? '';
           <?php endforeach; ?>
         </div>
       </div>
+      <a class="btn btn-primary menu-cta" href="<?= url('download-ipastore/') ?>">Download IPAStore</a>
     </nav>
 
     <form class="topsearch" action="<?= url('search/') ?>" role="search" data-suggest>
