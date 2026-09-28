@@ -26,6 +26,8 @@ $config = [
     // Google Analytics 4 measurement ID, e.g. 'G-XXXXXXXXXX'. Empty = no tracking.
     // Only loaded when debug is off, so local XAMPP visits aren't counted.
     'ga_id'     => 'G-6K03K5ZMR9',
+    // Microsoft Clarity project ID (Settings > Overview). Empty = no tracking. Also skipped in debug.
+    'clarity_id' => 'yp6w3pnjbv',
     'debug'     => true,
 ];
 

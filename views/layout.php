@@ -39,6 +39,9 @@ $nav       = $meta['nav'] ?? '';
 <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($gaId) ?>"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',<?= json_encode($gaId) ?>);</script>
 <?php endif; ?>
+<?php if (($clarityId = cfg('clarity_id')) && !cfg('debug')): ?>
+<script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script",<?= json_encode($clarityId) ?>);</script>
+<?php endif; ?>
 </head>
 <body class="<?= e($bodyClass) ?>">
 <a class="skip" href="#main">Skip to content</a>
