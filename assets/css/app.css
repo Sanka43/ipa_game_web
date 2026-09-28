@@ -570,6 +570,8 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
 .dl-btn { animation: nsIn .6s var(--ease); min-width: 280px; }
 .dl-hint { margin: 0; color: var(--muted); font-size: .88rem; }
 .dl-hint a { color: var(--cyan); }
+.dl-get { margin: 0; font-size: 1.05rem; color: #c7cddb; }
+.dl-get b { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 800; }
 .dl-soon { display: inline-flex; align-items: center; gap: 10px; margin: 0; padding: 10px 18px; border-radius: 999px; background: rgba(255,181,71,.1); border: 1px solid rgba(255,181,71,.3); color: var(--warn); font-weight: 600; }
 .dl-soon .dot { background: var(--warn); box-shadow: 0 0 12px var(--warn); }
 .dl-cta { justify-content: center; margin-top: 8px; }

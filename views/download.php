@@ -28,12 +28,9 @@
         </div>
       <?php else: ?>
         <div class="dl-action reveal">
-          <p class="dl-soon"><span class="dot"></span> IPA file coming soon</p>
-          <p class="dl-hint">We're preparing the <?= e($name) ?> IPA file. Check back shortly.</p>
-          <div class="hero-cta dl-cta">
-            <a class="btn btn-ghost" href="<?= e(game_url($g)) ?>">← Back to <?= e(excerpt($name, 28)) ?></a>
-            <?php if ($g['app_store_url']): ?><a class="btn btn-ghost" href="<?= url("out/{$g['slug']}/") ?>" rel="nofollow noopener" target="_blank">View on App Store</a><?php endif; ?>
-          </div>
+          <p class="dl-get">Get <?= e($name) ?> with the <b>IPAStore</b> app</p>
+          <a class="btn btn-primary btn-lg dl-btn" href="<?= url('download-ipastore/') ?>">Download IPAStore</a>
+          <p class="dl-hint">Free for iPhone &amp; iPad · Installs from Safari in seconds · <a href="<?= e(game_url($g)) ?>">Back to <?= e(excerpt($name, 28)) ?></a></p>
         </div>
       <?php endif; ?>
     </div>
@@ -43,9 +40,9 @@
 <div class="wrap dl-grid">
   <!-- File information -->
   <section class="dl-card reveal">
-    <h2 class="h3">File information</h2>
+    <h2 class="h3"><?= $file ? 'File information' : 'Game information' ?></h2>
     <dl class="dl-info">
-      <dt>File name</dt><dd><code><?= e($file['name'] ?? "{$g['slug']}.ipa") ?></code></dd>
+      <?php if ($file): ?><dt>File name</dt><dd><code><?= e($file['name']) ?></code></dd><?php endif; ?>
       <dt>Version</dt><dd><?= e($ver ?: '—') ?></dd>
       <dt>File size</dt><dd><?= e($size) ?></dd>
       <dt>Requires</dt><dd><?= e($ios ? "$ios or later" : '—') ?></dd>
@@ -65,6 +62,15 @@
 
   <!-- Install steps -->
   <section class="dl-card reveal" id="install">
+    <?php if (!$file): ?>
+    <h2 class="h3">Get it with IPAStore in 3 steps</h2>
+    <ol class="steps">
+      <li><strong>Tap Download IPAStore</strong> above in Safari on your iPhone or iPad, then allow the download.</li>
+      <li><strong>Install the profile.</strong> Open <em>Settings › Profile Downloaded</em> and tap <em>Install</em>.</li>
+      <li><strong>Open IPAStore</strong> from your Home Screen and find <?= e($name) ?>.</li>
+    </ol>
+    <p class="muted small">Free, no computer or Apple ID needed. <a href="<?= url('download-ipastore/') ?>">Learn more about IPAStore</a>.</p>
+    <?php else: ?>
     <h2 class="h3">Install in 3 steps</h2>
     <ol class="steps">
       <li><strong>Download</strong> the IPA above and save it to the Files app (or to your computer).</li>
@@ -77,6 +83,7 @@
       <a href="<?= guide_url('install-ipa-on-ipad') ?>"><b>On iPad</b><small>iPadOS guide</small></a>
     </div>
     <p class="muted small">Stuck? See <a href="<?= guide_url('ipa-installation-failed') ?>">why an IPA installation fails</a>.</p>
+    <?php endif; ?>
   </section>
 </div>
 
