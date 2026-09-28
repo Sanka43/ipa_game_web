@@ -6,7 +6,6 @@ $path = rawurldecode(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: 
 if (BASE_PATH !== '' && str_starts_with($path, BASE_PATH)) $path = substr($path, strlen(BASE_PATH));
 $path = '/' . trim($path, '/');
 
-if ($path === '/favicon.ico') redirect(url('assets/img/favicon-48.png'));
 // The home page has no pagination: /?page=2 etc. are duplicates of /.
 if ($path === '/' && isset($_GET['page'])) redirect(url());
 
