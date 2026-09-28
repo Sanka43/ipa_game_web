@@ -213,13 +213,6 @@
     location.href = `${window.SITE_BASE}/download-ipastore/open-on-iphone/`;
   });
 
-  // QR code pointing back to the download page.
-  const qr = $('[data-qr]');
-  if (qr) {
-    if (window.QRCode) new QRCode(qr, { text: qr.dataset.qr, width: 200, height: 200, colorDark: '#05060a', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
-    else qr.hidden = true;
-  }
-
   // Back button: return to the previous page on this site, or fall back to its link.
   $$('[data-back]').forEach(b => b.addEventListener('click', e => {
     let sameSite = false;
