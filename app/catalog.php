@@ -105,6 +105,27 @@ function category(string $slug): ?array
 
 function genres(): array { return array_keys(array_filter(categories(), fn($c) => empty($c['special']))); }
 
+/** Published game count per category slug (genres and special pages), cached per request. */
+function category_counts(): array
+{
+    static $n;
+    if ($n === null) {
+        $n = genre_counts();
+        foreach (categories() as $s => $c) if (!empty($c['special'])) $n[$s] = games_count(category($s)['where']);
+    }
+    return $n;
+}
+
+/** Categories with fewer games than this are thin: noindex and left out of the sitemap. */
+const MIN_INDEXABLE_GAMES = 3;
+
+/** Only the categories worth linking to: empty ones are noindex, so navigation skips them. */
+function nav_categories(array $slugs): array
+{
+    $n = category_counts();
+    return array_values(array_filter($slugs, fn($s) => ($n[$s] ?? 0) > 0));
+}
+
 /** Layer 3: guides. Content lives in content/guides/{slug}.php */
 function guides(): array
 {

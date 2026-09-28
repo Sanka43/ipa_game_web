@@ -7,7 +7,7 @@ $file    = ipa_file($g);
 $cat     = category($g['category']);
 $shots   = game_screenshots((int) $g['id'], 'ipad', 1) ?: game_screenshots((int) $g['id'], 'iphone', 1);
 $similar = similar_games($g, 6);
-$name    = $g['name'];
+$name    = game_name($g);
 $ver     = version_label($g['latest_version']);
 $size    = size_label($file['size_mb'] ?? $g['latest_size_mb']);
 $ios     = $g['min_ios'] ? "iOS {$g['min_ios']}" : '';
@@ -16,8 +16,10 @@ $crumbs  = [['Home', url()], ['IPA Games', url('ipa-games/')], [$cat['h1'], cate
             ["$name IPA", game_url($g)], ['Download', game_url($g) . 'download/']];
 
 render('download', compact('g', 'file', 'cat', 'shots', 'similar', 'name', 'ver', 'size', 'ios', 'devs', 'crumbs'), [
-    'title'       => "Download $name IPA" . ($ver ? " $ver" : '') . ' – Direct IPA File',
-    'description' => excerpt("Download the $name IPA file ($ver, $size) for iPhone and iPad. File details, SHA-256 checksum and step-by-step install instructions.", 158),
+    'title'       => $file ? "Download $name IPA" . ($ver ? " $ver" : '') : "Get $name for iPhone & iPad",
+    'description' => excerpt($file
+        ? "Download the $name IPA file ($ver, $size) for iPhone and iPad. File details, SHA-256 checksum and step-by-step install instructions."
+        : "Get $name ($ver, $size) on iPhone and iPad with the free IPA Game Store app. Game details and step-by-step install instructions.", 158),
     'canonical'   => abs_url("ipa-games/{$g['category']}/{$g['slug']}-ipa/download/"),
     // The game page is the page we want ranked; this one only hands out the file.
     'robots'      => 'noindex, follow',

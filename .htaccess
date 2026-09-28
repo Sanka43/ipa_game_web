@@ -4,6 +4,10 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # One host: www → bare domain (localhost is untouched).
+  RewriteCond %{HTTP_HOST} ^www\.ipagame\.store$ [NC]
+  RewriteRule ^ https://ipagame.store%{REQUEST_URI} [R=301,L]
+
   # Never serve internals.
   RewriteRule ^(app|views|content|database|routes)(/|$) - [F,L]
   RewriteRule ^config\.php$ - [F,L]

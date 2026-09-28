@@ -1,7 +1,8 @@
 <?php
 /** @var string $content  @var array $meta */
 $title     = $meta['title'] ?? SITE_NAME;
-$fullTitle = str_contains($title, SITE_NAME) ? $title : "$title | " . SITE_NAME;
+// Brand suffix only while the title still fits in Google's ~60 characters.
+$fullTitle = str_contains($title, SITE_NAME) || mb_strlen("$title | " . SITE_NAME) > 60 ? $title : "$title | " . SITE_NAME;
 $desc      = $meta['description'] ?? cfg('tagline');
 $canonical = $meta['canonical'] ?? null;
 $ogImage   = $meta['og_image'] ?? abs_url('assets/img/og-default.jpg');
@@ -29,18 +30,26 @@ $nav       = $meta['nav'] ?? '';
 <link rel="icon" type="image/png" sizes="32x32" href="<?= asset('img/favicon-32.png') ?>">
 <link rel="icon" type="image/png" sizes="48x48" href="<?= asset('img/favicon-48.png') ?>">
 <link rel="apple-touch-icon" href="<?= asset('img/apple-touch-icon.png') ?>">
+<?php if (!empty($meta['preload'])): ?><link rel="preload" as="image" href="<?= e($meta['preload']) ?>" fetchpriority="high">
+<?php endif; ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://is1-ssl.mzstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="<?= asset('css/app.css') ?>">
 <?php foreach ($meta['schema'] ?? [] as $s) echo json_ld($s), "\n"; ?>
-<?php if (($gaId = cfg('ga_id')) && !cfg('debug')): ?>
+<?php $gaId = cfg('debug') ? '' : (string) cfg('ga_id'); $clarityId = cfg('debug') ? '' : (string) cfg('clarity_id'); ?>
+<?php if ($gaId || $clarityId): ?>
+<script>
+// Analytics wait for cookie consent (see the banner below and app.js). GA4 uses Consent Mode v2.
+window.ANALYTICS = <?= json_encode(['ga' => $gaId, 'clarity' => $clarityId]) ?>;
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied'});
+</script>
+<?php if ($gaId): ?>
 <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($gaId) ?>"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',<?= json_encode($gaId) ?>);</script>
+<script>gtag('js',new Date());gtag('config',<?= json_encode($gaId) ?>);</script>
 <?php endif; ?>
-<?php if (($clarityId = cfg('clarity_id')) && !cfg('debug')): ?>
-<script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script",<?= json_encode($clarityId) ?>);</script>
 <?php endif; ?>
 </head>
 <body class="<?= e($bodyClass) ?>">
@@ -60,13 +69,13 @@ $nav       = $meta['nav'] ?? '';
         <div class="mega">
           <div class="mega-col">
             <p class="mega-h">Browse</p>
-            <?php foreach (['latest', 'offline', 'iphone', 'ipad', 'emulator'] as $s): $c = category($s); ?>
+            <?php foreach (nav_categories(['latest', 'offline', 'iphone', 'ipad', 'emulator']) as $s): $c = category($s); ?>
               <a href="<?= category_url($s) ?>"><span><?= $c['icon'] ?></span><?= e($c['h1']) ?></a>
             <?php endforeach; ?>
           </div>
           <div class="mega-col mega-genres">
             <p class="mega-h">Genres</p>
-            <?php foreach (genres() as $s): $c = category($s); ?>
+            <?php foreach (nav_categories(genres()) as $s): $c = category($s); ?>
               <a href="<?= category_url($s) ?>"><span><?= $c['icon'] ?></span><?= e($c['name']) ?></a>
             <?php endforeach; ?>
           </div>
@@ -110,13 +119,13 @@ $nav       = $meta['nav'] ?? '';
         <p class="foot-h">Browse</p>
         <a href="<?= url('download-ipastore/') ?>">Download IPA Game Store</a>
         <a href="<?= url('ipa-games/') ?>">All IPA Games</a>
-        <?php foreach (['latest', 'offline', 'iphone', 'ipad', 'emulator'] as $s): ?>
+        <?php foreach (nav_categories(['latest', 'offline', 'iphone', 'ipad', 'emulator']) as $s): ?>
           <a href="<?= category_url($s) ?>"><?= e(category($s)['h1']) ?></a>
         <?php endforeach; ?>
       </nav>
       <nav aria-label="Genres">
         <p class="foot-h">Genres</p>
-        <?php foreach (['action', 'racing', 'puzzle', 'adventure', 'simulation', 'strategy', 'sports', 'role-playing'] as $s): ?>
+        <?php foreach (nav_categories(['action', 'racing', 'puzzle', 'adventure', 'simulation', 'strategy', 'sports', 'role-playing']) as $s): ?>
           <a href="<?= category_url($s) ?>"><?= e(category($s)['name']) ?> IPA Games</a>
         <?php endforeach; ?>
       </nav>
@@ -130,11 +139,17 @@ $nav       = $meta['nav'] ?? '';
     </div>
     <div class="foot-bottom">
       <p>© <?= date('Y') ?> <?= e(SITE_NAME) ?>. Not affiliated with Apple Inc. App names, icons and screenshots belong to their developers. iPhone, iPad and App Store are trademarks of Apple Inc.</p>
-      <nav aria-label="Legal"><a href="<?= url('about/') ?>">About</a><a href="<?= url('dmca/') ?>">DMCA</a><a href="<?= url('disclaimer/') ?>">Disclaimer</a><a href="<?= url('privacy/') ?>">Privacy</a><a href="<?= url('contact/') ?>">Contact</a></nav>
+      <nav aria-label="Legal"><a href="<?= url('about/') ?>">About</a><a href="<?= url('dmca/') ?>">DMCA</a><a href="<?= url('disclaimer/') ?>">Disclaimer</a><a href="<?= url('privacy/') ?>">Privacy</a><a href="<?= url('contact/') ?>">Contact</a><?php if (cfg('ga_id') || cfg('clarity_id')): ?><button type="button" class="linkbtn" data-consent-open>Cookie settings</button><?php endif; ?></nav>
     </div>
   </div>
 </footer>
 
+<?php if (cfg('ga_id') || cfg('clarity_id')): ?>
+<div class="consent" id="consent" role="dialog" aria-label="Cookie consent" hidden>
+  <p>We use Google Analytics and Microsoft Clarity cookies to see how the site is used. They only load if you accept. <a href="<?= url('privacy/') ?>">Privacy policy</a></p>
+  <div class="consent-btns"><button type="button" class="btn btn-ghost" data-consent="deny">Decline</button><button type="button" class="btn btn-primary" data-consent="grant">Accept</button></div>
+</div>
+<?php endif; ?>
 <script>window.SITE_BASE = <?= json_encode(str_replace(' ', '%20', BASE_PATH)) ?>;</script>
 <?php foreach ($meta['scripts'] ?? [] as $src): ?><script src="<?= e($src) ?>" defer></script>
 <?php endforeach; ?>

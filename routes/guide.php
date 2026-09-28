@@ -2,12 +2,14 @@
 /** @var string $guideSlug */
 $guide = guide($guideSlug) ?? not_found();
 
-// A content file prints the article body and may set: $updated, $howto (steps), $faq, $related.
+// A content file prints the article body and may set: $updated (first published), $faq, $related.
 $updated = '2026-09-25';
-$howto = $faq = $related = [];
+$faq = $related = [];
 ob_start();
 require __DIR__ . "/../content/guides/$guideSlug.php";
 $body = ob_get_clean();
+// Last modified = when the content file last changed (deploys only upload changed files).
+$modified = max($updated, date('Y-m-d', filemtime(__DIR__ . "/../content/guides/$guideSlug.php")));
 
 // Give every <h2> an id and build the table of contents from them.
 $toc = [];
@@ -24,14 +26,14 @@ $picks   = games_where('is_offline=1', 'rating_count DESC', 4);
 
 $schema = [
     ['@context' => 'https://schema.org', '@type' => 'Article', 'headline' => $guide['title'], 'description' => $guide['desc'],
-     'dateModified' => $updated, 'datePublished' => $updated, 'mainEntityOfPage' => abs_url("guides/$guideSlug/"),
-     'author' => ['@type' => 'Organization', 'name' => SITE_NAME], 'publisher' => ['@type' => 'Organization', 'name' => SITE_NAME]],
+     'dateModified' => $modified, 'datePublished' => $updated, 'mainEntityOfPage' => abs_url("guides/$guideSlug/"),
+     'image' => abs_url('assets/img/og-default.jpg'),
+     'author' => ['@type' => 'Organization', 'name' => SITE_NAME, 'url' => abs_url('about/')],
+     'publisher' => ['@type' => 'Organization', 'name' => SITE_NAME, 'logo' => ['@type' => 'ImageObject', 'url' => abs_url('assets/img/logo-512.png')]]],
     breadcrumb_ld($crumbs),
 ];
-if ($howto) $schema[] = ['@context' => 'https://schema.org', '@type' => 'HowTo', 'name' => $guide['title'],
-    'step' => array_map(fn($s, $i) => ['@type' => 'HowToStep', 'position' => $i + 1, 'name' => $s[0], 'text' => $s[1]], $howto, array_keys($howto))];
-if ($faq) $schema[] = faq_ld($faq);
 
+$updated = $modified;   // the page shows the last update
 render('guide', compact('guide', 'body', 'toc', 'minutes', 'updated', 'faq', 'related', 'crumbs', 'picks'), [
     'title'       => $guide['title'],
     'description' => $guide['desc'],

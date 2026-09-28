@@ -5,7 +5,7 @@
     <h1 class="reveal">IPA Games</h1>
     <p class="lead reveal"><?= number_format($total) ?> iOS games for iPhone and iPad. Pick a category below, or scroll down for the most-played games. Every game has its own page with the version, the file size, iOS compatibility and install steps.</p>
     <div class="chips reveal">
-      <?php foreach (['latest', 'offline', 'iphone', 'ipad', 'emulator'] as $s): $c = category($s); ?>
+      <?php foreach (nav_categories(['latest', 'offline', 'iphone', 'ipad', 'emulator']) as $s): $c = category($s); ?>
         <a class="chip" href="<?= category_url($s) ?>"><?= $c['icon'] ?> <?= e($c['name']) ?></a>
       <?php endforeach; ?>
     </div>
@@ -17,7 +17,7 @@
   <div class="wrap">
     <div class="sec-head"><h2>Browse by genre</h2></div>
     <div class="posters posters-all">
-      <?php foreach (genres() as $i => $s): $c = category($s); ?>
+      <?php foreach (nav_categories(genres()) as $i => $s): $c = category($s); ?>
         <a class="poster reveal" href="<?= category_url($s) ?>" style="--d:<?= ($i % 6) * 50 ?>ms">
           <?php if ($posters[$s]): ?><img src="<?= e(img($posters[$s], '400x0w')) ?>" alt="" loading="lazy"><?php endif; ?>
           <span class="poster-shade"></span>

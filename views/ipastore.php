@@ -10,7 +10,7 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
       <?= breadcrumbs($crumbs) ?>
       <p class="eyebrow reveal"><span class="dot"></span> Free · iPhone &amp; iPad · Installs in seconds</p>
       <h1 class="hero-title reveal"><span class="line">Download</span><span class="line grad">IPA Game Store</span></h1>
-      <p class="hero-sub reveal">The whole IPA Store in your pocket. Browse <?= number_format($total) ?>+ iOS games, get the latest versions first, and open it all from your Home Screen.</p>
+      <p class="hero-sub reveal">The whole IPA Game Store in your pocket. Browse <?= number_format($total) ?>+ iOS games, get the latest versions first, and open it all from your Home Screen.</p>
 
       <div class="app-cta reveal">
         <?php if ($file): ?>
@@ -34,7 +34,7 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
     <div class="apphero-stage" aria-hidden="true">
       <div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div>
       <img class="app-shot" src="<?= asset('img/ipastore-app-screen.webp') ?>" alt="IPA Game Store app showing the Games screen on iPhone" width="675" height="1200" fetchpriority="high">
-      <img class="app-logo-float" src="<?= asset('img/logo-512.png') ?>" alt="" width="220" height="220">
+      <img class="app-logo-float" src="<?= asset('img/logo-440.webp') ?>" alt="" width="220" height="220">
     </div>
   </div>
 </section>

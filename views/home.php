@@ -26,7 +26,7 @@
       <?php foreach ($hero as $i => $h): ?>
         <div class="phones<?= $i === 0 ? ' on' : '' ?>">
           <?php foreach (array_slice($h['shots'], 0, 3) as $j => $s): ?>
-            <figure class="phone p<?= $j ?>"><img src="<?= e(img($s, '600x0w')) ?>" alt="" loading="lazy"></figure>
+            <figure class="phone p<?= $j ?>"><img src="<?= e(img($s, '600x0w')) ?>" alt=""<?= $i === 0 ? '' : ' loading="lazy"' ?> decoding="async"></figure>
           <?php endforeach; ?>
         </div>
       <?php endforeach; ?>
@@ -51,7 +51,7 @@
   <div class="filmstrip" data-drag>
     <?php foreach ($latest as $g): ?>
       <a class="frame reveal" href="<?= e(game_url($g)) ?>">
-        <span class="frame-img"><?php if ($g['shot']): ?><img src="<?= e(img($g['shot'], '400x0w')) ?>" alt="<?= e($g['name']) ?> screenshot" loading="lazy"><?php endif; ?></span>
+        <span class="frame-img"><?php if ($g['shot']): ?><img src="<?= e(img($g['shot'], '400x0w')) ?>" alt="<?= e($g['name']) ?> screenshot" loading="lazy" decoding="async"><?php endif; ?></span>
         <span class="frame-info">
           <img src="<?= e(img($g['icon'], '96x96')) ?>" alt="" width="44" height="44" loading="lazy">
           <span><b><?= e($g['name']) ?></b><small><?= e(version_label($g['latest_version'])) ?> · <?= e(date_label($g['latest_release_date'])) ?></small></span>
@@ -68,7 +68,7 @@
     <div class="posters">
       <?php foreach ($posterGenres as $i => $s): $c = category($s); ?>
         <a class="poster reveal" href="<?= category_url($s) ?>" style="--d:<?= $i * 60 ?>ms">
-          <?php if ($posters[$s]): ?><img src="<?= e(img($posters[$s], '500x0w')) ?>" alt="" loading="lazy"><?php endif; ?>
+          <?php if ($posters[$s]): ?><img src="<?= e(img($posters[$s], '500x0w')) ?>" alt="" loading="lazy" decoding="async"><?php endif; ?>
           <span class="poster-shade"></span>
           <span class="poster-txt"><em><?= $c['icon'] ?></em><b><?= e($c['name']) ?></b><small><?= (int) ($counts[$s] ?? 0) ?> games</small></span>
         </a>

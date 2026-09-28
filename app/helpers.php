@@ -11,6 +11,9 @@ function asset(string $path): string
     return url('assets/' . $path) . (is_file($file) ? '?v=' . filemtime($file) : '');
 }
 
+/** Game name without a trailing "IPA", since titles and headings add their own. */
+function game_name(array $g): string { return preg_replace('/\s+IPA$/i', '', trim($g['name'])); }
+
 function game_url(array $g): string     { return url("ipa-games/{$g['category']}/{$g['slug']}-ipa/"); }
 function category_url(string $c): string { return url("ipa-games/$c/"); }
 function guide_url(string $s): string    { return url("guides/$s/"); }
@@ -69,14 +72,6 @@ function breadcrumb_ld(array $crumbs): array
     return ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $items];
 }
 
-function faq_ld(array $faq): array
-{
-    return ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => array_map(fn($q) => [
-        '@type' => 'Question', 'name' => $q[0],
-        'acceptedAnswer' => ['@type' => 'Answer', 'text' => strip_tags($q[1])],
-    ], $faq)];
-}
-
 /** Render a view inside the layout. $meta: title, description, canonical, robots, og_image, schema[] */
 function render(string $view, array $vars = [], array $meta = []): void
 {
@@ -90,6 +85,7 @@ function render(string $view, array $vars = [], array $meta = []): void
 function not_found(): void
 {
     http_response_code(404);
+    header('X-LiteSpeed-Cache-Control: no-cache');
     render('404', [], ['title' => 'Page not found', 'robots' => 'noindex']);
     exit;
 }

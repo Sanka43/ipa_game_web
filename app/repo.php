@@ -52,13 +52,24 @@ function hero_games(int $limit = 5): array
     return $rows;
 }
 
-/** One poster image (first screenshot of the top game) per genre. */
+/** First iPhone screenshot per game id, in one query: [id => url]. */
+function first_screenshots(array $ids): array
+{
+    $ids = array_map('intval', $ids);
+    if (!$ids) return [];
+    return db()->query("SELECT game_id, url FROM game_screenshots WHERE device='iphone' AND sort=0 AND game_id IN (" . implode(',', $ids) . ')')
+        ->fetchAll(PDO::FETCH_KEY_PAIR);
+}
+
+/** One poster image (first screenshot of the top game) per genre, in one query. */
 function genre_posters(array $slugs): array
 {
-    $out = [];
-    $st = db()->prepare("SELECT s.url FROM games g JOIN game_screenshots s ON s.game_id=g.id AND s.sort=0 AND s.device='iphone'
-                         WHERE g.status='published' AND g.type='game' AND g.category=? ORDER BY g.rating_count DESC LIMIT 1");
-    foreach ($slugs as $c) { $st->execute([$c]); $out[$c] = $st->fetchColumn() ?: ''; }
+    $out = array_fill_keys($slugs, '');
+    if (!$slugs) return $out;
+    $in = implode(',', array_map(fn($s) => db()->quote($s), $slugs));
+    $rows = db()->query("SELECT g.category, s.url FROM games g JOIN game_screenshots s ON s.game_id=g.id AND s.sort=0 AND s.device='iphone'
+                         WHERE g.status='published' AND g.type='game' AND g.category IN ($in) ORDER BY g.rating_count DESC")->fetchAll();
+    foreach ($rows as $r) if ($out[$r['category']] === '') $out[$r['category']] = $r['url'];
     return $out;
 }
 

@@ -1,7 +1,8 @@
 <?php
 $hero    = hero_games(5);
 $latest  = games_where('1=1', 'latest_release_date DESC, id DESC', 14);
-foreach ($latest as &$g) $g['shot'] = game_screenshots((int) $g['id'], 'iphone', 1)[0] ?? '';
+$shots   = first_screenshots(array_column($latest, 'id'));
+foreach ($latest as &$g) $g['shot'] = $shots[$g['id']] ?? '';
 unset($g);
 $top     = games_where('1=1', 'rating_count DESC', 10);
 $shelves = [
@@ -24,14 +25,14 @@ $faq = [
 ];
 
 render('home', compact('hero', 'latest', 'top', 'shelves', 'posters', 'posterGenres', 'counts', 'total', 'faq'), [
-    'title'      => 'IPA Store – Free IPA Games Download for iPhone & iPad',
-    'description'=> "Download free IPA games for iPhone and iPad. $total+ iOS games with versions, file sizes, screenshots and step-by-step IPA install guides.",
+    'title'      => SITE_NAME . ' – Free IPA Games for iPhone & iPad',
+    'description'=> "Free IPA games for iPhone and iPad. $total+ iOS games with versions, file sizes, screenshots and step-by-step IPA install guides.",
     'canonical'  => abs_url(),
     'body_class' => 'is-home',
+    'preload'    => !empty($hero[0]) ? img($hero[0]['shots'][0] ?? $hero[0]['icon'], '1400x0w') : null,
     'schema'     => [
-        ['@context' => 'https://schema.org', '@type' => 'WebSite', 'name' => SITE_NAME, 'url' => abs_url(),
-         'potentialAction' => ['@type' => 'SearchAction', 'target' => abs_url('search/') . '?q={q}', 'query-input' => 'required name=q']],
-        ['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => SITE_NAME, 'url' => abs_url(), 'logo' => abs_url('assets/img/logo-512.png')],
-        faq_ld($faq),
+        ['@context' => 'https://schema.org', '@type' => 'WebSite', 'name' => SITE_NAME, 'alternateName' => ['IPA Game', 'ipagame.store'], 'url' => abs_url()],
+        ['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => SITE_NAME, 'url' => abs_url(), 'logo' => abs_url('assets/img/logo-512.png'),
+         'contactPoint' => ['@type' => 'ContactPoint', 'contactType' => 'customer support', 'email' => 'info@ipagame.store']],
     ],
 ]);

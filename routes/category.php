@@ -31,18 +31,18 @@ $faq = [
     ["Do these games work on iPad?", 'Nearly all of them do. Each game page says whether it supports iPhone, iPad or both. Only iPad-native games appear in <a href="' . category_url('ipad') . '">IPA games for iPad</a>.'],
 ];
 
-// Pages with no games are thin content: keep them out of the index until they fill up.
-$robots = ($total === 0 || $sort) ? 'noindex, follow' : null;
+// Pages with (almost) no games are thin content: keep them out of the index until they fill up.
+$robots = ($total < MIN_INDEXABLE_GAMES || $sort) ? 'noindex, follow' : null;
 $canonical = abs_url("ipa-games/$catSlug/" . ($page > 1 ? "?page=$page" : ''));
 
 render('category', compact('cat', 'games', 'poster', 'page', 'pages', 'total', 'base', 'crumbs', 'faq', 'sorts', 'sort'), [
     'title'       => $cat['title'] . ($page > 1 ? " – Page $page" : ''),
-    'description' => $cat['desc'],
+    'description' => ($page > 1 ? "Page $page of $pages. " : '') . $cat['desc'],
     'canonical'   => $canonical,
     'robots'      => $robots,
     'og_image'    => $poster ? img($poster, '1200x630') : null,
     'nav'         => in_array($catSlug, ['latest', 'offline'], true) ? $catSlug : 'games',
-    'schema'      => array_filter([breadcrumb_ld($crumbs), $total ? faq_ld($faq) : null, $games ? [
+    'schema'      => array_filter([breadcrumb_ld($crumbs), $games ? [
         '@context' => 'https://schema.org', '@type' => 'ItemList', 'name' => $cat['h1'],
         'itemListElement' => array_map(fn($g, $i) => ['@type' => 'ListItem', 'position' => ($page - 1) * $per + $i + 1,
             'url' => SITE_URL . substr(game_url($g), strlen(str_replace(' ', '%20', BASE_PATH))), 'name' => $g['name']], $games, array_keys($games)),

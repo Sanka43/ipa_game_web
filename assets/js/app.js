@@ -1,4 +1,4 @@
-/* IPA Store — cinematic interactions. No dependencies. */
+/* IPA Game Store — cinematic interactions. No dependencies. */
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -236,5 +236,33 @@
       if (e.isIntersecting) { tocLinks.forEach(a => a.classList.remove('on')); map.get(e.target.id)?.classList.add('on'); }
     }), { rootMargin: '-20% 0px -70% 0px' });
     map.forEach((_, id) => { const el = document.getElementById(id); if (el) tio.observe(el); });
+  }
+  /* ── Cookie consent (GA4 Consent Mode + Clarity) ──── */
+  const banner = $('#consent');
+  if (banner) {
+    const KEY = 'consent-analytics';
+    const read = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
+    const save = v => { try { localStorage.setItem(KEY, v); } catch {} };
+    const cfg = window.ANALYTICS || {};
+    let clarityOn = false;
+    const apply = v => {
+      if (v !== 'grant') return;
+      if (window.gtag) gtag('consent', 'update', { analytics_storage: 'granted' });
+      if (cfg.clarity && !clarityOn) {
+        clarityOn = true;
+        window.clarity = window.clarity || function () { (window.clarity.q = window.clarity.q || []).push(arguments); };
+        const t = document.createElement('script'); t.async = true; t.src = 'https://www.clarity.ms/tag/' + cfg.clarity;
+        document.head.appendChild(t);
+      }
+    };
+    const choice = read();
+    if (choice) apply(choice); else banner.hidden = false;
+    $$('[data-consent]', banner).forEach(b => b.addEventListener('click', () => {
+      const v = b.dataset.consent;
+      save(v); banner.hidden = true;
+      if (v === 'grant') apply(v);
+      else if (window.gtag) gtag('consent', 'update', { analytics_storage: 'denied' });
+    }));
+    $$('[data-consent-open]').forEach(b => b.addEventListener('click', () => { banner.hidden = false; }));
   }
 })();

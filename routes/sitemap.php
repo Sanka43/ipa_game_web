@@ -1,17 +1,25 @@
 <?php
 header('Content-Type: application/xml; charset=utf-8');
 $rel = fn($u) => SITE_URL . substr($u, strlen(str_replace(' ', '%20', BASE_PATH)));
-$row = fn($loc, $mod = null, $pri = '0.5') => "  <url><loc>" . e($loc) . "</loc>" . ($mod ? "<lastmod>" . date('Y-m-d', strtotime($mod)) . "</lastmod>" : '') . "<priority>$pri</priority></url>\n";
+$row = fn($loc, $mod = null) => "  <url><loc>" . e($loc) . "</loc>" . ($mod ? "<lastmod>" . date('Y-m-d', strtotime($mod)) . "</lastmod>" : '') . "</url>\n";
+$fileDate = fn($f) => is_file($f) ? date('Y-m-d', filemtime($f)) : null;
+
+// lastmod = when the listed games last changed, so Google can trust it.
+$pub = "status='published' AND type='game'";
+$newest = db()->query("SELECT MAX(updated_at) FROM games WHERE $pub")->fetchColumn();
+$byCat  = db()->query("SELECT category, MAX(updated_at) FROM games WHERE $pub GROUP BY category")->fetchAll(PDO::FETCH_KEY_PAIR);
+$counts = category_counts();
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-echo $row(abs_url(), date('Y-m-d'), '1.0');
-echo $row(abs_url('ipa-games/'), date('Y-m-d'), '0.9');
-foreach (array_keys(categories()) as $s)
-    if (games_count(category($s)['where']) > 0) echo $row(abs_url("ipa-games/$s/"), date('Y-m-d'), '0.8');
-echo $row(abs_url('download-ipastore/'), null, '0.9');
-echo $row(abs_url('guides/'), null, '0.8');
-foreach (guides() as $s => $g) echo $row(abs_url("guides/$s/"), null, '0.8');
-foreach (db()->query("SELECT slug, category, updated_at FROM games WHERE status='published' AND type='game' ORDER BY id") as $g)
-    echo $row($rel(game_url($g)), $g['updated_at'], '0.6');
-foreach (['about', 'dmca', 'disclaimer', 'privacy', 'contact'] as $p) echo $row(abs_url("$p/"), null, '0.2');
+echo $row(abs_url(), $newest);
+echo $row(abs_url('ipa-games/'), $newest);
+foreach (categories() as $s => $c)
+    // Thin categories are noindex (routes/category.php), so they stay out of the sitemap too.
+    if (($counts[$s] ?? 0) >= MIN_INDEXABLE_GAMES) echo $row(abs_url("ipa-games/$s/"), empty($c['special']) ? ($byCat[$s] ?? $newest) : $newest);
+echo $row(abs_url('download-ipastore/'), $fileDate(__DIR__ . '/../views/ipastore.php'));
+echo $row(abs_url('guides/'), max(array_map(fn($s) => $fileDate(__DIR__ . "/../content/guides/$s.php"), array_keys(guides()))));
+foreach (guides() as $s => $g) echo $row(abs_url("guides/$s/"), $fileDate(__DIR__ . "/../content/guides/$s.php"));
+foreach (db()->query("SELECT slug, category, updated_at FROM games WHERE $pub ORDER BY id") as $g)
+    echo $row($rel(game_url($g)), $g['updated_at']);
+foreach (['about', 'dmca', 'disclaimer', 'privacy', 'contact'] as $p) echo $row(abs_url("$p/"));
 echo "</urlset>\n";

@@ -12,7 +12,7 @@ $config = [
     // Full public URL without trailing slash, e.g. 'https://ipastore.com'.
     // Empty = auto-detect (fine for localhost).
     'site_url'  => '',
-    'site_name' => 'IPA Store',
+    'site_name' => 'IPA Game Store',
     'tagline'   => 'Free IPA Games for iPhone & iPad',
     'per_page'  => 24,
     // The IPAStore web app on /download-ipastore/: a signed Web Clip profile that

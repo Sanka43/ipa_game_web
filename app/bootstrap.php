@@ -7,6 +7,8 @@ if ($CFG['debug']) { ini_set('display_errors', '1'); error_reporting(E_ALL); }
 else { ini_set('display_errors', '0'); }
 
 mb_internal_encoding('UTF-8');
+header_remove('X-Powered-By');
+if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') header('Strict-Transport-Security: max-age=31536000');
 date_default_timezone_set('UTC');
 
 // Base path of the site (works in a sub-folder like /ipa game site/ and at a domain root).

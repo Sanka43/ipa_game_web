@@ -1,6 +1,6 @@
 <?php
 $backdrop = $ipadShots[0] ?? $shots[0] ?? $g['icon'];
-$dlHref   = game_url($g) . 'download/';
+$ext      = $getHref === $storeHref ? ' rel="nofollow noopener" target="_blank"' : '';
 $langs    = array_filter(explode(',', $g['languages']));
 ?>
 <!-- ═══ GAME HERO ═══ -->
@@ -19,14 +19,14 @@ $langs    = array_filter(explode(',', $g['languages']));
           <?php if ($g['rating_count'] > 0): ?><li><b><?= number_format((float) $g['rating_value'], 1) ?> <?= stars((float) $g['rating_value']) ?></b><small><?= compact_num($g['rating_count']) ?> ratings</small></li><?php endif; ?>
           <li><b><?= e($ver ?: '—') ?></b><small>Version</small></li>
           <li><b><?= e($size) ?></b><small>Size</small></li>
-          <li><b><?= e($ios ?: '—') ?>+</b><small>Requires</small></li>
+          <li><b><?= e($ios ? "$ios+" : '—') ?></b><small>Requires</small></li>
           <?php if ($g['content_rating']): ?><li><b><?= e($g['content_rating']) ?></b><small>Age</small></li><?php endif; ?>
         </ul>
         <div class="ghero-cta reveal">
-          <a class="btn btn-primary btn-lg" href="<?= e($dlHref) ?>">Get on IPA Game Store</a>
+          <a class="btn btn-primary btn-lg" href="<?= e($getHref) ?>"<?= $ext ?>><?= e($getLabel) ?></a>
           <a class="btn btn-ghost" href="#install">How to install</a>
         </div>
-        <p class="ghero-note reveal"><?= $free ? 'Free' : 'Paid' ?> · <?= e($size) ?> · SHA-256 checksum on the download page · <a href="<?= guide_url('how-to-verify-ipa-file') ?>">How to verify</a></p>
+        <p class="ghero-note reveal"><?= $free ? 'Free' : 'Paid' ?> · <?= e($size) ?><?= $hasFile ? ' · SHA-256 checksum on the download page · <a href="' . guide_url('how-to-verify-ipa-file') . '">How to verify</a>' : ($ios ? ' · ' . e($ios) . ' or later' : '') ?></p>
       </div>
     </div>
   </div>
@@ -71,7 +71,8 @@ $langs    = array_filter(explode(',', $g['languages']));
     <!-- Installation method -->
     <section class="gsec reveal" id="install">
       <h2>How to install <?= e($name) ?> on iPhone &amp; iPad</h2>
-      <h3>Method 1: Download the IPA from IPA Game Store</h3>
+      <?php $m = 0; if ($hasFile): ?>
+      <h3>Method <?= ++$m ?>: Download the IPA from IPA Game Store</h3>
       <ol class="steps">
         <li>Tap <strong>Get on IPA Game Store</strong> above to open the <?= e($name) ?> download page, then download the <?= e($size) ?> IPA file.</li>
         <li>Install a signing tool: <a href="<?= guide_url('install-ipa-with-altstore') ?>">AltStore</a> (needs a computer) or <a href="<?= guide_url('install-ipa-with-sidestore') ?>">SideStore</a> (installs on the phone after a one-time setup).</li>
@@ -79,18 +80,30 @@ $langs    = array_filter(explode(',', $g['languages']));
         <li>On iOS 16 or later, turn on <em>Settings › Privacy &amp; Security › Developer Mode</em> and restart.</li>
         <li>Open the game. Apps signed with a free Apple ID have to be refreshed every 7 days.</li>
       </ol>
-      <?php if ($g['app_store_url']): ?>
-        <h3>Method 2: From the App Store</h3>
-        <p><?= e($name) ?> is also on the App Store. Installing it there means no signing and no 7-day refresh, and updates arrive automatically. <a href="<?= url("out/{$g['slug']}/") ?>" rel="nofollow noopener" target="_blank">View <?= e($name) ?> on the App Store</a>.</p>
+      <?php elseif ($free): ?>
+      <h3>Method <?= ++$m ?>: With the IPA Game Store app</h3>
+      <ol class="steps">
+        <li>Tap <strong>Get on IPA Game Store</strong> above, then <a href="<?= url('download-ipastore/') ?>">download IPA Game Store</a> in Safari on your iPhone or iPad.</li>
+        <li>Open <em>Settings › Profile Downloaded</em> and tap <em>Install</em>. The app appears on your Home Screen.</li>
+        <li>Open IPA Game Store and find <?= e($name) ?>.</li>
+      </ol>
+      <?php endif; ?>
+      <?php if ($storeHref): ?>
+        <h3>Method <?= ++$m ?>: From the App Store</h3>
+        <p><?= e($name) ?> is <?= $m > 1 ? 'also ' : '' ?>on the App Store<?= $free ? '' : ' as a paid game' ?>. Installing it there means no signing and no 7-day refresh, and updates arrive automatically. <a href="<?= e($storeHref) ?>" rel="nofollow noopener" target="_blank">View <?= e($name) ?> on the App Store</a>.</p>
+      <?php endif; ?>
+      <?php if ($free && !$hasFile): ?>
+        <h3>Method <?= ++$m ?>: Sideload an IPA you own</h3>
+        <p>If you have your own copy of the IPA file, sign and install it with <a href="<?= guide_url('install-ipa-with-altstore') ?>">AltStore</a> or <a href="<?= guide_url('install-ipa-with-sidestore') ?>">SideStore</a>. Our <a href="<?= guide_url('how-to-install-ipa-on-iphone') ?>">IPA install guide</a> compares every method.</p>
       <?php endif; ?>
       <p class="muted small">Having trouble? See <a href="<?= guide_url('ipa-installation-failed') ?>">why an IPA installation fails</a> or <a href="<?= guide_url('install-ipa-on-ipad') ?>">installing IPA on iPad</a>.</p>
     </section>
 
     <!-- Safety -->
     <section class="gsec reveal" id="safety">
-      <h2>Is <?= e($name) ?> IPA safe?</h2>
+      <h2>Is <?= e($name) ?> safe?</h2>
       <ul class="checks">
-        <li class="ok"><b>Checksum published.</b> The download page lists the file's SHA-256, so you can <a href="<?= guide_url('how-to-verify-ipa-file') ?>">confirm your copy is the untouched file</a>.</li>
+        <?php if ($hasFile): ?><li class="ok"><b>Checksum published.</b> The download page lists the file's SHA-256, so you can <a href="<?= guide_url('how-to-verify-ipa-file') ?>">confirm your copy is the untouched file</a>.</li><?php else: ?><li class="ok"><b>Check before you install.</b> Only install IPA files from sources you trust, and <a href="<?= guide_url('how-to-verify-ipa-file') ?>">verify the checksum and signature</a> first.</li><?php endif; ?>
         <li class="ok"><b>Developer:</b> <?= e($g['developer']) ?><?= $g['bundle_id'] ? ' · Bundle ID <code>' . e($g['bundle_id']) . '</code>' : '' ?></li>
         <li class="ok"><b>Sandboxed.</b> iOS runs every app in its own sandbox. A game cannot read your other apps' data without asking you.</li>
         <li class="<?= $g['content_rating'] && (int) $g['content_rating'] >= 12 ? 'warn' : 'ok' ?>"><b>Age rating <?= e($g['content_rating'] ?: 'n/a') ?>.</b> Use Screen Time to limit in-app purchases on a child's device.</li>
@@ -140,12 +153,12 @@ $langs    = array_filter(explode(',', $g['languages']));
         <dt>Updated</dt><dd><?= e(date_label($g['latest_release_date'])) ?></dd>
         <?php if ($langs): ?><dt>Languages</dt><dd><?= e(strtoupper(implode(', ', array_slice($langs, 0, 8)))) ?><?= count($langs) > 8 ? ' +' . (count($langs) - 8) : '' ?></dd><?php endif; ?>
       </dl>
-      <a class="btn btn-primary btn-block" href="<?= e($dlHref) ?>">Get on IPA Game Store</a>
-      <?php if ($g['app_store_url']): ?><a class="btn btn-ghost btn-block" href="<?= url("out/{$g['slug']}/") ?>" rel="nofollow noopener" target="_blank">View on App Store</a><?php endif; ?>
+      <a class="btn btn-primary btn-block" href="<?= e($getHref) ?>"<?= $ext ?>><?= e($getLabel) ?></a>
+      <?php if ($storeHref && $getHref !== $storeHref): ?><a class="btn btn-ghost btn-block" href="<?= url("out/{$g['slug']}/") ?>" rel="nofollow noopener" target="_blank">View on App Store</a><?php endif; ?>
     </div>
     <nav class="toc reveal" aria-label="On this page">
       <p class="h3">On this page</p>
-      <a href="#screenshots">Screenshots</a><a href="#about">About</a><a href="#whats-new">What's new</a><a href="#install">Install</a><a href="#safety">Safety</a><a href="#versions">Update history</a>
+      <?php if ($shots || $ipadShots): ?><a href="#screenshots">Screenshots</a><?php endif; ?><a href="#about">About</a><?php if ($latest): ?><a href="#whats-new">What's new</a><?php endif; ?><a href="#install">Install</a><a href="#safety">Safety</a><?php if ($versions): ?><a href="#versions">Update history</a><?php endif; ?>
     </nav>
   </aside>
 </div>
@@ -163,5 +176,5 @@ $langs    = array_filter(explode(',', $g['languages']));
 <div class="dlbar" id="dlbar">
   <img src="<?= e(img($g['icon'], '96x96')) ?>" alt="" width="40" height="40">
   <span><b><?= e($name) ?></b><small><?= e($ver) ?> · <?= e($size) ?></small></span>
-  <a class="btn btn-primary" href="<?= e($dlHref) ?>">Get</a>
+  <a class="btn btn-primary" href="<?= e($getHref) ?>"<?= $ext ?>>Get</a>
 </div>

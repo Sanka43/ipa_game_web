@@ -21,10 +21,10 @@ $faq = [
 
 render('hub', compact('games', 'counts', 'posters', 'page', 'pages', 'total', 'base', 'crumbs', 'faq'), [
     'title'       => ($page > 1 ? "IPA Games – Page $page" : 'IPA Games Download – iOS Games IPA for iPhone & iPad'),
-    'description' => "Download IPA games for iPhone and iPad. Browse " . number_format($total) . " iOS games IPA by category: action, racing, puzzle, offline and more.",
+    'description' => ($page > 1 ? "Page $page of $pages. " : '') . "IPA games for iPhone and iPad. Browse " . number_format($total) . " iOS games IPA by category: action, racing, puzzle, offline and more.",
     'canonical'   => abs_url('ipa-games/' . ($page > 1 ? "?page=$page" : '')),
     'nav'         => 'games',
-    'schema'      => [breadcrumb_ld($crumbs), faq_ld($faq), [
+    'schema'      => [breadcrumb_ld($crumbs), [
         '@context' => 'https://schema.org', '@type' => 'CollectionPage', 'name' => 'IPA Games', 'url' => abs_url('ipa-games/'),
     ]],
 ]);

@@ -38,7 +38,7 @@
   <section class="sec-mini">
     <h2 class="h3">More categories</h2>
     <div class="chips">
-      <?php foreach (array_keys(categories()) as $s): if ($s === $cat['slug']) continue; $c = category($s); ?>
+      <?php foreach (nav_categories(array_keys(categories())) as $s): if ($s === $cat['slug']) continue; $c = category($s); ?>
         <a class="chip" href="<?= category_url($s) ?>"><?= $c['icon'] ?> <?= e($c['h1']) ?></a>
       <?php endforeach; ?>
     </div>

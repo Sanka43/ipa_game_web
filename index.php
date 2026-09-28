@@ -6,6 +6,15 @@ $path = rawurldecode(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: 
 if (BASE_PATH !== '' && str_starts_with($path, BASE_PATH)) $path = substr($path, strlen(BASE_PATH));
 $path = '/' . trim($path, '/');
 
+if ($path === '/favicon.ico') redirect(url('assets/img/favicon-48.png'));
+// The home page has no pagination: /?page=2 etc. are duplicates of /.
+if ($path === '/' && isset($_GET['page'])) redirect(url());
+
+// Let LiteSpeed cache public HTML pages (ignored when LSCache is off). Error pages and
+// per-visitor routes opt out below; not_found() sends no-cache.
+if (!cfg('debug') && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET' && !preg_match('~^/(search|api|dl|out)(/|$)~', $path))
+    header('X-LiteSpeed-Cache-Control: public,max-age=1800');
+
 // One canonical form per page: trailing slash on directories, none on files.
 if ($path !== '/' && !preg_match('/\.(xml|txt)$/', $path) && !str_starts_with($path, '/api/')
     && !str_ends_with(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/')) {
@@ -103,5 +112,6 @@ try {
     }
 } catch (PDOException $ex) {
     http_response_code(500);
+    header('X-LiteSpeed-Cache-Control: no-cache');
     echo cfg('debug') ? '<pre>' . e($ex->getMessage()) . '</pre>' : 'Service temporarily unavailable.';
 }

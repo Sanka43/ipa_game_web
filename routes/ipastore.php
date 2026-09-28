@@ -33,7 +33,6 @@ render('ipastore', compact('app', 'file', 'total', 'features', 'faq', 'crumbs'),
     'nav'         => 'app',
     'schema'      => [
         breadcrumb_ld($crumbs),
-        faq_ld($faq),
         ['@context' => 'https://schema.org', '@type' => 'WebApplication', 'name' => 'IPA Game Store',
          'url' => 'https://' . $app['opens'] . '/', 'operatingSystem' => "iOS {$app['min_ios']}+",
          'applicationCategory' => 'UtilitiesApplication', 'softwareVersion' => $app['version'],

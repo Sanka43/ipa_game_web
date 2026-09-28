@@ -11,34 +11,47 @@ $similar   = similar_games($g);
 $cat       = category($g['category']);
 $latest    = $versions[0] ?? null;
 
-$name  = $g['name'];
+$name  = game_name($g);
 $ver   = version_label($g['latest_version']);
 $size  = size_label($g['latest_size_mb']);
 $ios   = $g['min_ios'] ? "iOS {$g['min_ios']}" : '';
 $devs  = implode(' & ', array_filter([$g['is_iphone'] ? 'iPhone' : '', $g['is_ipad'] ? 'iPad' : '']));
 $free  = (float) $g['price'] <= 0;
+$hasFile = $free && ipa_file($g) !== null;
+
+// Paid games are only offered through their App Store listing.
+$storeHref = $g['app_store_url'] ? url("out/{$g['slug']}/") : null;
+$getHref   = !$free && $storeHref ? $storeHref : game_url($g) . 'download/';
+$getLabel  = !$free && $storeHref ? 'Get on the App Store' : 'Get on IPA Game Store';
 
 $crumbs = [['Home', url()], ['IPA Games', url('ipa-games/')], [$cat['h1'], category_url($g['category'])], ["$name IPA", game_url($g)]];
 
+$n = e($name);
 $faq = [
-    ["Where can I download the $name IPA file?", "Tap <strong>Get on IPA Game Store</strong> to open the <a href=\"" . game_url($g) . "download/\">$name IPA download page</a>. It lists the version, the file size and the SHA-256 checksum. Then install it with AltStore or SideStore, as shown in our <a href=\"" . guide_url('how-to-install-ipa-on-iphone') . "\">sideloading guide</a>."],
-    ["Is $name free?", $free ? "Yes, $name is free to download. It may offer optional in-app purchases." : "$name is a paid game on the App Store."],
-    ["What iOS version does $name need?", $ios ? "$name $ver needs $ios or later. It runs on $devs." : "Check the App Store listing for current requirements."],
-    ["How big is the $name IPA?", "The $ver download is about $size. Many games download more content the first time you open them, so leave some extra free space."],
-    ["Does $name work on iPad?", $g['is_ipad'] ? "Yes. $name supports iPad natively" . ($ipadShots ? ', with a layout made for the larger screen.' : '.') : "$name is built for iPhone. It can still run on iPad in iPhone compatibility mode."],
+    ["How do I get $name on iPhone?", !$free && $storeHref
+        ? "$n is a paid game. Buy and install it from its <a href=\"$storeHref\" rel=\"nofollow noopener\" target=\"_blank\">App Store listing</a>. Updates then arrive automatically."
+        : "Tap <strong>Get on IPA Game Store</strong> to open the <a href=\"" . game_url($g) . "download/\">$n download page</a>, then add the free IPA Game Store app to your Home Screen and find $n there." . ($storeHref ? " $n is also on the <a href=\"$storeHref\" rel=\"nofollow noopener\" target=\"_blank\">App Store</a>." : '') . " To sideload an IPA yourself, see our <a href=\"" . guide_url('how-to-install-ipa-on-iphone') . "\">install guide</a>."],
+    ["Is $name free?", $free ? "Yes, $n is free to download. It may offer optional in-app purchases." : "No. $n is a paid game on the App Store."],
+    ["What iOS version does $name need?", $ios ? "$n $ver needs $ios or later. It runs on $devs." : "Check the App Store listing for current requirements."],
+    ["How big is $name?", "The $ver download is about $size. Many games download more content the first time you open them, so leave some extra free space."],
+    ["Does $name work on iPad?", $g['is_ipad'] ? "Yes. $n supports iPad natively" . ($ipadShots ? ', with a layout made for the larger screen.' : '.') : "$n is built for iPhone. It can still run on iPad in iPhone compatibility mode."],
 ];
-if ($g['is_offline']) $faq[] = ["Can I play $name offline?", "Yes. The developer says $name supports offline play. You may need to connect once to download content on first launch."];
+if ($g['is_offline']) $faq[] = ["Can I play $name offline?", "Yes. The developer says $n supports offline play. You may need to connect once to download content on first launch."];
 
-$metaDesc = excerpt("Download $name IPA $ver for iPhone and iPad. $size, requires " . ($ios ?: 'a recent iOS version') . ". Screenshots, what's new, install steps, safety info and full update history.", 158);
+$metaDesc = excerpt("$name $ver for iPhone and iPad: $size" . ($ios ? ", $ios or later" : '') . ". Screenshots, what's new, install guide, safety info and full update history.", 158);
 
-render('game', compact('g', 'shots', 'ipadShots', 'versions', 'similar', 'cat', 'latest', 'name', 'ver', 'size', 'ios', 'devs', 'free', 'crumbs', 'faq'), [
-    'title'       => "$name IPA Download for iPhone & iPad" . ($ver ? " ($ver)" : ''),
+// Keep the title within ~60 characters: the version (and then the brand suffix) drop off first.
+$title = "$name IPA for iPhone & iPad";
+if ($ver && mb_strlen("$title ($ver) | " . SITE_NAME) <= 60) $title .= " ($ver)";
+
+render('game', compact('g', 'shots', 'ipadShots', 'versions', 'similar', 'cat', 'latest', 'name', 'ver', 'size', 'ios', 'devs', 'free', 'crumbs', 'faq', 'storeHref', 'getHref', 'getLabel', 'hasFile'), [
+    'title'       => $title,
     'description' => $metaDesc,
     'canonical'   => abs_url("ipa-games/{$g['category']}/{$g['slug']}-ipa/"),
     'og_image'    => img($g['icon'], '1200x630'),
-    'og_type'     => 'article',
     'nav'         => 'games',
     'body_class'  => 'is-game',
+    'preload'     => img($ipadShots[0] ?? $shots[0] ?? $g['icon'], '1400x0w'),
     'schema'      => [
         array_filter([
             '@context' => 'https://schema.org', '@type' => 'SoftwareApplication',
@@ -49,9 +62,7 @@ render('game', compact('g', 'shots', 'ipadShots', 'versions', 'similar', 'cat', 
             'image' => img($g['icon'], '512x512'), 'screenshot' => array_map(fn($s) => img($s, '600x0w'), array_slice($shots, 0, 4)),
             'author' => ['@type' => 'Organization', 'name' => $g['developer']],
             'offers' => ['@type' => 'Offer', 'price' => number_format((float) $g['price'], 2, '.', ''), 'priceCurrency' => 'USD'],
-            'aggregateRating' => $g['rating_count'] > 0 ? ['@type' => 'AggregateRating', 'ratingValue' => (float) $g['rating_value'], 'ratingCount' => (int) $g['rating_count'], 'bestRating' => 5] : null,
         ]),
         breadcrumb_ld($crumbs),
-        faq_ld($faq),
     ],
 ]);
