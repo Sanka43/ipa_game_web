@@ -21,7 +21,7 @@ $free  = (float) $g['price'] <= 0;
 $crumbs = [['Home', url()], ['IPA Games', url('ipa-games/')], [$cat['h1'], category_url($g['category'])], ["$name IPA", game_url($g)]];
 
 $faq = [
-    ["Where can I download the $name IPA file?", "Tap <strong>Get on IPAStore</strong> to open the <a href=\"" . game_url($g) . "download/\">$name IPA download page</a>. It lists the version, the file size and the SHA-256 checksum. Then install it with AltStore or SideStore, as shown in our <a href=\"" . guide_url('how-to-install-ipa-on-iphone') . "\">sideloading guide</a>."],
+    ["Where can I download the $name IPA file?", "Tap <strong>Get on IPA Game Store</strong> to open the <a href=\"" . game_url($g) . "download/\">$name IPA download page</a>. It lists the version, the file size and the SHA-256 checksum. Then install it with AltStore or SideStore, as shown in our <a href=\"" . guide_url('how-to-install-ipa-on-iphone') . "\">sideloading guide</a>."],
     ["Is $name free?", $free ? "Yes, $name is free to download. It may offer optional in-app purchases." : "$name is a paid game on the App Store."],
     ["What iOS version does $name need?", $ios ? "$name $ver needs $ios or later. It runs on $devs." : "Check the App Store listing for current requirements."],
     ["How big is the $name IPA?", "The $ver download is about $size. Many games download more content the first time you open them, so leave some extra free space."],

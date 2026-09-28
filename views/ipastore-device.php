@@ -13,7 +13,7 @@
 
         <p class="kicker">iPhone &amp; iPad only</p>
         <h1>Open this page on your <span class="grad">iPhone or iPad</span></h1>
-        <p class="lead">IPAStore is made for iOS and installs from <strong>Safari on your iPhone or iPad</strong>. Open this page there to continue.</p>
+        <p class="lead">IPA Game Store is made for iOS and installs from <strong>Safari on your iPhone or iPad</strong>. Open this page there to continue.</p>
 
         <ol class="steps gate-steps">
           <li>
@@ -27,11 +27,11 @@
                 ipagame store
               </span>
             </span>
-            <small>Tap the IPAStore result, or type <b><?= e($host) ?></b> straight into the address bar.</small>
+            <small>Tap the IPA Game Store result, or type <b><?= e($host) ?></b> straight into the address bar.</small>
           </li>
           <li>
             <span class="step-head"><span><strong>Tap Download IPA Game Store</strong> and allow the download.</span></span>
-            <small>Open <b>Settings › Profile Downloaded</b> and tap <b>Install</b>. IPAStore appears on your Home Screen.</small>
+            <small>Open <b>Settings › Profile Downloaded</b> and tap <b>Install</b>. IPA Game Store appears on your Home Screen.</small>
           </li>
         </ol>
 

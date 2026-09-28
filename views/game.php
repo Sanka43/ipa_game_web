@@ -23,7 +23,7 @@ $langs    = array_filter(explode(',', $g['languages']));
           <?php if ($g['content_rating']): ?><li><b><?= e($g['content_rating']) ?></b><small>Age</small></li><?php endif; ?>
         </ul>
         <div class="ghero-cta reveal">
-          <a class="btn btn-primary btn-lg" href="<?= e($dlHref) ?>">Get on IPAStore</a>
+          <a class="btn btn-primary btn-lg" href="<?= e($dlHref) ?>">Get on IPA Game Store</a>
           <a class="btn btn-ghost" href="#install">How to install</a>
         </div>
         <p class="ghero-note reveal"><?= $free ? 'Free' : 'Paid' ?> · <?= e($size) ?> · SHA-256 checksum on the download page · <a href="<?= guide_url('how-to-verify-ipa-file') ?>">How to verify</a></p>
@@ -71,9 +71,9 @@ $langs    = array_filter(explode(',', $g['languages']));
     <!-- Installation method -->
     <section class="gsec reveal" id="install">
       <h2>How to install <?= e($name) ?> on iPhone &amp; iPad</h2>
-      <h3>Method 1: Download the IPA from IPAStore</h3>
+      <h3>Method 1: Download the IPA from IPA Game Store</h3>
       <ol class="steps">
-        <li>Tap <strong>Get on IPAStore</strong> above to open the <?= e($name) ?> download page, then download the <?= e($size) ?> IPA file.</li>
+        <li>Tap <strong>Get on IPA Game Store</strong> above to open the <?= e($name) ?> download page, then download the <?= e($size) ?> IPA file.</li>
         <li>Install a signing tool: <a href="<?= guide_url('install-ipa-with-altstore') ?>">AltStore</a> (needs a computer) or <a href="<?= guide_url('install-ipa-with-sidestore') ?>">SideStore</a> (installs on the phone after a one-time setup).</li>
         <li>Save the <code>.ipa</code> file to the Files app, then open it with your signing tool.</li>
         <li>On iOS 16 or later, turn on <em>Settings › Privacy &amp; Security › Developer Mode</em> and restart.</li>
@@ -140,7 +140,7 @@ $langs    = array_filter(explode(',', $g['languages']));
         <dt>Updated</dt><dd><?= e(date_label($g['latest_release_date'])) ?></dd>
         <?php if ($langs): ?><dt>Languages</dt><dd><?= e(strtoupper(implode(', ', array_slice($langs, 0, 8)))) ?><?= count($langs) > 8 ? ' +' . (count($langs) - 8) : '' ?></dd><?php endif; ?>
       </dl>
-      <a class="btn btn-primary btn-block" href="<?= e($dlHref) ?>">Get on IPAStore</a>
+      <a class="btn btn-primary btn-block" href="<?= e($dlHref) ?>">Get on IPA Game Store</a>
       <?php if ($g['app_store_url']): ?><a class="btn btn-ghost btn-block" href="<?= url("out/{$g['slug']}/") ?>" rel="nofollow noopener" target="_blank">View on App Store</a><?php endif; ?>
     </div>
     <nav class="toc reveal" aria-label="On this page">

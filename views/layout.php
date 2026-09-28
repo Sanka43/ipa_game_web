@@ -51,7 +51,7 @@ $nav       = $meta['nav'] ?? '';
   <div class="wrap topbar-in">
     <a class="brand" href="<?= url() ?>" aria-label="<?= e(SITE_NAME) ?> home">
       <img class="brand-mark" src="<?= asset('img/logo-128.webp') ?>" alt="" width="40" height="40">
-      <span class="brand-text">IPA<b>STORE</b></span>
+      <span class="brand-text">IPA GAME <b>STORE</b></span>
     </a>
 
     <nav class="mainnav" id="mainnav" aria-label="Main">
@@ -103,7 +103,7 @@ $nav       = $meta['nav'] ?? '';
   <div class="wrap">
     <div class="foot-top">
       <div class="foot-brand">
-        <a class="brand" href="<?= url() ?>"><img class="brand-mark" src="<?= asset('img/logo-128.webp') ?>" alt="" width="40" height="40"><span class="brand-text">IPA<b>STORE</b></span></a>
+        <a class="brand" href="<?= url() ?>"><img class="brand-mark" src="<?= asset('img/logo-128.webp') ?>" alt="" width="40" height="40"><span class="brand-text">IPA GAME <b>STORE</b></span></a>
         <p>IPA games for iPhone and iPad, with versions, file sizes and install guides.</p>
       </div>
       <nav aria-label="Browse">

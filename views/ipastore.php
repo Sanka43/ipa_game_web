@@ -18,7 +18,7 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
           <a class="btn btn-ghost btn-lg" href="#install">How to install</a>
           <p class="app-hint" data-ios-hint hidden>📱 Open this page in <strong>Safari on your iPhone or iPad</strong>. The profile only installs on iOS.</p>
         <?php else: ?>
-          <p class="dl-soon"><span class="dot"></span> IPAStore app coming soon</p>
+          <p class="dl-soon"><span class="dot"></span> IPA Game Store app coming soon</p>
           <a class="btn btn-ghost btn-lg" href="<?= url('ipa-games/') ?>">Browse games on the web →</a>
         <?php endif; ?>
       </div>
@@ -33,7 +33,7 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
 
     <div class="apphero-stage" aria-hidden="true">
       <div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div>
-      <img class="app-shot" src="<?= asset('img/ipastore-app-screen.webp') ?>" alt="IPAStore app showing the Games screen on iPhone" width="675" height="1200" fetchpriority="high">
+      <img class="app-shot" src="<?= asset('img/ipastore-app-screen.webp') ?>" alt="IPA Game Store app showing the Games screen on iPhone" width="675" height="1200" fetchpriority="high">
       <img class="app-logo-float" src="<?= asset('img/logo-512.png') ?>" alt="" width="220" height="220">
     </div>
   </div>
@@ -42,7 +42,7 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
 <!-- ═══ FEATURES ═══ -->
 <section class="sec">
   <div class="wrap">
-    <div class="sec-head reveal"><div><p class="kicker">Why IPAStore</p><h2>Everything in one app</h2></div></div>
+    <div class="sec-head reveal"><div><p class="kicker">Why IPA Game Store</p><h2>Everything in one app</h2></div></div>
     <div class="features">
       <?php foreach ($features as $i => [$icon, $title, $text]): ?>
         <div class="feature reveal" style="--d:<?= $i * 60 ?>ms">
@@ -61,12 +61,12 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
   <div class="wrap app-install">
     <div class="reveal">
       <p class="kicker">Install</p>
-      <h2>Install IPAStore in 4 steps</h2>
+      <h2>Install IPA Game Store in 4 steps</h2>
       <ol class="steps">
         <li><strong>Open this page in Safari</strong> on your iPhone or iPad and tap <strong>Download IPA Game Store</strong>. When asked, tap <strong>Allow</strong>.</li>
         <li><strong>Open Settings.</strong> Tap <em>Profile Downloaded</em> at the top. You can also find it in <em>Settings › General › VPN &amp; Device Management</em>.</li>
         <li><strong>Tap Install</strong>, enter your passcode, then tap <strong>Install</strong> again to confirm.</li>
-        <li><strong>Done.</strong> The IPAStore icon is on your Home Screen. Tap it to open the store full screen.</li>
+        <li><strong>Done.</strong> The IPA Game Store icon is on your Home Screen. Tap it to open the store full screen.</li>
       </ol>
       <p class="muted small">To remove it later: <em>Settings › General › VPN &amp; Device Management</em> › IPA Game › <strong>Remove Profile</strong>.</p>
     </div>
@@ -74,7 +74,7 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
     <div class="dl-card reveal">
       <h3 class="h3">Profile information</h3>
       <dl class="dl-info">
-        <dt>App</dt><dd>IPAStore</dd>
+        <dt>App</dt><dd>IPA Game Store</dd>
         <dt>Type</dt><dd>Home Screen web app</dd>
         <dt>Opens</dt><dd><code><?= e($app['opens']) ?></code></dd>
         <dt>Contains</dt><dd>1 Web Clip · no MDM, certificates or VPN</dd>
@@ -91,7 +91,7 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
 
 <!-- ═══ FAQ + CTA ═══ -->
 <section class="sec">
-  <div class="wrap prose-wrap"><?= faq_block($faq, 'IPAStore app — FAQ') ?></div>
+  <div class="wrap prose-wrap"><?= faq_block($faq, 'IPA Game Store app — FAQ') ?></div>
 </section>
 
 <section class="app-final">
