@@ -11,7 +11,6 @@
 
   <div class="wrap hero-in">
     <div class="hero-copy">
-      <p class="eyebrow reveal"><span class="dot"></span> <?= number_format($total) ?> games · updated <?= date('M j') ?></p>
       <h1 class="hero-title reveal">
         <span class="line">Free IPA Games</span>
         <span class="line grad">for iPhone &amp; iPad</span>
@@ -130,11 +129,11 @@
 <section class="sec">
   <div class="wrap devices">
     <a class="device reveal" href="<?= category_url('iphone') ?>">
-      <span class="device-art iphone" aria-hidden="true"></span>
+      <img class="device-img iphone" src="<?= asset('img/gate-iphone.webp') ?>" alt="" width="215" height="440" loading="lazy">
       <span><p class="kicker">iPhone</p><b>IPA Games for iPhone</b><small>Ranked by how many people play them. Minimum iOS and download size listed for each game.</small></span>
     </a>
     <a class="device reveal" href="<?= category_url('ipad') ?>">
-      <span class="device-art ipad" aria-hidden="true"></span>
+      <img class="device-img ipad" src="<?= asset('img/gate-ipad.webp') ?>" alt="" width="469" height="360" loading="lazy">
       <span><p class="kicker">iPad</p><b>IPA Games for iPad</b><small>Games built for the big screen, with native iPad support and iPad screenshots.</small></span>
     </a>
   </div>

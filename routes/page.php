@@ -18,7 +18,7 @@ $pages = [
         <p>We do not require an account and do not collect personal information. We count anonymous download clicks per game to show popularity. Our hosting provider keeps standard server logs (IP address, browser, pages visited) for security, for a limited time.</p>
         <p>If we add analytics or advertising, this page will list the providers and the cookies they use.</p>'],
     'contact' => ['Contact', 'Contact IPA Store.', '
-        <p>For corrections, developer requests or <a href="' . url('dmca/') . '">DMCA notices</a>, email <strong>contact@yourdomain.com</strong>.</p>'],
+        <p>For corrections, developer requests or <a href="' . url('dmca/') . '">DMCA notices</a>, email <a href="mailto:info@ipagame.store"><strong>info@ipagame.store</strong></a>.</p>'],
 ];
 [$title, $desc, $html] = $pages[$pageSlug];
 $crumbs = [['Home', url()], [$title, url("$pageSlug/")]];
