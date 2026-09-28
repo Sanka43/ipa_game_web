@@ -17,7 +17,7 @@
       </h1>
       <p class="hero-sub reveal">Download iOS games with the full details: version history, file sizes, compatibility and install guides for each one.</p>
       <div class="hero-cta reveal">
-        <a class="btn btn-primary" href="<?= url('download-ipastore/') ?>">Download IPAStore</a>
+        <a class="btn btn-primary" href="<?= url('download-ipastore/') ?>">Download IPA Game Store</a>
         <a class="btn btn-ghost" href="<?= guide_url('how-to-install-ipa-on-iphone') ?>">▶ How to install IPA</a>
       </div>
     </div>

@@ -82,7 +82,7 @@ $nav       = $meta['nav'] ?? '';
           <?php endforeach; ?>
         </div>
       </div>
-      <a class="btn btn-primary menu-cta" href="<?= url('download-ipastore/') ?>">Download IPAStore</a>
+      <a class="btn btn-primary menu-cta" href="<?= url('download-ipastore/') ?>">Download IPA Game Store</a>
     </nav>
 
     <form class="topsearch" action="<?= url('search/') ?>" role="search" data-suggest>
@@ -108,7 +108,7 @@ $nav       = $meta['nav'] ?? '';
       </div>
       <nav aria-label="Browse">
         <p class="foot-h">Browse</p>
-        <a href="<?= url('download-ipastore/') ?>">Download IPAStore</a>
+        <a href="<?= url('download-ipastore/') ?>">Download IPA Game Store</a>
         <a href="<?= url('ipa-games/') ?>">All IPA Games</a>
         <?php foreach (['latest', 'offline', 'iphone', 'ipad', 'emulator'] as $s): ?>
           <a href="<?= category_url($s) ?>"><?= e(category($s)['h1']) ?></a>

@@ -23,10 +23,10 @@ $faq = [
     ['Does IPAStore work on iPad?', 'Yes. It works on iPhone and iPad with iOS ' . e($app['min_ios']) . ' or later.'],
 ];
 
-$crumbs = [['Home', url()], ['Download IPAStore', url('download-ipastore/')]];
+$crumbs = [['Home', url()], ['Download IPA Game Store', url('download-ipastore/')]];
 
 render('ipastore', compact('app', 'file', 'total', 'features', 'faq', 'crumbs'), [
-    'title'       => 'Download IPAStore – IPA Store App for iPhone & iPad',
+    'title'       => 'Download IPA Game Store – IPA Store App for iPhone & iPad',
     'description' => "Download the IPAStore app for iPhone and iPad. Browse $total+ IPA games and get the latest versions, straight from your Home Screen. Free, installs in seconds.",
     'canonical'   => abs_url('download-ipastore/'),
     'body_class'  => 'is-app',

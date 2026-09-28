@@ -30,7 +30,7 @@
             <small>Tap the IPAStore result, or type <b><?= e($host) ?></b> straight into the address bar.</small>
           </li>
           <li>
-            <span class="step-head"><span><strong>Tap Download IPAStore</strong> and allow the download.</span></span>
+            <span class="step-head"><span><strong>Tap Download IPA Game Store</strong> and allow the download.</span></span>
             <small>Open <b>Settings › Profile Downloaded</b> and tap <b>Install</b>. IPAStore appears on your Home Screen.</small>
           </li>
         </ol>

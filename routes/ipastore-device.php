@@ -3,7 +3,7 @@
 // Domain shown in the steps. Locally SITE_URL is localhost, so fall back to the live domain.
 $host = parse_url(SITE_URL, PHP_URL_HOST) ?: '';
 if ($host === '' || $host === 'localhost' || filter_var($host, FILTER_VALIDATE_IP)) $host = 'ipagame.store';
-$crumbs  = [['Home', url()], ['Download IPAStore', url('download-ipastore/')], ['Open on iPhone', url('download-ipastore/open-on-iphone/')]];
+$crumbs  = [['Home', url()], ['Download IPA Game Store', url('download-ipastore/')], ['Open on iPhone', url('download-ipastore/open-on-iphone/')]];
 
 render('ipastore-device', compact('host', 'crumbs'), [
     'title'       => 'Open IPAStore on your iPhone or iPad',

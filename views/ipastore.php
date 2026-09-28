@@ -9,12 +9,12 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
     <div class="apphero-copy">
       <?= breadcrumbs($crumbs) ?>
       <p class="eyebrow reveal"><span class="dot"></span> Free · iPhone &amp; iPad · Installs in seconds</p>
-      <h1 class="hero-title reveal"><span class="line">Download</span><span class="line grad">IPAStore</span></h1>
+      <h1 class="hero-title reveal"><span class="line">Download</span><span class="line grad">IPA Game Store</span></h1>
       <p class="hero-sub reveal">The whole IPA Store in your pocket. Browse <?= number_format($total) ?>+ iOS games, get the latest versions first, and open it all from your Home Screen.</p>
 
       <div class="app-cta reveal">
         <?php if ($file): ?>
-          <a class="btn btn-primary btn-lg" href="<?= e($dlHref) ?>" rel="nofollow">Download IPAStore</a>
+          <a class="btn btn-primary btn-lg" href="<?= e($dlHref) ?>" rel="nofollow">Download IPA Game Store</a>
           <a class="btn btn-ghost btn-lg" href="#install">How to install</a>
           <p class="app-hint" data-ios-hint hidden>📱 Open this page in <strong>Safari on your iPhone or iPad</strong>. The profile only installs on iOS.</p>
         <?php else: ?>
@@ -63,7 +63,7 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
       <p class="kicker">Install</p>
       <h2>Install IPAStore in 4 steps</h2>
       <ol class="steps">
-        <li><strong>Open this page in Safari</strong> on your iPhone or iPad and tap <strong>Download IPAStore</strong>. When asked, tap <strong>Allow</strong>.</li>
+        <li><strong>Open this page in Safari</strong> on your iPhone or iPad and tap <strong>Download IPA Game Store</strong>. When asked, tap <strong>Allow</strong>.</li>
         <li><strong>Open Settings.</strong> Tap <em>Profile Downloaded</em> at the top. You can also find it in <em>Settings › General › VPN &amp; Device Management</em>.</li>
         <li><strong>Tap Install</strong>, enter your passcode, then tap <strong>Install</strong> again to confirm.</li>
         <li><strong>Done.</strong> The IPAStore icon is on your Home Screen. Tap it to open the store full screen.</li>
@@ -84,7 +84,7 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
         <dt>Requires</dt><dd>iOS <?= e($app['min_ios']) ?> or later</dd>
         <dt>Price</dt><dd>Free</dd>
       </dl>
-      <?php if ($file): ?><a class="btn btn-primary btn-block" href="<?= e($dlHref) ?>" rel="nofollow">Download IPAStore</a><?php endif; ?>
+      <?php if ($file): ?><a class="btn btn-primary btn-block" href="<?= e($dlHref) ?>" rel="nofollow">Download IPA Game Store</a><?php endif; ?>
     </div>
   </div>
 </section>
@@ -99,7 +99,7 @@ $size   = $file ? $file['size_kb'] . ' KB' : '';
     <img src="<?= asset('img/logo-128.webp') ?>" alt="" width="88" height="88">
     <h2>Your games. One store.</h2>
     <?php if ($file): ?>
-      <a class="btn btn-primary btn-lg" href="<?= e($dlHref) ?>" rel="nofollow">Download IPAStore</a>
+      <a class="btn btn-primary btn-lg" href="<?= e($dlHref) ?>" rel="nofollow">Download IPA Game Store</a>
     <?php else: ?>
       <a class="btn btn-primary btn-lg" href="<?= url('ipa-games/') ?>">Browse IPA games</a>
     <?php endif; ?>
