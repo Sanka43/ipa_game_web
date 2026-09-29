@@ -41,6 +41,9 @@ $langs    = array_filter(explode(',', $g['languages']));
       <div class="sec-head"><h2><?= e($name) ?> screenshots</h2>
         <?php if ($shots && $ipadShots): ?><div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-tab="iphone">iPhone</button><button role="tab" aria-selected="false" data-tab="ipad">iPad</button></div><?php endif; ?>
       </div>
+      <div class="shots-frame">
+      <button type="button" class="shots-nav prev" data-dir="-1" aria-label="Previous screenshots" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <button type="button" class="shots-nav next" data-dir="1" aria-label="Next screenshots" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       <?php foreach (['iphone' => $shots, 'ipad' => $ipadShots] as $dev => $list): if (!$list) continue; ?>
         <div class="shots shots-<?= $dev ?>" data-panel="<?= $dev ?>" <?= $dev === 'ipad' && $shots ? 'hidden' : '' ?> data-drag>
           <?php foreach ($list as $i => $s): ?>
@@ -48,6 +51,7 @@ $langs    = array_filter(explode(',', $g['languages']));
           <?php endforeach; ?>
         </div>
       <?php endforeach; ?>
+      </div>
     </section>
     <?php endif; ?>
 
