@@ -137,31 +137,18 @@
     document.addEventListener('click', e => { if (!form.contains(e.target)) close(); });
   });
 
-  /* ── Screenshot tabs ──────────────────────────────── */
-  $$('.tabs').forEach(tabs => tabs.addEventListener('click', e => {
-    const b = e.target.closest('[data-tab]'); if (!b) return;
-    $$('[data-tab]', tabs).forEach(x => x.setAttribute('aria-selected', String(x === b)));
-    $$('[data-panel]', tabs.closest('section')).forEach(p => p.hidden = p.dataset.panel !== b.dataset.tab);
-    tabs.closest('section').dispatchEvent(new Event('shots:tab'));
-  }));
-
   /* ── Screenshot prev/next buttons ─────────────────── */
   $$('.shots-frame').forEach(frame => {
     const [prev, next] = $$('.shots-nav', frame);
-    const strip = () => $$('.shots', frame).find(s => !s.hidden);
+    const s = $('.shots', frame);
     const update = () => {
-      const s = strip(); if (!s) return;
-      const max = s.scrollWidth - s.clientWidth;
       prev.hidden = s.scrollLeft <= 4;
-      next.hidden = s.scrollLeft >= max - 4;
+      next.hidden = s.scrollLeft >= s.scrollWidth - s.clientWidth - 4;
     };
-    $$('.shots-nav', frame).forEach(b => b.addEventListener('click', () => {
-      const s = strip(); if (!s) return;
-      s.scrollBy({ left: b.dataset.dir * s.clientWidth * 0.8, behavior: reduced ? 'auto' : 'smooth' });
-    }));
-    $$('.shots', frame).forEach(s => s.addEventListener('scroll', update, { passive: true }));
-    $$('img', frame).forEach(i => i.addEventListener('load', update));
-    frame.closest('section').addEventListener('shots:tab', update);
+    [prev, next].forEach(b => b.addEventListener('click', () =>
+      s.scrollBy({ left: b.dataset.dir * s.clientWidth * 0.8, behavior: reduced ? 'auto' : 'smooth' })));
+    s.addEventListener('scroll', update, { passive: true });
+    $$('img', s).forEach(i => i.addEventListener('load', update));
     addEventListener('resize', update);
     update();
   });

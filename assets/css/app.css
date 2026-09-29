@@ -397,15 +397,9 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
 .gsec .prose h3, .gsec > h3 { font-size: 1rem; color: var(--text); margin-top: 1.4em; }
 .gsec > p, .gsec > ol, .gsec > ul { color: #c7cddb; }
 .gsec a { color: var(--cyan); }
-.tabs { display: flex; background: var(--surface); border-radius: 999px; padding: 4px; border: 1px solid var(--line); }
-.tabs button { border: 0; background: none; padding: 6px 16px; border-radius: 999px; font-size: .85rem; color: var(--muted); }
-.tabs [aria-selected="true"] { background: var(--text); color: var(--bg); }
 .shots { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: var(--surface-2) transparent; }
-.shots[hidden] { display: none; }
 /* Fixed row height, width follows each image, so portrait and landscape shots can mix */
-.shots a { flex: none; scroll-snap-align: start; min-width: 120px; border-radius: 18px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
-.shots-iphone a { height: 420px; }
-.shots-ipad a { height: 300px; }
+.shots a { flex: none; scroll-snap-align: start; height: 420px; min-width: 120px; border-radius: 18px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
 .shots img { display: block; width: auto; height: 100%; max-width: none; transition: transform .6s var(--ease); }
 .shots a:hover img { transform: scale(1.04); }
 .shots-frame { position: relative; }
@@ -543,8 +537,7 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
   .ghero-stats { gap: 14px 0; }
   .ghero-stats li { padding: 0 14px; }
   .ghero-cta .btn { flex: 1; }
-  .shots-iphone a { height: 320px; }
-  .shots-ipad a { height: 220px; }
+  .shots a { height: 320px; }
   .device { flex-direction: column; align-items: flex-start; padding: 24px; }
   .foot-top { grid-template-columns: 1fr; }
   .bigsearch { border-radius: 20px; flex-wrap: wrap; padding: 12px; }
@@ -755,7 +748,6 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
 
   /* Game page: content first, specs card after */
   .game-side { order: 0; }
-  .tabs button { min-height: 40px; }
 }
 
 @media (max-width: 640px) {

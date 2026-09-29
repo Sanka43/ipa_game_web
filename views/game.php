@@ -38,19 +38,15 @@ $langs    = array_filter(explode(',', $g['languages']));
     <!-- Screenshots -->
     <?php if ($shots || $ipadShots): ?>
     <section class="gsec reveal" id="screenshots">
-      <div class="sec-head"><h2><?= e($name) ?> screenshots</h2>
-        <?php if ($shots && $ipadShots): ?><div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-tab="iphone">iPhone</button><button role="tab" aria-selected="false" data-tab="ipad">iPad</button></div><?php endif; ?>
-      </div>
+      <div class="sec-head"><h2><?= e($name) ?> screenshots</h2></div>
       <div class="shots-frame">
       <button type="button" class="shots-nav prev" data-dir="-1" aria-label="Previous screenshots" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
       <button type="button" class="shots-nav next" data-dir="1" aria-label="Next screenshots" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
-      <?php foreach (['iphone' => $shots, 'ipad' => $ipadShots] as $dev => $list): if (!$list) continue; ?>
-        <div class="shots shots-<?= $dev ?>" data-panel="<?= $dev ?>" <?= $dev === 'ipad' && $shots ? 'hidden' : '' ?> data-drag>
-          <?php foreach ($list as $i => $s): ?>
-            <a href="<?= e(img($s, '1200x0w')) ?>" data-lightbox="<?= $dev ?>"><img src="<?= e(img($s, $dev === 'ipad' ? '600x0w' : '460x0w')) ?>" alt="<?= e($name) ?> for <?= $dev === 'ipad' ? 'iPad' : 'iPhone' ?> screenshot <?= $i + 1 ?>" loading="lazy"></a>
-          <?php endforeach; ?>
+        <div class="shots" data-drag>
+          <?php foreach (['iphone' => $shots, 'ipad' => $ipadShots] as $dev => $list): foreach ($list as $i => $s): ?>
+            <a href="<?= e(img($s, '1200x0w')) ?>" data-lightbox="shots"><img src="<?= e(img($s, $dev === 'ipad' ? '600x0w' : '460x0w')) ?>" alt="<?= e($name) ?> for <?= $dev === 'ipad' ? 'iPad' : 'iPhone' ?> screenshot <?= $i + 1 ?>" loading="lazy"></a>
+          <?php endforeach; endforeach; ?>
         </div>
-      <?php endforeach; ?>
       </div>
     </section>
     <?php endif; ?>
