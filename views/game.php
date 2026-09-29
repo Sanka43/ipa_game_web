@@ -13,7 +13,7 @@ $langs    = array_filter(explode(',', $g['languages']));
       <img class="ghero-icon reveal" src="<?= e(img($g['icon'], '360x360')) ?>" alt="<?= e($name) ?> IPA icon" width="180" height="180" fetchpriority="high">
       <div class="ghero-copy">
         <p class="kicker reveal"><a href="<?= category_url($g['category']) ?>"><?= $cat['icon'] ?> <?= e($cat['name']) ?> game</a><?= $g['is_offline'] ? ' · ✈ Offline' : '' ?></p>
-        <h1 class="reveal"><?= e($name) ?><?php if ($hasFile): ?> <span class="grad">IPA</span><?php endif; ?></h1>
+        <h1 class="reveal"><?= e($name) ?><?php if ($isIpa): ?> <span class="grad">IPA</span><?php endif; ?></h1>
         <p class="ghero-dev reveal">by <strong><?= e($g['developer']) ?></strong></p>
         <ul class="ghero-stats reveal">
           <?php if ($g['rating_count'] > 0): ?><li><b><?= number_format((float) $g['rating_value'], 1) ?> <?= stars((float) $g['rating_value']) ?></b><small><?= compact_num($g['rating_count']) ?> ratings</small></li><?php endif; ?>

@@ -18,6 +18,8 @@ $ios   = $g['min_ios'] ? "iOS {$g['min_ios']}" : '';
 $devs  = implode(' & ', array_filter([$g['is_iphone'] ? 'iPhone' : '', $g['is_ipad'] ? 'iPad' : '']));
 $free  = (float) $g['price'] <= 0;
 $hasFile = $free && ipa_file($g) !== null;
+// IPA vs App Store, same test as the admin: some version links off the App Store.
+$isIpa = (bool) array_filter($versions, fn($v) => $v['download_url'] !== '' && !str_contains($v['download_url'], 'apps.apple.com'));
 
 // Paid games are only offered through their App Store listing.
 $storeHref = $g['app_store_url'] ? url("out/{$g['slug']}/") : null;
@@ -44,7 +46,7 @@ $metaDesc = excerpt("$name $ver for iPhone and iPad: $size" . ($ios ? ", $ios or
 $title = "$name IPA for iPhone & iPad";
 if ($ver && mb_strlen("$title ($ver) | " . SITE_NAME) <= 60) $title .= " ($ver)";
 
-render('game', compact('g', 'shots', 'ipadShots', 'versions', 'similar', 'cat', 'latest', 'name', 'ver', 'size', 'ios', 'devs', 'free', 'crumbs', 'faq', 'storeHref', 'getHref', 'getLabel', 'hasFile'), [
+render('game', compact('g', 'shots', 'ipadShots', 'versions', 'similar', 'cat', 'latest', 'name', 'ver', 'size', 'ios', 'devs', 'free', 'crumbs', 'faq', 'storeHref', 'getHref', 'getLabel', 'hasFile', 'isIpa'), [
     'title'       => $title,
     'description' => $metaDesc,
     'canonical'   => abs_url("ipa-games/{$g['category']}/{$g['slug']}-ipa/"),
