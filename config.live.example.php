@@ -10,4 +10,10 @@ return [
     ],
     'site_url' => 'https://ipagame.store',
     'debug'    => false,   // hide error details from visitors
+    // Social links in the home hero (empty string hides a button).
+    'social' => [
+        'telegram' => 'https://t.me/YOUR_CHANNEL',
+        'x'        => 'https://x.com/YOUR_HANDLE',
+        'youtube'  => 'https://www.youtube.com/@YOUR_CHANNEL',
+    ],
 ];

@@ -20,6 +20,21 @@
         <a class="btn btn-primary" href="<?= url('download-ipastore/') ?>">Download IPA Game Store</a>
         <a class="btn btn-ghost" href="<?= guide_url('how-to-install-ipa-on-iphone') ?>">▶ How to install IPA</a>
       </div>
+      <?php
+      $socialIcons = [
+          'telegram' => ['Telegram', '<path d="M21.9 4.3 18.7 19.4c-.2 1.1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.2 13l-4.8-1.5c-1-.3-1.1-1 .2-1.5L20.5 2.8c.9-.3 1.6.2 1.4 1.5Z"/>'],
+          'x'        => ['X', '<path d="M17.8 2.5h3.3l-7.2 8.2 8.5 10.8h-6.6l-5.2-6.8-6 6.8H1.3l7.7-8.8L.9 2.5h6.8l4.7 6.2 5.4-6.2Zm-1.2 17h1.8L7.1 4.3H5.2l11.4 15.2Z"/>'],
+          'youtube'  => ['YouTube', '<path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8ZM9.7 15.1V8.9l5.8 3.1-5.8 3.1Z"/>'],
+      ];
+      $social = array_filter(cfg('social') ?? [], fn($u, $k) => $u !== '' && isset($socialIcons[$k]), ARRAY_FILTER_USE_BOTH);
+      if ($social): ?>
+      <div class="hero-social reveal">
+        <span>Follow us</span>
+        <?php foreach ($social as $k => $u): ?>
+          <a href="<?= e($u) ?>" target="_blank" rel="noopener" aria-label="<?= e(SITE_NAME . ' on ' . $socialIcons[$k][0]) ?>" title="<?= e($socialIcons[$k][0]) ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><?= $socialIcons[$k][1] ?></svg></a>
+        <?php endforeach; ?>
+      </div>
+      <?php endif; ?>
     </div>
 
     <div class="hero-stage" aria-hidden="true">

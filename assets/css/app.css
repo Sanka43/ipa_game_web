@@ -157,6 +157,11 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
 .hero-title .line { display: block; }
 .hero-sub { font-size: 1.12rem; color: #b9c0d0; max-width: 520px; margin: 0 0 32px; }
 .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-social { display: flex; align-items: center; gap: 10px; margin-top: 28px; }
+.hero-social span { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+.hero-social a { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: var(--text); background: rgba(255,255,255,.06); border: 1px solid var(--line-2); backdrop-filter: blur(12px); transition: transform .3s var(--ease), background .3s, border-color .3s, box-shadow .3s; }
+.hero-social svg { width: 19px; height: 19px; fill: currentColor; }
+.hero-social a:hover, .hero-social a:focus-visible { transform: translateY(-3px); background: rgba(255,255,255,.12); border-color: rgba(61,245,255,.5); box-shadow: 0 8px 24px -8px rgba(61,245,255,.55), 0 8px 30px -12px rgba(255,61,170,.55); }
 @keyframes nsIn { from { opacity: 0; transform: translateX(-16px); } }
 
 .hero-stage { position: relative; height: min(620px, 70vh); perspective: 1400px; }
@@ -724,7 +729,7 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
 
   /* Heroes: one centered column */
   .hero-copy, .apphero-copy, .ghero-copy, .pagehead .wrap { text-align: center; }
-  .crumbs ol, .hero-cta, .app-cta, .ghero-cta, .pagehead .chips, .guide-head .kicker { justify-content: center; }
+  .crumbs ol, .hero-cta, .hero-social, .app-cta, .ghero-cta, .pagehead .chips, .guide-head .kicker { justify-content: center; }
   .guide-head .kicker { flex-wrap: wrap; }
   .hero-sub, .pagehead h1, .lead, .bigsearch { margin-inline: auto; }
   .ghero-in { flex-direction: column; align-items: center; gap: 20px; }

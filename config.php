@@ -23,6 +23,12 @@ $config = [
         'file'    => 'downloads/ipastore.mobileconfig',
         'opens'   => 'app.ipagame.store',
     ],
+    // Social links shown in the home hero. Empty = button hidden. '#' = placeholder.
+    'social' => [
+        'telegram' => '#',
+        'x'        => '#',
+        'youtube'  => '#',
+    ],
     // Google Analytics 4 measurement ID, e.g. 'G-XXXXXXXXXX'. Empty = no tracking.
     // Only loaded when debug is off, so local XAMPP visits aren't counted.
     'ga_id'     => 'G-6K03K5ZMR9',
