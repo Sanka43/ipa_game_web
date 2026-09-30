@@ -102,13 +102,17 @@
       el.appendChild(c);
     });
     const setW = () => el.children[originals.length].offsetLeft - el.children[0].offsetLeft;
-    let pos = 0, last = 0, paused = false, visible = false, raf = 0, resume = 0, wrapW = 0;
+    let pos = 0, last = 0, paused = false, hover = false, touching = false, visible = false, raf = 0, resume = 0, wrapW = 0;
+    // Jump by one set of cards without a visible change (only ever done while nobody is scrolling).
     const wrap = () => {
       if (!wrapW) return;
       if (el.scrollLeft >= wrapW) el.scrollLeft -= wrapW;
       else if (el.scrollLeft <= 0) el.scrollLeft += wrapW;
     };
-    const init = () => { wrapW = setW(); if (wrapW > el.clientWidth) { el.scrollLeft = wrapW / 2; pos = el.scrollLeft; } };
+    const init = () => {
+      wrapW = setW();
+      if (!paused && wrapW > el.clientWidth) { el.scrollLeft = Math.max(el.scrollLeft, wrapW / 2); pos = el.scrollLeft; }
+    };
     const tick = t => {
       raf = 0;
       if (!visible) return;
@@ -120,20 +124,26 @@
       }
       raf = requestAnimationFrame(tick);
     };
-    const sync = () => { pos = el.scrollLeft; last = 0; };
+    // Resume only once the user has let go AND any swipe momentum has finished (no scroll events for a while),
+    // otherwise writing scrollLeft mid-fling stops the momentum and feels jerky.
+    const settle = (ms = 900) => {
+      clearTimeout(resume);
+      if (hover || touching) return;
+      resume = setTimeout(() => { wrap(); pos = el.scrollLeft; last = 0; paused = false; }, ms);
+    };
     const pause = () => { paused = true; clearTimeout(resume); };
-    const go = () => { clearTimeout(resume); resume = setTimeout(() => { sync(); paused = false; }, 1200); };
     new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible) { last = 0; if (!raf) raf = requestAnimationFrame(tick); } }).observe(el);
     el.classList.add('autoscroll');
-    el.addEventListener('scroll', () => { if (paused) wrap(); }, { passive: true });
-    el.addEventListener('pointerenter', pause);
-    el.addEventListener('pointerleave', go);
-    el.addEventListener('pointerdown', pause);
-    el.addEventListener('touchstart', pause, { passive: true });
-    el.addEventListener('touchend', go, { passive: true });
-    el.addEventListener('wheel', () => { pause(); go(); }, { passive: true });
+    el.addEventListener('scroll', () => { if (paused) settle(); }, { passive: true });
+    el.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { hover = true; pause(); } });
+    el.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { hover = false; settle(400); } });
+    el.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') pause(); });
+    el.addEventListener('touchstart', () => { touching = true; pause(); }, { passive: true });
+    el.addEventListener('touchend', () => { touching = false; settle(); }, { passive: true });
+    el.addEventListener('touchcancel', () => { touching = false; settle(); }, { passive: true });
+    el.addEventListener('wheel', () => { pause(); settle(); }, { passive: true });
     el.addEventListener('focusin', pause);
-    el.addEventListener('focusout', go);
+    el.addEventListener('focusout', () => settle());
     addEventListener('resize', init);
     addEventListener('load', init);
     init();

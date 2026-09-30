@@ -219,7 +219,9 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
 .filmstrip::-webkit-scrollbar { display: none; }
 .filmstrip.dragging { cursor: grabbing; scroll-snap-type: none; }
 .filmstrip.autoscroll { max-width: var(--wrap); margin-inline: auto; padding-inline: 24px; scroll-snap-type: none;-webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%); }
-@media (max-width: 720px) { .filmstrip.autoscroll { -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%); } }
+/* Touch screens: a mask on a scrolling element repaints every frame and makes swiping laggy, so no fade there. */
+.filmstrip.autoscroll { overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+@media (max-width: 720px), (pointer: coarse) { .filmstrip.autoscroll { -webkit-mask-image: none; mask-image: none; } .frame { will-change: auto; } }
 .frame { flex: none; width: 230px; scroll-snap-align: start; border-radius: var(--radius); overflow: hidden; background: var(--surface); border: 1px solid var(--line); transition: transform .4s var(--ease), border-color .3s; }
 .frame:hover { transform: translateY(-6px); border-color: rgba(61,245,255,.35); }
 .frame-img { display: block; aspect-ratio: 9/14; background: var(--surface-2); overflow: hidden; position: relative; }
