@@ -24,8 +24,15 @@ $nav       = $meta['nav'] ?? '';
 <meta property="og:title" content="<?= e($title) ?>">
 <meta property="og:description" content="<?= e($desc) ?>">
 <?php if ($canonical): ?><meta property="og:url" content="<?= e($canonical) ?>">
+<meta property="og:locale" content="en_US">
 <?php endif; if ($ogImage): ?><meta property="og:image" content="<?= e($ogImage) ?>">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="<?= e($meta['og_image_alt'] ?? SITE_NAME . ' – free IPA games for iPhone and iPad') ?>">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<?= e($title) ?>">
+<meta name="twitter:description" content="<?= e($desc) ?>">
+<meta name="twitter:image" content="<?= e($ogImage) ?>">
 <?php endif; ?>
 <link rel="icon" type="image/png" sizes="32x32" href="<?= asset('img/favicon-32.png') ?>">
 <link rel="icon" type="image/png" sizes="48x48" href="<?= asset('img/favicon-48.png') ?>">
@@ -35,7 +42,8 @@ $nav       = $meta['nav'] ?? '';
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://is1-ssl.mzstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="<?= asset('css/app.css') ?>">
 <?php foreach ($meta['schema'] ?? [] as $s) echo json_ld($s), "\n"; ?>
 <?php $gaId = cfg('debug') ? '' : (string) cfg('ga_id'); $clarityId = cfg('debug') ? '' : (string) cfg('clarity_id'); ?>

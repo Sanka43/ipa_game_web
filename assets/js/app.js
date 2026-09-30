@@ -91,6 +91,54 @@
     el.addEventListener('click', e => { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
   });
 
+  /* ── Endless, smooth auto-scrolling strips (pause on hover / touch / drag / off-screen) ── */
+  if (!reduced) $$('[data-autoscroll]').forEach(el => {
+    const SPEED = 32;                      // px per second
+    const originals = [...el.children];
+    originals.forEach(n => {
+      const c = n.cloneNode(true);
+      c.setAttribute('aria-hidden', 'true'); c.tabIndex = -1; c.classList.add('in');
+      c.querySelectorAll('a').forEach(a => a.tabIndex = -1);
+      el.appendChild(c);
+    });
+    const setW = () => el.children[originals.length].offsetLeft - el.children[0].offsetLeft;
+    let pos = 0, last = 0, paused = false, visible = false, raf = 0, resume = 0, wrapW = 0;
+    const wrap = () => {
+      if (!wrapW) return;
+      if (el.scrollLeft >= wrapW) el.scrollLeft -= wrapW;
+      else if (el.scrollLeft <= 0) el.scrollLeft += wrapW;
+    };
+    const init = () => { wrapW = setW(); if (wrapW > el.clientWidth) { el.scrollLeft = wrapW / 2; pos = el.scrollLeft; } };
+    const tick = t => {
+      raf = 0;
+      if (!visible) return;
+      const dt = last ? Math.min(t - last, 64) : 16; last = t;
+      if (!paused && wrapW > el.clientWidth) {
+        pos += SPEED * dt / 1000;
+        if (pos >= wrapW) pos -= wrapW;
+        el.scrollLeft = pos;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    const sync = () => { pos = el.scrollLeft; last = 0; };
+    const pause = () => { paused = true; clearTimeout(resume); };
+    const go = () => { clearTimeout(resume); resume = setTimeout(() => { sync(); paused = false; }, 1200); };
+    new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible) { last = 0; if (!raf) raf = requestAnimationFrame(tick); } }).observe(el);
+    el.classList.add('autoscroll');
+    el.addEventListener('scroll', () => { if (paused) wrap(); }, { passive: true });
+    el.addEventListener('pointerenter', pause);
+    el.addEventListener('pointerleave', go);
+    el.addEventListener('pointerdown', pause);
+    el.addEventListener('touchstart', pause, { passive: true });
+    el.addEventListener('touchend', go, { passive: true });
+    el.addEventListener('wheel', () => { pause(); go(); }, { passive: true });
+    el.addEventListener('focusin', pause);
+    el.addEventListener('focusout', go);
+    addEventListener('resize', init);
+    addEventListener('load', init);
+    init();
+  });
+
   /* ── Poster tilt ──────────────────────────────────── */
   if (!reduced && matchMedia('(pointer: fine)').matches) {
     $$('.poster').forEach(p => {

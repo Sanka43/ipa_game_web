@@ -38,7 +38,7 @@ $faqLd = ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity'
 
 render('home', compact('hero', 'latest', 'top', 'shelves', 'posters', 'posterGenres', 'counts', 'total', 'faq', 'latestDate'), [
     'title'      => SITE_NAME . ' – Free IPA Games for iPhone & iPad',
-    'description'=> "Download free IPA games for iPhone & iPad. $total+ iOS games with version history, file size, iOS requirements, screenshots and easy install guides.",
+    'description'=> "Download free IPA games for iPhone & iPad. " . number_format($total) . "+ iOS games with version history, file size, iOS requirements, screenshots and easy install guides.",
     'canonical'  => abs_url(),
     'body_class' => 'is-home',
     'preload'    => !empty($hero[0]) ? img($hero[0]['shots'][0] ?? $hero[0]['icon'], '1400x0w') : null,
@@ -48,6 +48,9 @@ render('home', compact('hero', 'latest', 'top', 'shelves', 'posters', 'posterGen
         ['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => SITE_NAME, 'url' => abs_url(), 'logo' => abs_url('assets/img/logo-512.png'),
          'sameAs' => array_values(array_filter(array_map('strval', cfg('social') ?? []), fn($u) => str_starts_with($u, 'http'))),
          'contactPoint' => ['@type' => 'ContactPoint', 'contactType' => 'customer support', 'email' => 'info@ipagame.store']],
+        ['@context' => 'https://schema.org', '@type' => 'ItemList', 'name' => 'Top 10 iOS Games (IPA) – Most Played',
+         'itemListElement' => array_map(fn($g, $i) => ['@type' => 'ListItem', 'position' => $i + 1, 'name' => $g['name'], 'url' => abs_url("ipa-games/{$g['category']}/{$g['slug']}-ipa/")], $top, array_keys($top)),
+        ],
         $faqLd,
     ],
 ]);

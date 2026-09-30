@@ -26,7 +26,7 @@
           'x'        => ['X', '<path d="M17.8 2.5h3.3l-7.2 8.2 8.5 10.8h-6.6l-5.2-6.8-6 6.8H1.3l7.7-8.8L.9 2.5h6.8l4.7 6.2 5.4-6.2Zm-1.2 17h1.8L7.1 4.3H5.2l11.4 15.2Z"/>'],
           'youtube'  => ['YouTube', '<path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8ZM9.7 15.1V8.9l5.8 3.1-5.8 3.1Z"/>'],
       ];
-      $social = array_filter(cfg('social') ?? [], fn($u, $k) => $u !== '' && isset($socialIcons[$k]), ARRAY_FILTER_USE_BOTH);
+      $social = array_filter(cfg('social') ?? [], fn($u, $k) => str_starts_with((string) $u, 'http') && isset($socialIcons[$k]), ARRAY_FILTER_USE_BOTH);
       if ($social): ?>
       <div class="hero-social reveal">
         <span>Follow us</span>
@@ -61,12 +61,12 @@
 <section class="sec" id="latest">
   <div class="wrap sec-head reveal">
     <div><p class="kicker">New releases</p><h2>Latest IPA Games – New iOS Game Releases</h2></div>
-    <a class="see" href="<?= category_url('latest') ?>">See all new games →</a>
+    <a class="see" href="<?= category_url('latest') ?>">See all latest IPA games →</a>
   </div>
-  <div class="filmstrip" data-drag>
+  <div class="filmstrip" data-drag data-autoscroll>
     <?php foreach ($latest as $g): ?>
       <a class="frame reveal" href="<?= e(game_url($g)) ?>">
-        <span class="frame-img"><?php if ($g['shot']): ?><img src="<?= e(img($g['shot'], '400x0w')) ?>" alt="<?= e($g['name']) ?> screenshot" loading="lazy" decoding="async"><?php endif; ?></span>
+        <span class="frame-img"><?php if ($g['shot']): ?><img src="<?= e(img($g['shot'], '400x0w')) ?>" alt="<?= e($g['name']) ?> screenshot" width="400" height="622" loading="lazy" decoding="async"><?php endif; ?></span>
         <span class="frame-info">
           <img src="<?= e(img($g['icon'], '96x96')) ?>" alt="" width="44" height="44" loading="lazy">
           <span><b><?= e($g['name']) ?></b><small><?= e(version_label($g['latest_version'])) ?> · <?= e(date_label($g['latest_release_date'])) ?></small></span>
@@ -79,12 +79,12 @@
 <!-- ═══ GENRE POSTERS ═══ -->
 <section class="sec">
   <div class="wrap">
-    <div class="sec-head reveal"><div><p class="kicker">Pick a genre</p><h2>Browse IPA Games by Category</h2></div><a class="see" href="<?= url('ipa-games/') ?>">All categories →</a></div>
+    <div class="sec-head reveal"><div><p class="kicker">Pick a genre</p><h2>Browse IPA Games by Category</h2></div><a class="see" href="<?= url('ipa-games/') ?>">All IPA game categories →</a></div>
     <div class="genre-cards">
       <?php foreach ($posterGenres as $i => $s): $c = category($s); ?>
         <a class="gnr reveal" href="<?= category_url($s) ?>" style="--d:<?= $i * 50 ?>ms">
           <span class="gnr-thumb">
-            <?php if ($posters[$s]): ?><img src="<?= e(img($posters[$s], '500x0w')) ?>" alt="<?= e($c['name']) ?> IPA games for iPhone and iPad" loading="lazy" decoding="async"><?php endif; ?>
+            <?php if ($posters[$s]): ?><img src="<?= e(img($posters[$s], '500x0w')) ?>" alt="<?= e($c['name']) ?> IPA games for iPhone and iPad" width="56" height="56" loading="lazy" decoding="async"><?php endif; ?>
             <em><?= $c['icon'] ?></em>
           </span>
           <span class="gnr-txt"><b><?= e($c['name']) ?></b><small><?= (int) ($counts[$s] ?? 0) ?> games</small></span>
@@ -123,7 +123,7 @@
 <!-- ═══ TOP 10 ═══ -->
 <section class="sec top10-sec">
   <div class="wrap">
-    <div class="sec-head reveal"><div><p class="kicker">Most played</p><h2>Top 10 iOS Games (IPA) – Most Played</h2></div><a class="see" href="<?= category_url('iphone') ?>">Full chart →</a></div>
+    <div class="sec-head reveal"><div><p class="kicker">Most played</p><h2>Top 10 iOS Games (IPA) – Most Played</h2></div><a class="see" href="<?= category_url('iphone') ?>">Full iPhone games chart →</a></div>
     <ol class="top10">
       <?php foreach ($top as $i => $g): ?>
         <li class="reveal" style="--d:<?= $i * 50 ?>ms"><a href="<?= e(game_url($g)) ?>">
@@ -142,7 +142,7 @@
   <div class="wrap shelves3">
     <?php foreach ($shelves as $s => $games): $c = category($s); ?>
       <div class="shelf reveal">
-        <div class="sec-head"><h2 class="h3"><?= e($c['h1']) ?></h2><a class="see" href="<?= category_url($s) ?>">See all →</a></div>
+        <div class="sec-head"><h2 class="h3"><?= e($c['h1']) ?></h2><a class="see" href="<?= category_url($s) ?>">See all <?= e($c['h1']) ?> →</a></div>
         <?php foreach ($games as $g) echo game_card($g); ?>
       </div>
     <?php endforeach; ?>
@@ -152,7 +152,7 @@
 <!-- ═══ HOW IT WORKS ═══ -->
 <section class="sec how-sec">
   <div class="wrap">
-    <div class="sec-head reveal"><div><p class="kicker">How it works</p><h2>How to Get IPA Games on Your iPhone in 3 Steps</h2></div></div>
+    <div class="sec-head reveal"><div><p class="kicker">How it works</p><h2>How to Sideload IPA Games on Your iPhone in 3 Steps</h2></div></div>
     <ol class="how-grid">
       <li class="how-card reveal" style="--d:0ms">
         <span class="how-no">1</span>
@@ -188,17 +188,42 @@
 </section>
 
 <!-- ═══ SEO COPY + FAQ ═══ -->
-<section class="sec">
-  <div class="wrap prose-wrap">
-    <article class="prose reveal">
+<section class="sec seo-sec">
+  <div class="wrap">
+    <div class="seo-intro reveal">
+      <p class="kicker">About the store</p>
       <h2>Your IPA Store for Free iOS Games</h2>
       <p>An <strong>IPA file</strong> (iOS App Store Package) is the file format used by every iPhone and iPad app and game. IPA Game Store lists <strong><?= number_format($total) ?>+ free iOS games</strong> in one place. Each game page shows the current version, file size, minimum iOS version, screenshots and the full update history, so you know exactly what you are installing before you tap download.</p>
-      <p><strong>Find the right game fast.</strong> Browse by genre, for example <a href="<?= category_url('racing') ?>">IPA racing games</a>, <a href="<?= category_url('puzzle') ?>">IPA puzzle games</a>, <a href="<?= category_url('action') ?>">action</a>, <a href="<?= category_url('strategy') ?>">strategy</a> or <a href="<?= category_url('role-playing') ?>">role-playing</a>. Looking for something to play on a flight? Open the <a href="<?= category_url('offline') ?>">offline IPA games</a> list. To see what just arrived, check the <a href="<?= category_url('latest') ?>">latest IPA games</a>.</p>
-      <p><strong>Made for iPhone and iPad.</strong> Use the <a href="<?= category_url('iphone') ?>">iPhone games</a> chart for the most played titles, or the <a href="<?= category_url('ipad') ?>">iPad games</a> list for games with native tablet support. If you like retro gaming, see <a href="<?= category_url('emulator') ?>">emulator IPA apps for iOS</a>.</p>
-      <p><strong>New to IPA files?</strong> Start with <a href="<?= guide_url('what-is-an-ipa-file') ?>">what an IPA file is</a>, then follow the <a href="<?= guide_url('how-to-install-ipa-on-iphone') ?>">iPhone install guide</a>. Prefer not to use a computer? Read <a href="<?= guide_url('install-ipa-without-computer') ?>">how to install IPA without a computer</a>. If something goes wrong, <a href="<?= guide_url('ipa-installation-failed') ?>">12 fixes for a failed IPA install</a> will help.</p>
-      <p><strong>IPA vs App Store.</strong> The App Store is the simplest and safest way to install apps. IPA files are useful when you want a specific older version, an app that is not available in your region, or a copy of a game. <a href="<?= guide_url('ipa-vs-app-store') ?>">Learn the difference</a> before you decide.</p>
-      <p><strong>Stay safe.</strong> Only install files from sources you trust, and <a href="<?= guide_url('how-to-verify-ipa-file') ?>">verify the IPA file</a> when you can. We never ask for your Apple ID password on this website.</p>
-    </article>
-    <?= faq_block($faq) ?>
+    </div>
+
+    <div class="seo-grid">
+      <article class="seo-card reveal" style="--d:0ms">
+        <span class="seo-ico" aria-hidden="true">⌕</span>
+        <h3>Find the right game fast</h3>
+        <p>Browse by genre, for example <a href="<?= category_url('racing') ?>">IPA racing games</a>, <a href="<?= category_url('puzzle') ?>">IPA puzzle games</a>, <a href="<?= category_url('action') ?>">action</a>, <a href="<?= category_url('strategy') ?>">strategy</a> or <a href="<?= category_url('role-playing') ?>">role-playing</a>. Looking for something to play on a flight? Open the <a href="<?= category_url('offline') ?>">offline IPA games</a> list. To see what just arrived, check the <a href="<?= category_url('latest') ?>">latest IPA games</a>.</p>
+      </article>
+      <article class="seo-card reveal" style="--d:60ms">
+        <span class="seo-ico" aria-hidden="true">▯</span>
+        <h3>Made for iPhone and iPad</h3>
+        <p>Use the <a href="<?= category_url('iphone') ?>">iPhone games</a> chart for the most played titles, or the <a href="<?= category_url('ipad') ?>">iPad games</a> list for games with native tablet support. If you like retro gaming, see <a href="<?= category_url('emulator') ?>">emulator IPA apps for iOS</a>.</p>
+      </article>
+      <article class="seo-card reveal" style="--d:120ms">
+        <span class="seo-ico" aria-hidden="true">✦</span>
+        <h3>New to IPA files?</h3>
+        <p>Start with <a href="<?= guide_url('what-is-an-ipa-file') ?>">what an IPA file is</a>, then follow the <a href="<?= guide_url('how-to-install-ipa-on-iphone') ?>">iPhone install guide</a>. Prefer not to use a computer? Read <a href="<?= guide_url('install-ipa-without-computer') ?>">how to install IPA without a computer</a>. If something goes wrong, <a href="<?= guide_url('ipa-installation-failed') ?>">12 fixes for a failed IPA install</a> will help.</p>
+      </article>
+      <article class="seo-card reveal" style="--d:180ms">
+        <span class="seo-ico" aria-hidden="true">⇄</span>
+        <h3>IPA vs App Store</h3>
+        <p>The App Store is the simplest and safest way to install apps. IPA files are useful when you want a specific older version, an app that is not available in your region, or a copy of a game. <a href="<?= guide_url('ipa-vs-app-store') ?>">Learn the difference</a> before you decide.</p>
+      </article>
+      <article class="seo-card seo-safe reveal" style="--d:240ms">
+        <span class="seo-ico" aria-hidden="true">✓</span>
+        <h3>Stay safe</h3>
+        <p>Only install files from sources you trust, and <a href="<?= guide_url('how-to-verify-ipa-file') ?>">verify the IPA file</a> when you can. We never ask for your Apple ID password on this website.</p>
+      </article>
+    </div>
+
+    <div class="seo-faq"><?= faq_block($faq) ?></div>
   </div>
 </section>
