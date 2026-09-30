@@ -23,7 +23,8 @@ $langs    = array_filter(explode(',', $g['languages']));
           <?php if ($g['content_rating']): ?><li><b><?= e($g['content_rating']) ?></b><small>Age</small></li><?php endif; ?>
         </ul>
         <div class="ghero-cta reveal">
-          <a class="btn btn-primary btn-lg" href="<?= e($getHref) ?>"<?= $ext ?>><?= e($getLabel) ?></a>
+          <a class="btn btn-primary btn-lg btn-get" href="<?= e($getHref) ?>"<?= $ext ?>><?= e($getLabel) ?></a>
+          <?php if ($storeHref && $getHref !== $storeHref): ?><a class="btn btn-ghost btn-store" href="<?= e($storeHref) ?>" rel="nofollow noopener" target="_blank">View on App Store</a><?php endif; ?>
           <a class="btn btn-ghost" href="#install">How to install</a>
         </div>
         <p class="ghero-note reveal"><?= $free ? 'Free' : 'Paid' ?> · <?= e($size) ?><?= $hasFile ? ' · SHA-256 checksum on the download page · <a href="' . guide_url('how-to-verify-ipa-file') . '">How to verify</a>' : ($ios ? ' · ' . e($ios) . ' or later' : '') ?></p>

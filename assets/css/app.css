@@ -74,6 +74,7 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
 .btn-ghost { background: rgba(255,255,255,.06); border: 1px solid var(--line-2); backdrop-filter: blur(12px); }
 .btn-ghost:hover { background: rgba(255,255,255,.12); }
 .btn-lg { height: 56px; padding: 0 32px; font-size: 1.02rem; }
+.ghero-cta .btn-ghost { height: 40px; padding: 0 20px; font-size: .86rem; }
 .btn-block { width: 100%; margin-top: 10px; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -830,6 +831,11 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
   .hero-cta { flex-direction: column; align-items: center; }
   .hero-cta .btn, .app-cta .btn, .ghero-cta .btn { width: 100%; max-width: 360px; flex: none; }
   .ghero-cta { flex-direction: column; align-items: center; }
+  /* Phone order: App Store, IPA Game Store, How to install (one under the other, same width) */
+  .ghero-cta .btn { order: 3; }
+  .ghero-cta .btn-store { order: 1; }
+  .ghero-cta .btn-get { order: 2; max-width: 300px; }
+  .ghero-cta .btn-ghost { max-width: 240px; }
   .scroll-cue { display: none; }
   .hero-stage { display: block; height: 280px; margin-top: 28px; }
   .app-chips { grid-template-columns: 1fr 1fr; }
