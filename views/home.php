@@ -82,13 +82,13 @@
     <div class="sec-head reveal"><div><p class="kicker">Pick a genre</p><h2>Browse IPA Games by Category</h2></div><a class="see" href="<?= url('ipa-games/') ?>">All categories →</a></div>
     <div class="genre-cards">
       <?php foreach ($posterGenres as $i => $s): $c = category($s); ?>
-        <a class="gcard reveal" href="<?= category_url($s) ?>" style="--d:<?= $i * 50 ?>ms">
-          <span class="gcard-thumb">
+        <a class="gnr reveal" href="<?= category_url($s) ?>" style="--d:<?= $i * 50 ?>ms">
+          <span class="gnr-thumb">
             <?php if ($posters[$s]): ?><img src="<?= e(img($posters[$s], '500x0w')) ?>" alt="<?= e($c['name']) ?> IPA games for iPhone and iPad" loading="lazy" decoding="async"><?php endif; ?>
             <em><?= $c['icon'] ?></em>
           </span>
-          <span class="gcard-txt"><b><?= e($c['name']) ?></b><small><?= (int) ($counts[$s] ?? 0) ?> games</small></span>
-          <span class="gcard-go" aria-hidden="true">→</span>
+          <span class="gnr-txt"><b><?= e($c['name']) ?></b><small><?= (int) ($counts[$s] ?? 0) ?> games</small></span>
+          <span class="gnr-go" aria-hidden="true">→</span>
         </a>
       <?php endforeach; ?>
     </div>
