@@ -66,6 +66,10 @@ $faq = [
 </ol>
 <p>You can add a Shortcuts automation, for example "every 5 days, open SideStore", so you never forget. SideStore itself needs refreshing too, so keep an eye on its own countdown.</p>
 
+<h2>Want more than 3 apps?</h2>
+<p>Install the LiveContainer + SideStore build. Apps run inside LiveContainer do not count toward the 3-app limit. See the <a href="<?= guide_url('install-ipa-with-livecontainer') ?>">LiveContainer + SideStore guide</a>, which uses <strong>iloader</strong> as the installer and <strong>LocalDevVPN</strong> as the VPN app.</p>
+<?= note('warn', '<b>iOS 26.4:</b> this release changed how apps are refreshed, and the current SideStore method may not work on it. Supported: iOS 15.0 – 26.3.') ?>
+
 <h2>Troubleshooting SideStore</h2>
 <ul>
   <li><strong>"Could not connect" / timeouts:</strong> the VPN tunnel is off, or another VPN is active. Turn off other VPNs and try again.</li>

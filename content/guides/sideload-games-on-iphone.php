@@ -42,6 +42,8 @@ $faq = [
   <li>Emulators that need <strong>JIT</strong> for full speed need an extra step on iOS. Follow the emulator's own documentation.</li>
 </ul>
 
+<p><strong>Tip:</strong> hit the 3-app limit? <a href="<?= guide_url('install-ipa-with-livecontainer') ?>">LiveContainer + SideStore</a> lets you keep many games installed.</p>
+
 <h2>6. Stay safe</h2>
 <p>Avoid "modded" or "hacked" game IPAs that promise unlimited coins. They are the most common way malware and account-stealing code get onto iPhones, and online games ban modified clients. Read <a href="<?= guide_url('are-ipa-files-safe') ?>">are IPA files safe?</a> and <a href="<?= guide_url('how-to-verify-ipa-file') ?>">verify every file</a>.</p>
 

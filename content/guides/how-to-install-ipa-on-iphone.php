@@ -33,6 +33,7 @@ $faq = [
   <tbody>
     <tr><td><a href="<?= guide_url('install-ipa-with-altstore') ?>">AltStore</a></td><td>Yes (setup + refresh)</td><td>7 days, auto-refresh</td><td>3 apps</td><td>Free</td></tr>
     <tr><td><a href="<?= guide_url('install-ipa-with-sidestore') ?>">SideStore</a></td><td>Once, for setup</td><td>7 days, refresh on-device</td><td>3 apps</td><td>Free</td></tr>
+    <tr><td><a href="<?= guide_url('install-ipa-with-livecontainer') ?>">LiveContainer + SideStore</a></td><td>Once, for setup</td><td>7 days, refresh on-device</td><td>Unlimited apps inside LiveContainer</td><td>Free</td></tr>
     <tr><td>Sideloadly</td><td>Yes, every time</td><td>7 days</td><td>3 apps</td><td>Free</td></tr>
     <tr><td>Paid Apple Developer account</td><td>Depends on the signing tool</td><td>1 year</td><td>No practical limit</td><td>$99/year</td></tr>
     <tr><td>TrollStore</td><td>Usually once</td><td>Permanent</td><td>Unlimited</td><td>Free, only on some iOS versions</td></tr>
@@ -51,6 +52,9 @@ $faq = [
 
 <h2>Method 2: SideStore (refresh without a computer)</h2>
 <p>SideStore is a community fork of AltStore. It refreshes apps <em>on the iPhone itself</em> using a local VPN connection, so after a one-time setup you never need the computer again. The trade-off is a slightly more technical setup. You create a <em>pairing file</em> once on a computer. <a href="<?= guide_url('install-ipa-with-sidestore') ?>">Follow the SideStore guide →</a></p>
+
+<h2>Bonus: LiveContainer + SideStore (more than 3 apps)</h2>
+<p>LiveContainer runs apps inside itself, so they do not count toward the free 3-app limit. The LiveContainer + SideStore build refreshes on the device and needs a computer only once. <a href="<?= guide_url('install-ipa-with-livecontainer') ?>">Follow the LiveContainer + SideStore guide →</a></p>
 
 <h2>Method 3: Sideloadly (simple one-off installs)</h2>
 <p>Sideloadly is a desktop app for Windows and Mac. You drag in the IPA, type your Apple ID and click Start. It is the fastest way to install a single IPA, but it has no automatic refresh. After 7 days you connect the phone again and repeat.</p>

@@ -21,6 +21,8 @@ $faq = [
 <p>You borrow a computer for about 15 minutes to install SideStore and create a pairing file. From then on, you install, update and refresh IPAs entirely on the iPhone, with the help of a local VPN app. It is free and it uses your own Apple ID, so no third party ever holds your signing certificate.</p>
 <p><a class="btn btn-primary" href="<?= guide_url('install-ipa-with-sidestore') ?>">SideStore setup guide →</a></p>
 
+<p>Want more than 3 apps? Add <a href="<?= guide_url('install-ipa-with-livecontainer') ?>">LiveContainer + SideStore</a> on top of the same one-time setup.</p>
+
 <h2>Option 2: A paid developer account</h2>
 <p>With an Apple Developer Program membership ($99/year) you get a certificate that lasts a year. Some on-device signing apps can use your developer certificate to install IPAs with no computer involved. Some services also sell "UDID registration", which adds your device to <em>their</em> developer account. That works, but you are trusting a stranger's account. If Apple bans it, your apps stop working.</p>
 

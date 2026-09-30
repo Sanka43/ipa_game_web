@@ -11,7 +11,7 @@ foreach (guides() as $s => $g) $byTopic[$g['topic']][$s] = $g;
 
 render('guides', compact('crumbs', 'topics', 'byTopic'), [
     'title'       => 'IPA Guides – Install, Sideload & Fix IPA Files on iPhone',
-    'description' => 'Step-by-step IPA guides: install IPA on iPhone and iPad, AltStore and SideStore setup, installing without a computer, verifying IPA files and fixing errors.',
+    'description' => 'Step-by-step IPA guides: install IPA on iPhone and iPad, AltStore, SideStore and LiveContainer setup, installing without a computer, verifying IPA files and fixing errors.',
     'canonical'   => abs_url('guides/'),
     'nav'         => 'guides',
     'schema'      => [breadcrumb_ld($crumbs), [
