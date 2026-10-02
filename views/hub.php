@@ -39,5 +39,6 @@
 
 <?php if ($page === 1): ?>
 <div class="wrap"><?= guide_cards(['how-to-install-ipa-on-iphone', 'install-ipa-with-altstore', 'install-ipa-with-sidestore', 'are-ipa-files-safe']) ?></div>
+<div class="wrap"><div id="container-911b8b732262ab1a6da784c794f8780e"></div></div>
 <section class="sec"><div class="wrap prose-wrap"><?= faq_block($faq) ?></div></section>
 <?php endif; ?>

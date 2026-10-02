@@ -114,6 +114,9 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 
 <main id="main">
 <?= $content ?>
+<?php if (!in_array($view ?? '', ['home', 'game', 'guides', 'category'], true) && !(($view ?? '') === 'hub' && ($page ?? 1) === 1)): ?>
+<div class="wrap"><div id="container-911b8b732262ab1a6da784c794f8780e"></div></div>
+<?php endif; ?>
 </main>
 
 <footer class="foot">

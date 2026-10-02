@@ -98,6 +98,7 @@ $langs    = array_filter(explode(',', $g['languages']));
         <p>If you have your own copy of the IPA file, sign and install it with <a href="<?= guide_url('install-ipa-with-altstore') ?>">AltStore</a> or <a href="<?= guide_url('install-ipa-with-sidestore') ?>">SideStore</a>. Our <a href="<?= guide_url('how-to-install-ipa-on-iphone') ?>">IPA install guide</a> compares every method.</p>
       <?php endif; ?>
       <p class="muted small">Having trouble? See <a href="<?= guide_url('ipa-installation-failed') ?>">why an IPA installation fails</a> or <a href="<?= guide_url('install-ipa-on-ipad') ?>">installing IPA on iPad</a>.</p>
+      <div id="container-911b8b732262ab1a6da784c794f8780e"></div>
     </section>
 
     <!-- Safety -->

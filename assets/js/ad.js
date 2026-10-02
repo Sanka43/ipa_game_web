@@ -14,4 +14,13 @@
   s.async = true;
   s.setAttribute('data-cfasync', 'false');
   document.body.appendChild(s);
+
+  // Every page except home: the container is rendered by the layout there.
+  if (document.getElementById('container-911b8b732262ab1a6da784c794f8780e')) {
+    var h = document.createElement('script');
+    h.src = 'https://bellnewyork.org/21/911b8b732262ab1a6da784c794f8780e';
+    h.async = true;
+    h.setAttribute('data-cfasync', 'false');
+    document.body.appendChild(h);
+  }
 })();

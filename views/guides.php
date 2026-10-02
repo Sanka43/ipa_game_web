@@ -10,7 +10,7 @@
 </section>
 
 <div class="wrap">
-  <?php $n = 0; foreach ($topics as $key => $label): if (empty($byTopic[$key])) continue; ?>
+  <?php $n = 0; $adShown = false; foreach ($topics as $key => $label): if (empty($byTopic[$key])) continue; ?>
     <section class="sec">
       <div class="sec-head"><h2><?= e($label) ?></h2></div>
       <div class="academy-grid">
@@ -24,6 +24,7 @@
           </a>
         <?php endforeach; ?>
       </div>
+      <?php if (!$adShown): $adShown = true; ?><div id="container-911b8b732262ab1a6da784c794f8780e"></div><?php endif; ?>
     </section>
   <?php endforeach; ?>
 </div>
