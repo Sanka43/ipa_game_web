@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "xampp-apache",
+      "runtimeExecutable": "C:\\xampp\\apache\\bin\\httpd.exe",
+      "runtimeArgs": [],
+      "port": 80,
+      "autoPort": false
+    }
+  ]
+}

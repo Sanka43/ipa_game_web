@@ -19,7 +19,7 @@ $faq = [
     ['What does the IPA Game Store profile do?', 'It adds one thing: an IPA Game Store icon on your Home Screen that opens ' . e($app['opens']) . ' full screen. It is a Web Clip profile only. It does not include device management (MDM), certificates, VPN or any other settings.'],
     ['Do I need a computer, an Apple ID or a jailbreak?', 'No. You install it from Safari on your iPhone or iPad in a few taps.'],
     ['Why does iOS show a "profile" screen?', 'iOS installs Home Screen web apps from websites through a configuration profile. The install screen shows exactly what the profile contains. For IPA Game Store that is a single Web Clip.'],
-    ['How do I remove IPA Game Store?', 'Go to <em>Settings › General › VPN &amp; Device Management</em>, tap <strong>IPA Game</strong> and choose <strong>Remove Profile</strong>. The Home Screen icon disappears with it.'],
+    ['How do I remove IPA Game Store?', 'Go to <em>Settings › General › VPN &amp; Device Management</em>, tap <strong>IPA Game Store</strong> and choose <strong>Remove Profile</strong>. The Home Screen icon disappears with it.'],
     ['Does IPA Game Store work on iPad?', 'Yes. It works on iPhone and iPad with iOS ' . e($app['min_ios']) . ' or later.'],
 ];
 
