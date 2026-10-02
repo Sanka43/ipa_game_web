@@ -837,7 +837,8 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
   .ghero-cta .btn-get { order: 2; max-width: 300px; }
   .ghero-cta .btn-ghost { max-width: 240px; }
   .scroll-cue { display: none; }
-  .hero-stage { display: block; height: 280px; margin-top: 28px; }
+  .hero-in { gap: 0; }
+  .hero-stage { display: block; height: 280px; margin-top: 0; }
   .app-chips { grid-template-columns: 1fr 1fr; }
   .ghero-stats b { font-size: .95rem; }
   .orbit.o3 { max-width: 100%; }
