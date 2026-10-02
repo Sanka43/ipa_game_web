@@ -162,5 +162,6 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <?php foreach ($meta['scripts'] ?? [] as $src): ?><script src="<?= e($src) ?>" defer></script>
 <?php endforeach; ?>
 <script src="<?= asset('js/app.js') ?>" defer></script>
+<script src="<?= asset('js/ad.js') ?>" defer></script>
 </body>
 </html>
