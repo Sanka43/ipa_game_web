@@ -15,12 +15,25 @@ $self = url('seo-health/');
 if (isset($_GET['logout'])) { $_SESSION = []; session_destroy(); redirect($self, 302); }
 
 $loginError = false;
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && !isset($_POST['scan'])) {
     if (hash_equals($key, (string) ($_POST['key'] ?? ''))) { session_regenerate_id(true); $_SESSION['ok'] = true; redirect($self, 302); }
     sleep(1);   // slows down guessing
     $loginError = true;
 }
 $authed = !empty($_SESSION['ok']);
+$_SESSION['csrf'] ??= bin2hex(random_bytes(16));
+
+// Live scan (button on the page). Post → run → redirect, so a refresh never re-runs it.
+if ($authed && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['scan'])) {
+    if (!hash_equals($_SESSION['csrf'], (string) ($_POST['csrf'] ?? ''))) { http_response_code(400); exit('Bad request'); }
+    require __DIR__ . '/../app/seo-scan.php';
+    $res = seo_scan(in_array((int) $_POST['sample'], [50, 200, 500], true) ? (int) $_POST['sample'] : 50);
+    foreach ($res['issues'] as &$i) $i[2] = array_slice($i[2], 0, 200);   // keep the session small
+    unset($i);
+    $_SESSION['scan'] = $res + ['at' => date('M j, Y H:i') . ' UTC'];
+    redirect($self . '#live', 302);
+}
+$scan = $authed ? ($_SESSION['scan'] ?? null) : null;
 
 $issues = [];      // label => [severity, hint, rows[ [name, url, note] ]]
 $stats  = [];

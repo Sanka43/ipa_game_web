@@ -1,4 +1,12 @@
-<?php /** Standalone page (no site layout, no analytics or ads). */ ?><!doctype html>
+<?php /** Standalone page (no site layout, no analytics or ads). */
+$renderIssues = function (array $issues) { foreach ($issues as $label => [$sev, $hint, $list]): ?>
+    <details<?= $sev === 'high' ? ' open' : '' ?>>
+      <summary><span class="pill <?= e($sev) ?>"><?= e($sev === 'high' ? 'Fix' : ($sev === 'warn' ? 'Improve' : 'Info')) ?></span><?= e($label) ?><span class="n"><?= count($list) ?></span></summary>
+      <p class="hint"><?= e($hint) ?></p>
+      <ul><?php foreach ($list as $r): ?><li><a href="<?= e($r[1]) ?>" target="_blank" rel="noopener"><?= e($r[0]) ?></a><?php if (!empty($r[2])): ?><small><?= e($r[2]) ?></small><?php endif; ?></li><?php endforeach; ?></ul>
+    </details>
+  <?php endforeach; };
+?><!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>SEO health</title>
 <style>
@@ -14,6 +22,7 @@ details{background:var(--card);border:1px solid var(--line);border-radius:10px;m
 .n{margin-left:auto;font-weight:700}.hint{padding:0 14px 8px;margin:0;color:var(--mut)}
 ul{list-style:none;margin:0;padding:0 14px 12px;max-height:420px;overflow:auto}li{padding:6px 0;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}
 li small{color:var(--mut);word-break:break-word}
+.scanform{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:12px 0}h2{font-size:1.15rem;margin:28px 0 8px}select{font:inherit;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg)}button:disabled{opacity:.6;cursor:wait}
 form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg)}button{cursor:pointer;background:var(--in);color:#111;border:0;font-weight:700}
 </style></head><body><main>
 <?php if (!$authed): ?>
@@ -25,14 +34,24 @@ form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{f
   </form>
 <?php else: ?>
   <div class="top"><div><h1>SEO health report</h1><p class="mut">Checked from the database on <?= e(date('M j, Y H:i')) ?> UTC. Fix the red items first.</p></div><a href="<?= e($self) ?>?logout=1">Log out</a></div>
+  <section id="live">
+    <h2>Live checks</h2>
+    <p class="mut">Requests the sitemap and the pages in it over HTTP, like a crawler: status, redirects, noindex, canonical, title, H1, JSON-LD, alt. Can take up to a minute.</p>
+    <form method="post" action="<?= e($self) ?>#live" class="scanform" onsubmit="this.querySelector('button').disabled=true;this.querySelector('button').textContent='Scanning… please wait'">
+      <input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>"><input type="hidden" name="scan" value="1">
+      <label>Game pages to check <select name="sample"><option value="50">50 (random)</option><option value="200">200 (random)</option><option value="500">500 (random)</option></select></label>
+      <button type="submit">Run live scan</button>
+    </form>
+    <?php if ($scan): ?>
+      <p class="mut">Last scan: <?= e($scan['at']) ?></p>
+      <div class="stats"><?php foreach ($scan['summary'] as $k => $v): ?><div class="stat"><b><?= (int) $v ?></b><span class="mut"><?= e($k) ?></span></div><?php endforeach; ?></div>
+      <?php if (!$scan['issues']): ?><p>✔ No problems found in the pages checked.</p><?php endif; ?>
+      <?php $renderIssues($scan['issues']); ?>
+    <?php endif; ?>
+  </section>
+  <h2>Database checks</h2>
   <div class="stats"><?php foreach ($stats as $k => $v): ?><div class="stat"><b><?= (int) $v ?></b><span class="mut"><?= e($k) ?></span></div><?php endforeach; ?></div>
   <?php if (!$issues): ?><p>No issues found.</p><?php endif; ?>
-  <?php foreach ($issues as $label => [$sev, $hint, $list]): ?>
-    <details<?= $sev === 'high' ? ' open' : '' ?>>
-      <summary><span class="pill <?= e($sev) ?>"><?= e($sev === 'high' ? 'Fix' : ($sev === 'warn' ? 'Improve' : 'Info')) ?></span><?= e($label) ?><span class="n"><?= count($list) ?></span></summary>
-      <p class="hint"><?= e($hint) ?></p>
-      <ul><?php foreach ($list as $r): ?><li><a href="<?= e($r[1]) ?>" target="_blank" rel="noopener"><?= e($r[0]) ?></a><?php if (!empty($r[2])): ?><small><?= e($r[2]) ?></small><?php endif; ?></li><?php endforeach; ?></ul>
-    </details>
-  <?php endforeach; ?>
+  <?php $renderIssues($issues); ?>
 <?php endif; ?>
 </main></body></html>
