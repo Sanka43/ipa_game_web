@@ -26,6 +26,14 @@ $storeHref = $g['app_store_url'] ? url("out/{$g['slug']}/") : null;
 $getHref   = !$free && $storeHref ? $storeHref : game_url($g) . 'download/';
 $getLabel  = !$free && $storeHref ? 'Get on the App Store' : 'Get on IPA Game Store';
 
+// Guides that fit this game: always the basics, then iPad / verification / sideloading help by game type.
+$guideSlugs = array_values(array_unique(array_filter([
+    'how-to-install-ipa-on-iphone',
+    $g['is_ipad'] ? 'install-ipa-on-ipad' : 'install-ipa-without-computer',
+    $isIpa ? 'how-to-verify-ipa-file' : 'are-ipa-files-safe',
+    'ipa-installation-failed',
+], fn($s) => guide($s))));
+
 $crumbs = [['Home', url()], ['IPA Games', url('ipa-games/')], [$cat['h1'], category_url($g['category'])], ["$name IPA", game_url($g)]];
 
 $n = e($name);
@@ -46,10 +54,15 @@ $metaDesc = excerpt("$name $ver for iPhone and iPad: $size" . ($ios ? ", $ios or
 $title = $name . ($isIpa ? ' IPA' : '') . ' for iPhone & iPad';
 if ($ver && mb_strlen("$title ($ver) | " . SITE_NAME) <= 60) $title .= " ($ver)";
 
-render('game', compact('g', 'shots', 'ipadShots', 'versions', 'similar', 'cat', 'latest', 'name', 'ver', 'size', 'ios', 'devs', 'free', 'crumbs', 'faq', 'storeHref', 'getHref', 'getLabel', 'hasFile', 'isIpa'), [
+// Admin overrides (games.seo_title / seo_description / seo_noindex) win over the generated values.
+if (trim((string) $g['seo_title']) !== '') $title = trim($g['seo_title']);
+if (trim((string) $g['seo_description']) !== '') $metaDesc = trim($g['seo_description']);
+
+render('game', compact('g', 'shots', 'ipadShots', 'versions', 'similar', 'cat', 'latest', 'name', 'ver', 'size', 'ios', 'devs', 'free', 'crumbs', 'faq', 'storeHref', 'getHref', 'getLabel', 'hasFile', 'isIpa', 'guideSlugs'), [
     'title'       => $title,
     'description' => $metaDesc,
     'canonical'   => abs_url("ipa-games/{$g['category']}/{$g['slug']}-ipa/"),
+    'robots'      => !empty($g['seo_noindex']) ? 'noindex, follow' : null,
     'og_image'    => img($g['icon'], '1200x630'),
     'nav'         => 'games',
     'body_class'  => 'is-game',

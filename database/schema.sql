@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS games (
   latest_release_date DATE NULL,
   seo_title           VARCHAR(255) NOT NULL DEFAULT '',
   seo_description     VARCHAR(500) NOT NULL DEFAULT '',
+  seo_noindex         TINYINT(1)   NOT NULL DEFAULT 0,
   downloads           INT UNSIGNED NOT NULL DEFAULT 0,
   status              ENUM('published','review','draft','removed') NOT NULL DEFAULT 'published',
   created_at          DATETIME NOT NULL,

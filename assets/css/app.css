@@ -116,6 +116,9 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
 .mega-guides { grid-template-columns: 1fr 1fr; width: 620px; }
 .mega-guides a { flex-direction: column; align-items: flex-start; gap: 2px; }
 .mega-guides .tag { font-size: .6rem; padding: 1px 6px; }
+.guide-links { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.guide-links a { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; height: 100%; padding: 16px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); transition: border-color .3s, transform .3s var(--ease); }
+.guide-links a:hover { border-color: rgba(61,245,255,.45); transform: translateY(-2px); }
 
 .topsearch { position: relative; margin-left: auto; display: flex; align-items: center; width: 280px; height: 42px; padding: 0 14px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid var(--line); transition: .25s; }
 .topsearch:focus-within { border-color: rgba(61,245,255,.5); background: rgba(255,255,255,.09); width: 340px; }
@@ -519,8 +522,11 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
 .bigsearch input { padding: 0; font-size: 1.05rem; }
 
 /* 404 */
-.notfound { min-height: 90vh; display: grid; place-items: center; text-align: center; padding: 120px 0 60px; }
+.notfound { padding: 120px 0 80px; text-align: center; }
 .notfound .hero-cta { justify-content: center; }
+.nf-search { margin: 20px auto 24px; text-align: left; }
+.nf-h { margin: 56px 0 20px; font-size: 1.4rem; }
+.notfound .ggrid { text-align: left; }
 .nf-code { font-family: var(--display); font-size: clamp(6rem, 20vw, 14rem); font-weight: 800; line-height: 1; margin: 0; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; opacity: .9; }
 
 /* ═══ FOOTER ═════════════════════════════════════════════════ */

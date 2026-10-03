@@ -19,7 +19,9 @@ foreach (categories() as $s => $c)
 echo $row(abs_url('download-ipastore/'), $fileDate(__DIR__ . '/../views/ipastore.php'));
 echo $row(abs_url('guides/'), max(array_map(fn($s) => $fileDate(__DIR__ . "/../content/guides/$s.php"), array_keys(guides()))));
 foreach (guides() as $s => $g) echo $row(abs_url("guides/$s/"), $fileDate(__DIR__ . "/../content/guides/$s.php"));
-foreach (db()->query("SELECT slug, category, updated_at FROM games WHERE $pub ORDER BY id") as $g)
+// Games switched to noindex in the admin stay out of the sitemap (column exists after migration 004).
+$noindex = db()->query("SHOW COLUMNS FROM games LIKE 'seo_noindex'")->fetch() ? ' AND seo_noindex=0' : '';
+foreach (db()->query("SELECT slug, category, updated_at FROM games WHERE $pub$noindex ORDER BY id") as $g)
     echo $row($rel(game_url($g)), $g['updated_at']);
 foreach (['about', 'dmca', 'disclaimer', 'privacy', 'contact'] as $p) echo $row(abs_url("$p/"));
 echo "</urlset>\n";

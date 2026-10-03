@@ -174,6 +174,19 @@ $langs    = array_filter(explode(',', $g['languages']));
 </section>
 <?php endif; ?>
 
+<?php if ($guideSlugs): ?>
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><h2>Related IPA guides</h2><a class="see" href="<?= url('guides/') ?>">All IPA guides →</a></div>
+    <ul class="guide-links">
+      <?php foreach ($guideSlugs as $s): $gd = guide($s); ?>
+        <li><a href="<?= guide_url($s) ?>"><span class="tag"><?= e($gd['topic']) ?></span><b><?= e($gd['short']) ?></b></a></li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
+</section>
+<?php endif; ?>
+
 <!-- Mobile sticky download -->
 <div class="dlbar" id="dlbar">
   <img src="<?= e(img($g['icon'], '96x96')) ?>" alt="" width="40" height="40">
