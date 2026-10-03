@@ -33,6 +33,23 @@ if ($authed && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['sc
     $_SESSION['scan'] = $res + ['at' => date('M j, Y H:i') . ' UTC'];
     redirect($self . '#live', 302);
 }
+// Search Console data (button on the page). Same post → run → redirect pattern.
+if ($authed && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['gsc'])) {
+    if (!hash_equals($_SESSION['csrf'], (string) ($_POST['csrf'] ?? ''))) { http_response_code(400); exit('Bad request'); }
+    require __DIR__ . '/../app/gsc.php';
+    try {
+        $days = in_array((int) $_POST['days'], [7, 28, 90], true) ? (int) $_POST['days'] : 28;
+        $r = gsc_report($days);
+        $r['pages'] = array_slice($r['pages'], 0, 300);
+        $_SESSION['gsc'] = $r + ['at' => date('M j, Y H:i') . ' UTC'];
+    } catch (Throwable $ex) {
+        $_SESSION['gsc'] = ['error' => $ex->getMessage(), 'at' => date('M j, Y H:i') . ' UTC'];
+    }
+    redirect($self . '#gsc', 302);
+}
+if ($authed) require_once __DIR__ . '/../app/gsc.php';
+$gscReady = $authed && gsc_configured();
+$gsc = $authed ? ($_SESSION['gsc'] ?? null) : null;
 $scan = $authed ? ($_SESSION['scan'] ?? null) : null;
 
 $issues = [];      // label => [severity, hint, rows[ [name, url, note] ]]

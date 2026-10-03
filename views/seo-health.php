@@ -49,6 +49,52 @@ form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{f
       <?php $renderIssues($scan['issues']); ?>
     <?php endif; ?>
   </section>
+  <section id="gsc">
+    <h2>Search Console</h2>
+    <?php if (!$gscReady): ?>
+      <p class="mut">Not connected yet. Add a <code>'gsc'</code> entry (<code>key_file</code> and <code>site</code>) to <code>config.live.php</code> and upload the service-account key.</p>
+    <?php else: ?>
+      <form method="post" action="<?= e($self) ?>#gsc" class="scanform" onsubmit="this.querySelector('button').disabled=true;this.querySelector('button').textContent='Loading…'">
+        <input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>"><input type="hidden" name="gsc" value="1">
+        <label>Period <select name="days"><option value="28">Last 28 days</option><option value="7">Last 7 days</option><option value="90">Last 90 days</option></select></label>
+        <button type="submit">Load Search Console data</button>
+      </form>
+      <?php if ($gsc && isset($gsc['error'])): ?>
+        <p role="alert"><b>Search Console said:</b> <?= e($gsc['error']) ?></p>
+        <p class="mut">Most common cause: the service account email was not added as a user of the property in Search Console, or <code>site</code> does not match the property (<code>sc-domain:ipagame.store</code> for a Domain property, or the full URL with a trailing slash for a URL-prefix property).</p>
+      <?php elseif ($gsc):
+        $t = $gsc['tot']; $p = $gsc['prev'];
+        [$lowCtr, $striking] = gsc_opportunities($gsc['pages']);
+        $delta = fn($a, $b) => $b > 0 ? sprintf('%+.0f%% vs previous', ($a - $b) / $b * 100) : 'no previous data';
+        $short = fn($u) => rawurldecode(preg_replace('~^https?://[^/]+~', '', $u)) ?: '/';
+        $table = function (string $title, string $hint, array $rows, string $dim, string $sev) use ($short) {
+            if (!$rows) return; ?>
+          <details<?= $sev === 'high' ? ' open' : '' ?>>
+            <summary><span class="pill <?= e($sev) ?>"><?= $sev === 'high' ? 'Fix' : ($sev === 'warn' ? 'Improve' : 'Info') ?></span><?= e($title) ?><span class="n"><?= count($rows) ?></span></summary>
+            <p class="hint"><?= e($hint) ?></p>
+            <ul><?php foreach ($rows as $r): $k = $r['keys'][0]; ?>
+              <li><?php if ($dim === 'page'): ?><a href="<?= e($k) ?>" target="_blank" rel="noopener"><?= e($short($k)) ?></a><?php else: ?><span><?= e($k) ?></span><?php endif; ?>
+                <small><?= number_format($r['impressions']) ?> impr · <?= number_format($r['clicks']) ?> clicks · <?= number_format($r['ctr'] * 100, 1) ?>% CTR · pos <?= number_format($r['position'], 1) ?></small></li>
+            <?php endforeach; ?></ul>
+          </details>
+        <?php }; ?>
+        <p class="mut"><?= e($gsc['from']) ?> to <?= e($gsc['to']) ?> (Google's data is about 3 days behind). Loaded <?= e($gsc['at']) ?>.</p>
+        <div class="stats">
+          <div class="stat"><b><?= number_format($t['clicks']) ?></b><span class="mut">Clicks · <?= e($delta($t['clicks'], $p['clicks'])) ?></span></div>
+          <div class="stat"><b><?= number_format($t['impressions']) ?></b><span class="mut">Impressions · <?= e($delta($t['impressions'], $p['impressions'])) ?></span></div>
+          <div class="stat"><b><?= number_format($t['ctr'] * 100, 1) ?>%</b><span class="mut">Average CTR</span></div>
+          <div class="stat"><b><?= number_format($t['position'], 1) ?></b><span class="mut">Average position</span></div>
+        </div>
+        <?php foreach ($gsc['sitemaps'] as $sm): ?>
+          <p class="mut">Sitemap <?= e($short($sm['path'])) ?>: <?= number_format($sm['submitted']) ?> URLs submitted<?= $sm['pending'] ? ', still pending' : '' ?>, <?= (int) $sm['errors'] ?> errors, <?= (int) $sm['warnings'] ?> warnings.</p>
+        <?php endforeach;
+        $table('Seen a lot, clicked rarely', 'Ranking in the top 10 with a CTR under 3%. Improve the title and meta description for these pages.', $lowCtr, 'page', 'high');
+        $table('Almost on page one (position 6–20)', 'A small push moves these up: internal links from related games and guides, and richer page content.', $striking, 'page', 'warn');
+        $table('Top search queries', 'What people typed before landing on the site.', $gsc['queries'], 'query', 'info');
+        $table('Top pages by clicks', 'Pages that bring the most visitors. Keep these fresh.', array_slice($gsc['pages'], 0, 25), 'page', 'info');
+      endif; ?>
+    <?php endif; ?>
+  </section>
   <h2>Database checks</h2>
   <div class="stats"><?php foreach ($stats as $k => $v): ?><div class="stat"><b><?= (int) $v ?></b><span class="mut"><?= e($k) ?></span></div><?php endforeach; ?></div>
   <?php if (!$issues): ?><p>No issues found.</p><?php endif; ?>

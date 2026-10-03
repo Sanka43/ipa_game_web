@@ -3,3 +3,4 @@ web.zip
 *.zip
 *.ipa
 database/export/
+app/gsc-key.json

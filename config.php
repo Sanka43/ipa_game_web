@@ -36,6 +36,9 @@ $config = [
     'clarity_id' => 'yp6w3pnjbv',
     // Access key for the private /seo-health/ report. Empty = the page does not exist. Set it in config.live.php.
     'seo_health_key' => '',
+    // Search Console API for /seo-health/ (set in config.live.php). key_file: service-account JSON, path relative to the site root
+    // or absolute (keep it in app/, which the web server blocks). site: 'sc-domain:ipagame.store' (Domain property) or 'https://ipagame.store/'.
+    'gsc' => ['key_file' => '', 'site' => ''],
     'debug'     => true,
 ];
 
