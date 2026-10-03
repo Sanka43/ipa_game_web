@@ -34,6 +34,8 @@ $config = [
     'ga_id'     => 'G-6K03K5ZMR9',
     // Microsoft Clarity project ID (Settings > Overview). Empty = no tracking. Also skipped in debug.
     'clarity_id' => 'yp6w3pnjbv',
+    // Access key for the private /seo-health/ report. Empty = the page does not exist. Set it in config.live.php.
+    'seo_health_key' => '',
     'debug'     => true,
 ];
 

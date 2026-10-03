@@ -48,15 +48,7 @@ $faq = [
 ];
 if ($g['is_offline']) $faq[] = ["Can I play $name offline?", "Yes. The developer says $n supports offline play. You may need to connect once to download content on first launch."];
 
-$metaDesc = excerpt("$name $ver for iPhone and iPad: $size" . ($ios ? ", $ios or later" : '') . ". Screenshots, what's new, install guide, safety info and full update history.", 158);
-
-// Keep the title within ~60 characters: the version (and then the brand suffix) drop off first.
-$title = $name . ($isIpa ? ' IPA' : '') . ' for iPhone & iPad';
-if ($ver && mb_strlen("$title ($ver) | " . SITE_NAME) <= 60) $title .= " ($ver)";
-
-// Admin overrides (games.seo_title / seo_description / seo_noindex) win over the generated values.
-if (trim((string) $g['seo_title']) !== '') $title = trim($g['seo_title']);
-if (trim((string) $g['seo_description']) !== '') $metaDesc = trim($g['seo_description']);
+[$title, $metaDesc] = game_seo($g, $isIpa);   // generated from the game data
 
 render('game', compact('g', 'shots', 'ipadShots', 'versions', 'similar', 'cat', 'latest', 'name', 'ver', 'size', 'ios', 'devs', 'free', 'crumbs', 'faq', 'storeHref', 'getHref', 'getLabel', 'hasFile', 'isIpa', 'guideSlugs'), [
     'title'       => $title,

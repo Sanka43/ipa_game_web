@@ -122,3 +122,23 @@ function ipastore_profile(): ?array
     return ['url' => url($app['file']), 'name' => basename($path), 'size_kb' => (int) ceil(filesize($path) / 1024),
             'updated' => date('Y-m-d', filemtime($path))];
 }
+
+/**
+ * Generated SEO title and description for a game page.
+ * games.seo_title / seo_description are NOT used: the import filled them with boilerplate for ~every game.
+ * Shared by the game route and the /seo-health/ report so they can never disagree.
+ */
+function game_seo(array $g, bool $isIpa): array
+{
+    $name = game_name($g);
+    $ver  = version_label($g['latest_version']);
+    $size = size_label($g['latest_size_mb']);
+    $ios  = $g['min_ios'] ? "iOS {$g['min_ios']}" : '';
+
+    $desc = excerpt("$name $ver for iPhone and iPad: $size" . ($ios ? ", $ios or later" : '') . ". Screenshots, what's new, install guide, safety info and full update history.", 158);
+
+    // Keep the title within ~60 characters: the version (and then the brand suffix) drop off first.
+    $title = $name . ($isIpa ? ' IPA' : '') . ' for iPhone & iPad';
+    if ($ver && mb_strlen("$title ($ver) | " . SITE_NAME) <= 60) $title .= " ($ver)";
+    return [$title, $desc];
+}
