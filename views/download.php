@@ -29,7 +29,7 @@
       <?php else: ?>
         <div class="dl-action reveal">
           <p class="dl-get">Get <?= e($name) ?> with the <b>IPA Game Store</b> app</p>
-          <a class="btn btn-primary btn-lg dl-btn" href="<?= url('download-ipastore/') ?>">Download IPA Game Store</a>
+          <a class="btn btn-primary btn-lg dl-btn" href="<?= url('download-ipastore/?from=' . $g['slug']) ?>">Download IPA Game Store</a>
           <p class="dl-hint">Free for iPhone &amp; iPad · Installs from Safari in seconds · <a href="<?= e(game_url($g)) ?>">Back to <?= e(excerpt($name, 28)) ?></a></p>
         </div>
       <?php endif; ?>
@@ -69,7 +69,7 @@
       <li><strong>Install the profile.</strong> Open <em>Settings › Profile Downloaded</em> and tap <em>Install</em>.</li>
       <li><strong>Open IPA Game Store</strong> from your Home Screen and find <?= e($name) ?>.</li>
     </ol>
-    <p class="muted small">Free, no computer or Apple ID needed. <a href="<?= url('download-ipastore/') ?>">Learn more about IPA Game Store</a>.</p>
+    <p class="muted small">Free, no computer or Apple ID needed. <a href="<?= url('download-ipastore/?from=' . $g['slug']) ?>">Learn more about IPA Game Store</a>.</p>
     <?php else: ?>
     <h2 class="h3">Install in 3 steps</h2>
     <ol class="steps">

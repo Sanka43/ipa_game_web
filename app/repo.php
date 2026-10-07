@@ -142,3 +142,27 @@ function game_seo(array $g, bool $isIpa): array
     if ($ver && mb_strlen("$title ($ver) | " . SITE_NAME) <= 60) $title .= " ($ver)";
     return [$title, $desc];
 }
+
+/**
+ * Daily download counters per game. kind 'store' = the IPA Game Store app was downloaded after the
+ * visitor came from that game's page (game_id 0 = no game, e.g. from the home page); 'ipa' = the game's IPA file.
+ * Never throws: tracking must not break a download.
+ */
+function track_download(string $kind, int $gameId): void
+{
+    if (preg_match('/bot|crawl|spider|slurp|facebookexternalhit|preview|curl|wget/i', $_SERVER['HTTP_USER_AGENT'] ?? '')) return;
+    try {
+        db()->exec('CREATE TABLE IF NOT EXISTS download_stats (
+            day DATE NOT NULL, game_id INT UNSIGNED NOT NULL, kind VARCHAR(8) NOT NULL, n INT UNSIGNED NOT NULL DEFAULT 0,
+            PRIMARY KEY (day, game_id, kind), KEY (kind, game_id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
+        db()->prepare('INSERT INTO download_stats (day, game_id, kind, n) VALUES (CURDATE(), ?, ?, 1) ON DUPLICATE KEY UPDATE n = n + 1')
+            ->execute([$gameId, $kind]);
+    } catch (Throwable $e) {}
+}
+
+/** The game slug passed as ?from= on the IPA Game Store links, or '' if missing or invalid. */
+function from_slug(): string
+{
+    $s = (string) ($_GET['from'] ?? '');
+    return preg_match('/^[a-z0-9][a-z0-9-]{0,150}$/', $s) ? $s : '';
+}

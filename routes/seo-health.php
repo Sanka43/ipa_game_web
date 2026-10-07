@@ -131,4 +131,27 @@ if ($authed) {
     uasort($issues, fn($a, $b) => $order[$a[0]] <=> $order[$b[0]] ?: count($b[2]) <=> count($a[2]));
 }
 
+// Download tracking (see track_download() in app/repo.php).
+$dl = ['rows' => [], 'tot' => ['store' => [0, 0], 'ipa' => [0, 0]], 'days' => [], 'ready' => false];
+if ($authed) {
+    try {
+        $q = db()->query("SELECT game_id,
+                SUM(IF(kind='store', n, 0)) AS store_all, SUM(IF(kind='store' AND day >= CURDATE() - INTERVAL 29 DAY, n, 0)) AS store_30,
+                SUM(IF(kind='ipa', n, 0)) AS ipa_all,     SUM(IF(kind='ipa'   AND day >= CURDATE() - INTERVAL 29 DAY, n, 0)) AS ipa_30
+            FROM download_stats GROUP BY game_id");
+        $names = [];
+        foreach (db()->query('SELECT id, name, slug, category, type FROM games') as $r) $names[$r['id']] = $r;
+        foreach ($q as $r) {
+            $g = $names[$r['game_id']] ?? null;
+            $dl['rows'][] = $r + ['name' => $g ? game_name($g) : '(no game: home, menu or direct)', 'url' => $g ? game_url($g) : '', 'direct' => !$g];
+            $dl['tot']['store'][0] += $r['store_all']; $dl['tot']['store'][1] += $r['store_30'];
+            $dl['tot']['ipa'][0]   += $r['ipa_all'];   $dl['tot']['ipa'][1]   += $r['ipa_30'];
+        }
+        usort($dl['rows'], fn($a, $b) => [$b['store_30'], $b['store_all'], $b['ipa_30']] <=> [$a['store_30'], $a['store_all'], $a['ipa_30']]);
+        $dl['days'] = db()->query("SELECT day, SUM(IF(kind='store', n, 0)) AS store, SUM(IF(kind='ipa', n, 0)) AS ipa
+            FROM download_stats WHERE day >= CURDATE() - INTERVAL 13 DAY GROUP BY day ORDER BY day DESC")->fetchAll();
+        $dl['ready'] = true;
+    } catch (Throwable $e) {}   // table is created on the first tracked download
+}
+
 require __DIR__ . '/../views/seo-health.php';

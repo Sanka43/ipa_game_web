@@ -73,6 +73,7 @@ try {
                     redirect(url('download-ipastore/open-on-iphone/'), 302);
                 }
                 $file = ipastore_profile();
+                if ($file) { $from = from_slug(); $fg = $from ? game_by_slug($from) : null; track_download('store', $fg ? (int) $fg['id'] : 0); }
                 redirect($file ? $file['url'] : url('download-ipastore/'), 302);
             }
             // The actual IPA file, behind a download counter. No file yet → back to the download page.
@@ -82,6 +83,7 @@ try {
             $file = ipa_file($g);
             if (!$file) redirect(game_url($g) . 'download/', 302);
             db()->prepare('UPDATE games SET downloads=downloads+1 WHERE id=?')->execute([$g['id']]);
+            track_download('ipa', (int) $g['id']);
             redirect($file['url'], 302);
 
         case 'out':

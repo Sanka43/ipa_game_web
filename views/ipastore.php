@@ -1,5 +1,5 @@
 <?php
-$dlHref = url('dl/ipastore/');
+$dlHref = url('dl/ipastore/') . (from_slug() ? '?from=' . from_slug() : '');
 $size   = $file ? $file['size_kb'] . ' KB' : '';
 ?>
 <!-- ═══ APP HERO ═══ -->

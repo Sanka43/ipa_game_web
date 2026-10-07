@@ -36,7 +36,7 @@ form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{f
   </form>
 <?php else: ?>
   <div class="top"><div><h1>SEO health report</h1><p class="mut">Checked from the database on <?= e(date('M j, Y H:i')) ?> UTC. Fix the red items first.</p></div><a href="<?= e($self) ?>?logout=1">Log out</a></div>
-  <nav class="tabs" role="tablist"><a href="#live">Live checks</a><a href="#gsc">Search Console</a><a href="#db">Database checks</a></nav>
+  <nav class="tabs" role="tablist"><a href="#live">Live checks</a><a href="#gsc">Search Console</a><a href="#db">Database checks</a><a href="#downloads">Downloads</a></nav>
   <section id="live" class="tab">
     <h2>Live checks</h2>
     <p class="mut">Requests the sitemap and the pages in it over HTTP, like a crawler: status, redirects, noindex, canonical, title, H1, JSON-LD, alt. Can take up to a minute.</p>
@@ -104,8 +104,32 @@ form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{f
   <?php if (!$issues): ?><p>No issues found.</p><?php endif; ?>
   <?php $renderIssues($issues); ?>
   </section>
+  <section id="downloads" class="tab">
+    <h2>Downloads</h2>
+    <p class="mut">Counted when someone taps the download button. <b>App</b> = IPA Game Store installed after visiting that game's page. <b>IPA file</b> = the game's own IPA downloaded. Bots are ignored. Counting starts from the first download after this feature went live.</p>
+    <?php if (!$dl['ready']): ?>
+      <p>No downloads recorded yet.</p>
+    <?php else: ?>
+      <div class="stats">
+        <div class="stat"><b><?= number_format($dl['tot']['store'][1]) ?></b><span class="mut">App downloads · last 30 days (<?= number_format($dl['tot']['store'][0]) ?> all time)</span></div>
+        <div class="stat"><b><?= number_format($dl['tot']['ipa'][1]) ?></b><span class="mut">IPA file downloads · last 30 days (<?= number_format($dl['tot']['ipa'][0]) ?> all time)</span></div>
+      </div>
+      <details open>
+        <summary><span class="pill info">Top</span>Games that bring the most app downloads<span class="n"><?= count($dl['rows']) ?></span></summary>
+        <p class="hint">Ranked by app downloads in the last 30 days. Push the top games with more internal links and fresher content.</p>
+        <ul><?php foreach ($dl['rows'] as $r): ?>
+          <li><?php if ($r['url']): ?><a href="<?= e($r['url']) ?>" target="_blank" rel="noopener"><?= e($r['name']) ?></a><?php else: ?><span><?= e($r['name']) ?></span><?php endif; ?>
+            <small>App: <?= number_format($r['store_30']) ?> (30d) · <?= number_format($r['store_all']) ?> total · IPA file: <?= number_format($r['ipa_30']) ?> (30d) · <?= number_format($r['ipa_all']) ?> total</small></li>
+        <?php endforeach; ?></ul>
+      </details>
+      <details>
+        <summary><span class="pill info">Daily</span>Last 14 days</summary>
+        <ul><?php foreach ($dl['days'] as $d): ?><li><span><?= e(date('D, M j', strtotime($d['day']))) ?></span><small>App: <?= (int) $d['store'] ?> · IPA file: <?= (int) $d['ipa'] ?></small></li><?php endforeach; ?></ul>
+      </details>
+    <?php endif; ?>
+  </section>
   <script>
-  (function(){var ids=['live','gsc','db'];function show(){var h=location.hash.slice(1);if(ids.indexOf(h)<0)h='live';
+  (function(){var ids=['live','gsc','db','downloads'];function show(){var h=location.hash.slice(1);if(ids.indexOf(h)<0)h='live';
     ids.forEach(function(i){document.getElementById(i).classList.toggle('on',i===h)});
     document.querySelectorAll('.tabs a').forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+h)});}
   document.documentElement.classList.add('js');window.addEventListener('hashchange',show);show();})();

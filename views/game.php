@@ -84,7 +84,7 @@ $langs    = array_filter(explode(',', $g['languages']));
       <?php elseif ($free): ?>
       <h3>Method <?= ++$m ?>: With the IPA Game Store app</h3>
       <ol class="steps">
-        <li>Tap <strong>Get on IPA Game Store</strong> above, then <a href="<?= url('download-ipastore/') ?>">download IPA Game Store</a> in Safari on your iPhone or iPad.</li>
+        <li>Tap <strong>Get on IPA Game Store</strong> above, then <a href="<?= url('download-ipastore/?from=' . $g['slug']) ?>">download IPA Game Store</a> in Safari on your iPhone or iPad.</li>
         <li>Open <em>Settings › Profile Downloaded</em> and tap <em>Install</em>. The app appears on your Home Screen.</li>
         <li>Open IPA Game Store and find <?= e($name) ?>.</li>
       </ol>
