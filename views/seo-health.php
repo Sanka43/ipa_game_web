@@ -23,6 +23,8 @@ details{background:var(--card);border:1px solid var(--line);border-radius:10px;m
 ul{list-style:none;margin:0;padding:0 14px 12px;max-height:420px;overflow:auto}li{padding:6px 0;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}
 li small{color:var(--mut);word-break:break-word}
 .scanform{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:12px 0}h2{font-size:1.15rem;margin:28px 0 8px}select{font:inherit;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg)}button:disabled{opacity:.6;cursor:wait}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin:18px 0 4px;flex-wrap:wrap}.tabs a{padding:10px 16px;border-radius:10px 10px 0 0;text-decoration:none;color:var(--mut);font-weight:600;border:1px solid transparent;border-bottom:0}.tabs a.on{color:var(--fg);background:var(--card);border-color:var(--line);box-shadow:inset 0 -2px 0 var(--in)}
+.js .tab{display:none}.js .tab.on{display:block}
 form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg)}button{cursor:pointer;background:var(--in);color:#111;border:0;font-weight:700}
 </style></head><body><main>
 <?php if (!$authed): ?>
@@ -34,7 +36,8 @@ form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{f
   </form>
 <?php else: ?>
   <div class="top"><div><h1>SEO health report</h1><p class="mut">Checked from the database on <?= e(date('M j, Y H:i')) ?> UTC. Fix the red items first.</p></div><a href="<?= e($self) ?>?logout=1">Log out</a></div>
-  <section id="live">
+  <nav class="tabs" role="tablist"><a href="#live">Live checks</a><a href="#gsc">Search Console</a><a href="#db">Database checks</a></nav>
+  <section id="live" class="tab">
     <h2>Live checks</h2>
     <p class="mut">Requests the sitemap and the pages in it over HTTP, like a crawler: status, redirects, noindex, canonical, title, H1, JSON-LD, alt. Can take up to a minute.</p>
     <form method="post" action="<?= e($self) ?>#live" class="scanform" onsubmit="this.querySelector('button').disabled=true;this.querySelector('button').textContent='Scanning… please wait'">
@@ -49,7 +52,7 @@ form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{f
       <?php $renderIssues($scan['issues']); ?>
     <?php endif; ?>
   </section>
-  <section id="gsc">
+  <section id="gsc" class="tab">
     <h2>Search Console</h2>
     <?php if (!$gscReady): ?>
       <p class="mut">Not connected yet. Add a <code>'gsc'</code> entry (<code>key_file</code> and <code>site</code>) to <code>config.live.php</code> and upload the service-account key.</p>
@@ -95,9 +98,17 @@ form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{f
       endif; ?>
     <?php endif; ?>
   </section>
+  <section id="db" class="tab">
   <h2>Database checks</h2>
   <div class="stats"><?php foreach ($stats as $k => $v): ?><div class="stat"><b><?= (int) $v ?></b><span class="mut"><?= e($k) ?></span></div><?php endforeach; ?></div>
   <?php if (!$issues): ?><p>No issues found.</p><?php endif; ?>
   <?php $renderIssues($issues); ?>
+  </section>
+  <script>
+  (function(){var ids=['live','gsc','db'];function show(){var h=location.hash.slice(1);if(ids.indexOf(h)<0)h='live';
+    ids.forEach(function(i){document.getElementById(i).classList.toggle('on',i===h)});
+    document.querySelectorAll('.tabs a').forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+h)});}
+  document.documentElement.classList.add('js');window.addEventListener('hashchange',show);show();})();
+  </script>
 <?php endif; ?>
 </main></body></html>
