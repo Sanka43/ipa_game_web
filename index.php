@@ -107,7 +107,7 @@ try {
             echo "User-agent: *\nDisallow: /search/\nDisallow: /out/\nDisallow: /dl/\nDisallow: /downloads/\nDisallow: /api/\n\nSitemap: " . abs_url('sitemap.xml') . "\n";
             break;
 
-        case 'about': case 'dmca': case 'disclaimer': case 'privacy': case 'contact':
+        case 'about': case 'dmca': case 'disclaimer': case 'privacy': case 'contact': case 'terms': case 'how-we-verify':
             if (count($seg) > 1) not_found();
             $pageSlug = $seg[0];
             require __DIR__ . '/routes/page.php';

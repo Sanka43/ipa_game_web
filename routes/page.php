@@ -7,7 +7,31 @@ $pages = [
         <p>Game details come from public App Store listings and from developers. Download buttons point to the official App Store whenever the game is available there. That is the safest and fastest way to install it.</p>
         <h2>Our rules</h2>
         <ul><li>We do not host or link to cracked, pirated or modified copies of paid games.</li><li>Third-party IPA files are listed only when the developer allows distribution.</li><li>Every report is reviewed. See our <a href="' . url('dmca/') . '">DMCA policy</a>.</li></ul>'],
-    'dmca' => ['DMCA & Content Removal', 'How rights holders can request removal of content from ' . SITE_NAME . '.', '
+    'terms' => ['Terms of Service', 'The rules for using ' . SITE_NAME . ': what we provide, what we do not, and your responsibilities.', '
+        <p>By using ' . SITE_NAME . ' you agree to these terms. If you do not agree, please do not use the site.</p>
+        <h2>What we provide</h2>
+        <p>' . SITE_NAME . ' is an information site about iOS games. We list game details, link to official App Store pages, and, where we have the right to, offer IPA files. Everything is provided <strong>as is</strong>, without warranty.</p>
+        <h2>Your responsibilities</h2>
+        <ul><li>Install apps only on devices you own or are allowed to manage.</li><li>Follow the developer\'s licence and the law where you live.</li><li>Verify files before installing. See <a href="' . url('how-we-verify/') . '">how we check files</a>.</li><li>Do not use the site to distribute pirated or modified copies of paid games.</li></ul>
+        <h2>Risks of sideloading</h2>
+        <p>Installing an IPA outside the App Store bypasses Apple\'s review. Signed apps need to be refreshed, can stop working, and are installed at your own risk. We are not liable for loss of data, account bans or device problems.</p>
+        <h2>Third-party content</h2>
+        <p>Game names, icons and screenshots belong to their developers. Links to other sites are not under our control. See the <a href="' . url('disclaimer/') . '">disclaimer</a>.</p>
+        <h2>Copyright</h2>
+        <p>Rights holders can request removal at any time. See the <a href="' . url('dmca/') . '">copyright and takedown policy</a>.</p>
+        <h2>Changes</h2>
+        <p>We may update these terms. The current version is always on this page. Questions: <a href="mailto:info@ipagame.store">info@ipagame.store</a>.</p>'],
+    'how-we-verify' => ['How We Check Files', 'How ' . SITE_NAME . ' checks game files and sources, and what you should verify before installing an IPA.', '
+        <p>This page explains what we check, what we cannot check, and what you should do yourself before installing anything.</p>
+        <h2>What we check</h2>
+        <ul><li><strong>Source and permission.</strong> Every download page states where the file comes from and why we may share it: official App Store release, free from the developer, open source, or authorised by the developer.</li><li><strong>Game details.</strong> Version, size, minimum iOS and developer are taken from the App Store listing or the developer.</li><li><strong>Checksum.</strong> When we host a file we publish its SHA-256, so you can confirm your copy is identical.</li><li><strong>Last verified date.</strong> Shown on each page when a person has reviewed the entry. "Not yet reviewed" means it has not been reviewed.</li></ul>
+        <h2>What we do not claim</h2>
+        <p>A checksum proves a file is unchanged. It does not prove the file is harmless, and we never call a file "100% safe". We do not accept files we cannot confirm the rights to.</p>
+        <h2>What to verify before installing</h2>
+        <ol><li>Prefer the App Store version when it exists.</li><li>Compare the SHA-256 with the value on the download page. See <a href="' . guide_url('how-to-verify-ipa-file') . '">how to verify an IPA file</a>.</li><li>Check the bundle ID and developer match the real game.</li><li>Avoid "modded" files that promise unlimited coins. Read <a href="' . guide_url('are-ipa-files-safe') . '">are IPA files safe?</a></li></ol>
+        <h2>Found a problem?</h2>
+        <p>Email <a href="mailto:info@ipagame.store">info@ipagame.store</a> or send a <a href="' . url('dmca/') . '">takedown notice</a>. We review every report.</p>'],
+    'dmca' => ['Copyright & DMCA Takedown Policy', 'How rights holders can request removal of content from ' . SITE_NAME . '.', '
         <p>We respect intellectual property rights. If you believe content on ' . SITE_NAME . ' infringes your copyright, send a notice to our contact address with:</p>
         <ol><li>Your name, organisation and contact details.</li><li>The work you believe is infringed.</li><li>The exact URL(s) on this site.</li><li>A statement that you have a good-faith belief the use is not authorised.</li><li>A statement, under penalty of perjury, that the notice is accurate and you are the rights holder or authorised to act for them.</li><li>Your physical or electronic signature.</li></ol>
         <p>We act on valid notices, usually within 48 hours, by removing the listing or the download link.</p>'],

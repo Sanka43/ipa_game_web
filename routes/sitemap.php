@@ -23,5 +23,5 @@ foreach (guides() as $s => $g) echo $row(abs_url("guides/$s/"), $fileDate(__DIR_
 $noindex = db()->query("SHOW COLUMNS FROM games LIKE 'seo_noindex'")->fetch() ? ' AND seo_noindex=0' : '';
 foreach (db()->query("SELECT slug, category, updated_at FROM games WHERE $pub$noindex ORDER BY id") as $g)
     echo $row($rel(game_url($g)), $g['updated_at']);
-foreach (['about', 'dmca', 'disclaimer', 'privacy', 'contact'] as $p) echo $row(abs_url("$p/"));
+foreach (['about', 'how-we-verify', 'terms', 'dmca', 'disclaimer', 'privacy', 'contact'] as $p) echo $row(abs_url("$p/"));
 echo "</urlset>\n";

@@ -150,7 +150,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     </div>
     <div class="foot-bottom">
       <p>© <?= date('Y') ?> <?= e(SITE_NAME) ?>. Not affiliated with Apple Inc. App names, icons and screenshots belong to their developers. iPhone, iPad and App Store are trademarks of Apple Inc.</p>
-      <nav aria-label="Legal"><a href="<?= url('about/') ?>">About</a><a href="<?= url('dmca/') ?>">DMCA</a><a href="<?= url('disclaimer/') ?>">Disclaimer</a><a href="<?= url('privacy/') ?>">Privacy</a><a href="<?= url('contact/') ?>">Contact</a><?php if (cfg('ga_id') || cfg('clarity_id')): ?><button type="button" class="linkbtn" data-consent-open>Cookie settings</button><?php endif; ?></nav>
+      <nav aria-label="Legal"><a href="<?= url('about/') ?>">About</a><a href="<?= url('how-we-verify/') ?>">How we verify</a><a href="<?= url('terms/') ?>">Terms</a><a href="<?= url('dmca/') ?>">Copyright / DMCA</a><a href="<?= url('disclaimer/') ?>">Disclaimer</a><a href="<?= url('privacy/') ?>">Privacy</a><a href="<?= url('contact/') ?>">Contact</a><?php if (cfg('ga_id') || cfg('clarity_id')): ?><button type="button" class="linkbtn" data-consent-open>Cookie settings</button><?php endif; ?></nav>
     </div>
   </div>
 </footer>

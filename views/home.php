@@ -41,7 +41,7 @@
       <?php foreach ($hero as $i => $h): ?>
         <div class="phones<?= $i === 0 ? ' on' : '' ?>">
           <?php foreach (array_slice($h['shots'], 0, 3) as $j => $s): ?>
-            <figure class="phone p<?= $j ?>"><img src="<?= e(img($s, '600x0w')) ?>" alt="<?= e($h['name']) ?> gameplay screenshot"<?= $i === 0 ? '' : ' loading="lazy"' ?> decoding="async"></figure>
+            <figure class="phone p<?= $j ?>"><img src="<?= e(img($s, '600x0w')) ?>" alt="<?= e($h['name']) ?> gameplay screenshot" width="600" height="1226"<?= $i === 0 ? '' : ' loading="lazy"' ?> decoding="async"></figure>
           <?php endforeach; ?>
         </div>
       <?php endforeach; ?>
@@ -123,13 +123,13 @@
 <!-- ═══ TOP 10 ═══ -->
 <section class="sec top10-sec">
   <div class="wrap">
-    <div class="sec-head reveal"><div><p class="kicker">Most played</p><h2>Top 10 iOS Games (IPA) – Most Played</h2></div><a class="see" href="<?= category_url('iphone') ?>">Full iPhone games chart →</a></div>
+    <div class="sec-head reveal"><div><p class="kicker">Most downloaded</p><h2>Top 10 Most Downloaded IPA Games</h2></div><a class="see" href="<?= category_url('iphone') ?>">Full iPhone games chart →</a></div>
     <ol class="top10">
       <?php foreach ($top as $i => $g): ?>
         <li class="reveal" style="--d:<?= $i * 50 ?>ms"><a href="<?= e(game_url($g)) ?>">
           <span class="rank"><?= $i + 1 ?></span>
           <img src="<?= e(img($g['icon'], '160x160')) ?>" alt="<?= e($g['name']) ?> icon" width="72" height="72" loading="lazy">
-          <span class="t10-info"><b><?= e($g['name']) ?></b><small><?= e(category($g['category'])['name'] ?? '') ?> · <?= compact_num($g['rating_count']) ?> ratings</small></span>
+          <span class="t10-info"><b><?= e($g['name']) ?></b><small><?= e(category($g['category'])['name'] ?? '') ?> · <?= (int) $g['dl'] > 0 ? compact_num($g['dl']) . ' downloads' : compact_num($g['rating_count']) . ' ratings' ?></small></span>
           <span class="t10-rate">★ <?= number_format((float) $g['rating_value'], 1) ?></span>
         </a></li>
       <?php endforeach; ?>

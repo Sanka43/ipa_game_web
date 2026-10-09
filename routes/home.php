@@ -4,7 +4,7 @@ $latest  = games_where('1=1', 'latest_release_date DESC, id DESC', 14);
 $shots   = first_screenshots(array_column($latest, 'id'));
 foreach ($latest as &$g) $g['shot'] = $shots[$g['id']] ?? '';
 unset($g);
-$top     = games_where('1=1', 'rating_count DESC', 10);
+$top     = top_downloaded(10);
 $shelves = [
     'offline' => games_where('is_offline=1', 'rating_count DESC', 6),
     'racing'  => games_where("category='racing'", 'rating_count DESC', 6),
@@ -48,7 +48,7 @@ render('home', compact('hero', 'latest', 'top', 'shelves', 'posters', 'posterGen
         ['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => SITE_NAME, 'url' => abs_url(), 'logo' => abs_url('assets/img/logo-512.png'),
          'sameAs' => array_values(array_filter(array_map('strval', cfg('social') ?? []), fn($u) => str_starts_with($u, 'http'))),
          'contactPoint' => ['@type' => 'ContactPoint', 'contactType' => 'customer support', 'email' => 'info@ipagame.store']],
-        ['@context' => 'https://schema.org', '@type' => 'ItemList', 'name' => 'Top 10 iOS Games (IPA) – Most Played',
+        ['@context' => 'https://schema.org', '@type' => 'ItemList', 'name' => 'Top 10 Most Downloaded IPA Games',
          'itemListElement' => array_map(fn($g, $i) => ['@type' => 'ListItem', 'position' => $i + 1, 'name' => $g['name'], 'url' => abs_url("ipa-games/{$g['category']}/{$g['slug']}-ipa/")], $top, array_keys($top)),
         ],
         $faqLd,

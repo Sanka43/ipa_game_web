@@ -112,3 +112,36 @@ function pager(int $page, int $pages, string $base): string
     if ($page < $pages) $h .= '<a rel="next" href="' . e($href($page + 1)) . '">Next →</a>';
     return $h . '</nav>';
 }
+
+/** Plain-language source and licence of a game's download, from games.license_type. */
+function source_info(array $g, bool $hasFile): array
+{
+    $lic = $g['license_type'] ?? 'app-store-link';
+    if (!$hasFile) {
+        return ['label' => 'Official App Store release', 'official' => true,
+                'text' => 'We host no IPA file for this game. It is installed from the developer\'s App Store listing, or through the free IPA Game Store app, which also installs from the App Store.'];
+    }
+    return match ($lic) {
+        'free'           => ['label' => 'Free release from the developer', 'official' => false, 'text' => 'The developer offers this game free of charge and allows the file to be shared.'],
+        'open-source'    => ['label' => 'Open-source build', 'official' => false, 'text' => 'Built from open-source code that permits redistribution. It is a third-party package, not an App Store build.'],
+        'dev-authorized' => ['label' => 'Distributed with the developer\'s permission', 'official' => false, 'text' => 'The developer has authorised us to distribute this file. It is a third-party package, not an App Store build.'],
+        'app-store-link' => ['label' => 'Official App Store release', 'official' => true, 'text' => 'This file is the developer\'s App Store release.'],
+        default          => ['label' => 'Third-party file, rights not confirmed', 'official' => false, 'text' => 'We have not confirmed that this file may be redistributed. Prefer the App Store version, and report it if you are the rights holder.'],
+    };
+}
+
+/** "Source & verification" box shown on game and download pages. */
+function source_box(array $g, bool $hasFile, ?array $file = null): string
+{
+    $s = source_info($g, $hasFile);
+    $checked = !empty($g['verified_at']) ? date_label($g['verified_at']) : null;
+    $rows = '<dt>Source</dt><dd>' . e($s['label']) . '</dd>'
+          . '<dt>Type</dt><dd>' . ($s['official'] ? 'Official release' : 'Third-party package') . '</dd>'
+          . '<dt>Developer</dt><dd>' . e($g['developer']) . '</dd>'
+          . '<dt>Last verified</dt><dd>' . ($checked ?: 'Not yet reviewed') . '</dd>';
+    if (!empty($g['source_note'])) $rows .= '<dt>Note</dt><dd>' . e($g['source_note']) . '</dd>';
+    $sha = $file['sha256'] ?? null;
+    $rows .= '<dt>SHA-256</dt><dd>' . ($sha ? '<code>' . e($sha) . '</code>' : 'Not published') . '</dd>';
+    return '<dl class="dl-info source-box">' . $rows . '</dl><p class="muted small">' . e($s['text'])
+         . ' <a href="' . url('how-we-verify/') . '">How we check files</a> · <a href="' . url('dmca/') . '">Report a problem</a></p>';
+}

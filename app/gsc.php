@@ -101,3 +101,18 @@ function gsc_opportunities(array $pages): array
     usort($striking, fn($a, $b) => $b['impressions'] <=> $a['impressions']);
     return [array_slice($lowCtr, 0, 25), array_slice($striking, 0, 25)];
 }
+
+/** Totals for one page URL over the last $days (window ends 3 days ago). Zeroes when Google has no data for it. */
+function gsc_page_stats(string $pageUrl, int $days = 28): array
+{
+    $token = gsc_token();
+    $end   = strtotime('-3 days');
+    $res = gsc_http(GSC_API . rawurlencode(gsc_config()['site']) . '/searchAnalytics/query', [
+        'startDate' => date('Y-m-d', strtotime('-' . ($days - 1) . ' days', $end)), 'endDate' => date('Y-m-d', $end),
+        'dimensionFilterGroups' => [['filters' => [['dimension' => 'page', 'operator' => 'equals', 'expression' => $pageUrl]]]],
+        'rowLimit' => 1, 'dataState' => 'final',
+    ], null, $token);
+    $r = $res['rows'][0] ?? [];
+    return ['clicks' => (int) ($r['clicks'] ?? 0), 'impressions' => (int) ($r['impressions'] ?? 0),
+            'ctr' => (float) ($r['ctr'] ?? 0), 'position' => (float) ($r['position'] ?? 0), 'days' => $days];
+}

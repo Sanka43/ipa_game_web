@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS games (
   -- IPA file for the download page: an external URL. Leave NULL to use downloads/{slug}.ipa instead.
   ipa_url             VARCHAR(1000) NULL,
   ipa_sha256          CHAR(64) NULL,
+  verified_at         DATE NULL,
+  source_note         VARCHAR(255) NOT NULL DEFAULT '',
   latest_version      VARCHAR(64)  NOT NULL DEFAULT '',
   latest_size_mb      DECIMAL(10,1) NOT NULL DEFAULT 0,
   latest_release_date DATE NULL,

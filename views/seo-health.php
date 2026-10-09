@@ -36,7 +36,7 @@ form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{f
   </form>
 <?php else: ?>
   <div class="top"><div><h1>SEO health report</h1><p class="mut">Checked from the database on <?= e(date('M j, Y H:i')) ?> UTC. Fix the red items first.</p></div><a href="<?= e($self) ?>?logout=1">Log out</a></div>
-  <nav class="tabs" role="tablist"><a href="#live">Live checks</a><a href="#gsc">Search Console</a><a href="#db">Database checks</a><a href="#downloads">Downloads</a></nav>
+  <nav class="tabs" role="tablist"><a href="#live">Live checks</a><a href="#gsc">Search Console</a><a href="#db">Database checks</a><a href="#downloads">Downloads</a><a href="#changes">Change log</a></nav>
   <section id="live" class="tab">
     <h2>Live checks</h2>
     <p class="mut">Requests the sitemap and the pages in it over HTTP, like a crawler: status, redirects, noindex, canonical, title, H1, JSON-LD, alt. Can take up to a minute.</p>
@@ -128,8 +128,40 @@ form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{f
       </details>
     <?php endif; ?>
   </section>
+  <section id="changes" class="tab">
+    <h2>Change log</h2>
+    <p class="mut">Record every significant SEO change. With Search Console connected, the page's clicks, impressions, CTR and position for the last 28 days are saved as the baseline. Load Search Console data on its tab and the "now" numbers appear here. Wait 2–4 weeks before judging a change.</p>
+    <?php if ($changeMsg): ?><p role="alert"><?= e($changeMsg) ?></p><?php endif; ?>
+    <form method="post" action="<?= e($self) ?>#changes" class="scanform">
+      <input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>"><input type="hidden" name="addchange" value="1">
+      <input type="date" name="changed_on" value="<?= e(date('Y-m-d')) ?>" required>
+      <select name="kind"><?php foreach (CHANGE_KINDS as $k => $l): ?><option value="<?= e($k) ?>"><?= e($l) ?></option><?php endforeach; ?></select>
+      <input type="text" name="page" placeholder="/ipa-games/sports/efootball-ipa/ (optional)" size="34">
+      <input type="text" name="note" placeholder="What changed" size="40" maxlength="1000" required>
+      <button type="submit">Add</button>
+    </form>
+    <?php
+      $nowByPage = [];
+      if (!empty($gsc['pages'])) foreach ($gsc['pages'] as $r) $nowByPage[$r['keys'][0]] = $r;
+    ?>
+    <?php if (!$changes): ?><p>No changes recorded yet.</p><?php else: ?>
+    <ul>
+      <?php foreach ($changes as $c): $now = $nowByPage[$c['page']] ?? null; ?>
+      <li>
+        <span><b><?= e(date('M j, Y', strtotime($c['changed_on']))) ?></b> · <?= e(CHANGE_KINDS[$c['kind']] ?? $c['kind']) ?><br><?= e($c['note']) ?>
+          <?php if ($c['page']): ?><br><a href="<?= e($c['page']) ?>" target="_blank" rel="noopener"><?= e(rawurldecode(preg_replace('~^https?://[^/]+~', '', $c['page'])) ?: '/') ?></a><?php endif; ?></span>
+        <small>
+          <?php if ($c['base_impr'] !== null): ?>Before: <?= number_format($c['base_impr']) ?> impr · <?= number_format($c['base_clicks']) ?> clicks · <?= number_format($c['base_ctr'] * 100, 1) ?>% CTR · pos <?= number_format($c['base_pos'], 1) ?><?php else: ?>No baseline<?php endif; ?>
+          <?php if ($now): ?><br>Now: <?= number_format($now['impressions']) ?> impr · <?= number_format($now['clicks']) ?> clicks · <?= number_format($now['ctr'] * 100, 1) ?>% CTR · pos <?= number_format($now['position'], 1) ?><?php endif; ?>
+        </small>
+        <form method="post" action="<?= e($self) ?>#changes" onsubmit="return confirm('Delete this entry?')"><input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>"><button type="submit" name="delchange" value="<?= (int) $c['id'] ?>">Delete</button></form>
+      </li>
+      <?php endforeach; ?>
+    </ul>
+    <?php endif; ?>
+  </section>
   <script>
-  (function(){var ids=['live','gsc','db','downloads'];function show(){var h=location.hash.slice(1);if(ids.indexOf(h)<0)h='live';
+  (function(){var ids=['live','gsc','db','downloads','changes'];function show(){var h=location.hash.slice(1);if(ids.indexOf(h)<0)h='live';
     ids.forEach(function(i){document.getElementById(i).classList.toggle('on',i===h)});
     document.querySelectorAll('.tabs a').forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+h)});}
   document.documentElement.classList.add('js');window.addEventListener('hashchange',show);show();})();

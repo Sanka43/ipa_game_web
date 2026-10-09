@@ -87,6 +87,13 @@
   </section>
 </div>
 
+<div class="wrap">
+  <section class="dl-card reveal">
+    <h2 class="h3">Source &amp; verification</h2>
+    <?= source_box($g, (bool) $file, $file) ?>
+  </section>
+</div>
+
 <?php if (!empty($file['sha256'])): ?>
 <div class="wrap">
   <section class="dl-card dl-verify reveal">

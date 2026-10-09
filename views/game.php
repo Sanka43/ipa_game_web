@@ -45,7 +45,7 @@ $langs    = array_filter(explode(',', $g['languages']));
       <button type="button" class="shots-nav next" data-dir="1" aria-label="Next screenshots" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
         <div class="shots" data-drag>
           <?php foreach (['iphone' => $shots, 'ipad' => $ipadShots] as $dev => $list): foreach ($list as $i => $s): ?>
-            <a href="<?= e(img($s, '1200x0w')) ?>" data-lightbox="shots"><img src="<?= e(img($s, $dev === 'ipad' ? '600x0w' : '460x0w')) ?>" alt="<?= e($name) ?> for <?= $dev === 'ipad' ? 'iPad' : 'iPhone' ?> screenshot <?= $i + 1 ?>" loading="lazy"></a>
+            <a href="<?= e(img($s, '1200x0w')) ?>" data-lightbox="shots"><img src="<?= e(img($s, $dev === 'ipad' ? '600x0w' : '460x0w')) ?>" alt="<?= e($name) ?> for <?= $dev === 'ipad' ? 'iPad' : 'iPhone' ?> screenshot <?= $i + 1 ?>" width="<?= $dev === 'ipad' ? 600 : 460 ?>" height="<?= $dev === 'ipad' ? 800 : 996 ?>" loading="lazy" decoding="async"></a>
           <?php endforeach; endforeach; ?>
         </div>
       </div>
@@ -101,12 +101,39 @@ $langs    = array_filter(explode(',', $g['languages']));
       <div id="container-911b8b732262ab1a6da784c794f8780e"></div>
     </section>
 
+    <!-- Compatibility & limitations -->
+    <section class="gsec reveal" id="compatibility">
+      <h2><?= e($name) ?> compatibility &amp; known limitations</h2>
+      <div class="table-scroll"><table>
+        <tr><th>Minimum iOS</th><td><?= e($ios ? "$ios or later" : 'Not listed. Check the App Store page') ?></td></tr>
+        <tr><th>Devices</th><td><?= e($devs ?: '—') ?><?= !$g['is_ipad'] && $g['is_iphone'] ? ' (runs on iPad in iPhone compatibility mode)' : '' ?></td></tr>
+        <tr><th>Size</th><td><?= e($size) ?> download, plus extra data on first launch for many games</td></tr>
+        <tr><th>Internet</th><td><?= $g['is_offline'] ? 'Offline play supported' : 'Online connection required' ?></td></tr>
+        <tr><th>Release type</th><td><?= source_info($g, $hasFile)['official'] ? 'Official App Store release' : 'Third-party package' ?></td></tr>
+        <tr><th>Last checked</th><td><?= !empty($g['verified_at']) ? e(date_label($g['verified_at'])) : 'Not yet reviewed. Version data last changed ' . e(date_label($g['latest_release_date'])) ?></td></tr>
+      </table></div>
+      <h3>Known limitations</h3>
+      <ul>
+        <?php if ($hasFile): ?>
+        <li>A sideloaded IPA signed with a free Apple ID stops opening after 7 days until you refresh it. See <a href="<?= guide_url('refresh-ipa-apps') ?>">how to refresh IPA apps</a>.</li>
+        <li>iOS 16 and later need Developer Mode turned on before a sideloaded app will open.</li>
+        <li>Sideloaded copies do not update themselves. Check this page for newer versions.</li>
+        <?php else: ?>
+        <li>Installed from the App Store, so it updates automatically and needs no signing.</li>
+        <?php endif; ?>
+        <li>Purchases, saved progress and sign-in with Game Center or social accounts can behave differently outside the App Store.</li>
+        <?php if (!$g['is_offline']): ?><li>Needs an internet connection. Servers can change or shut down at the developer's discretion.</li><?php endif; ?>
+      </ul>
+    </section>
+
     <!-- Safety -->
     <section class="gsec reveal" id="safety">
       <h2>Is <?= e($name) ?> safe?</h2>
+      <h3>Source &amp; verification</h3>
+      <?= source_box($g, $hasFile, $hasFile ? ipa_file($g) : null) ?>
       <ul class="checks">
         <?php if ($hasFile): ?><li class="ok"><b>Checksum published.</b> The download page lists the file's SHA-256, so you can <a href="<?= guide_url('how-to-verify-ipa-file') ?>">confirm your copy is the untouched file</a>.</li><?php else: ?><li class="ok"><b>Check before you install.</b> Only install IPA files from sources you trust, and <a href="<?= guide_url('how-to-verify-ipa-file') ?>">verify the checksum and signature</a> first.</li><?php endif; ?>
-        <li class="ok"><b>Developer:</b> <?= e($g['developer']) ?><?= $g['bundle_id'] ? ' · Bundle ID <code>' . e($g['bundle_id']) . '</code>' : '' ?></li>
+        <li class="info"><b>Developer:</b> <?= e($g['developer']) ?><?= $g['bundle_id'] ? ' · Bundle ID <code>' . e($g['bundle_id']) . '</code>' : '' ?></li>
         <li class="ok"><b>Sandboxed.</b> iOS runs every app in its own sandbox. A game cannot read your other apps' data without asking you.</li>
         <li class="<?= $g['content_rating'] && (int) $g['content_rating'] >= 12 ? 'warn' : 'ok' ?>"><b>Age rating <?= e($g['content_rating'] ?: 'n/a') ?>.</b> Use Screen Time to limit in-app purchases on a child's device.</li>
         <li class="info"><b>Avoid "modded" copies.</b> Modified IPAs that promise unlimited coins can include tracking code and can get your account banned. <a href="<?= guide_url('are-ipa-files-safe') ?>">Read more about IPA safety</a>.</li>
@@ -160,7 +187,7 @@ $langs    = array_filter(explode(',', $g['languages']));
     </div>
     <nav class="toc reveal" aria-label="On this page">
       <p class="h3">On this page</p>
-      <?php if ($shots || $ipadShots): ?><a href="#screenshots">Screenshots</a><?php endif; ?><a href="#about">About</a><?php if ($latest): ?><a href="#whats-new">What's new</a><?php endif; ?><a href="#install">Install</a><a href="#safety">Safety</a><?php if ($versions): ?><a href="#versions">Update history</a><?php endif; ?>
+      <?php if ($shots || $ipadShots): ?><a href="#screenshots">Screenshots</a><?php endif; ?><a href="#about">About</a><?php if ($latest): ?><a href="#whats-new">What's new</a><?php endif; ?><a href="#install">Install</a><a href="#compatibility">Compatibility</a><a href="#safety">Safety</a><?php if ($versions): ?><a href="#versions">Update history</a><?php endif; ?>
     </nav>
   </aside>
 </div>

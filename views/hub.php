@@ -19,7 +19,7 @@
     <div class="posters posters-all">
       <?php foreach (nav_categories(genres()) as $i => $s): $c = category($s); ?>
         <a class="poster reveal" href="<?= category_url($s) ?>" style="--d:<?= ($i % 6) * 50 ?>ms">
-          <?php if ($posters[$s]): ?><img src="<?= e(img($posters[$s], '400x0w')) ?>" alt="" loading="lazy"><?php endif; ?>
+          <?php if ($posters[$s]): ?><img src="<?= e(img($posters[$s], '400x0w')) ?>" alt="" width="400" height="533" loading="lazy" decoding="async"><?php endif; ?>
           <span class="poster-shade"></span>
           <span class="poster-txt"><em><?= $c['icon'] ?></em><b><?= e($c['name']) ?></b><small><?= (int) ($counts[$s] ?? 0) ?> games</small></span>
         </a>

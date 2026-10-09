@@ -166,3 +166,24 @@ function from_slug(): string
     $s = (string) ($_GET['from'] ?? '');
     return preg_match('/^[a-z0-9][a-z0-9-]{0,150}$/', $s) ? $s : '';
 }
+
+/**
+ * Games ranked by real downloads (IPA Game Store app + IPA file, all time), ties and games without
+ * downloads ordered by rating count. Each row gets 'dl' = its download count (0 = no downloads yet).
+ * Falls back to the rating order when download tracking has no table yet.
+ */
+function top_downloaded(int $limit = 10): array
+{
+    $cols = 'g.' . str_replace(', ', ', g.', preg_replace('/\s+/', ' ', CARD_COLS));
+    try {
+        $sql = "SELECT $cols, (COALESCE(d.store_n, 0) + GREATEST(COALESCE(d.ipa_n, 0), g.downloads)) AS dl
+                FROM games g
+                LEFT JOIN (SELECT game_id, SUM(IF(kind='store', n, 0)) AS store_n, SUM(IF(kind='ipa', n, 0)) AS ipa_n
+                           FROM download_stats WHERE game_id > 0 GROUP BY game_id) d ON d.game_id = g.id
+                WHERE g.status='published' AND g.type='game'
+                ORDER BY dl DESC, g.rating_count DESC LIMIT " . (int) $limit;
+        return db()->query($sql)->fetchAll();
+    } catch (Throwable $e) {
+        return array_map(fn($r) => $r + ['dl' => 0], games_where('1=1', 'rating_count DESC', $limit));
+    }
+}

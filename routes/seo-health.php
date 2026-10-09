@@ -15,7 +15,7 @@ $self = url('seo-health/');
 if (isset($_GET['logout'])) { $_SESSION = []; session_destroy(); redirect($self, 302); }
 
 $loginError = false;
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && !isset($_POST['scan'])) {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['key'])) {
     if (hash_equals($key, (string) ($_POST['key'] ?? ''))) { session_regenerate_id(true); $_SESSION['ok'] = true; redirect($self, 302); }
     sleep(1);   // slows down guessing
     $loginError = true;
@@ -47,7 +47,37 @@ if ($authed && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['gs
     }
     redirect($self . '#gsc', 302);
 }
-if ($authed) require_once __DIR__ . '/../app/gsc.php';
+// Change log: every significant SEO change, with the page's Search Console numbers at that moment.
+const CHANGE_KINDS = ['title' => 'Title / description', 'content' => 'Content', 'technical' => 'Technical', 'links' => 'Internal links', 'other' => 'Other'];
+if ($authed) {
+    require_once __DIR__ . '/../app/gsc.php';
+    db()->exec("CREATE TABLE IF NOT EXISTS seo_changes (
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, changed_on DATE NOT NULL, page VARCHAR(500) NOT NULL DEFAULT '', kind VARCHAR(16) NOT NULL,
+        note VARCHAR(1000) NOT NULL, base_clicks INT NULL, base_impr INT NULL, base_ctr FLOAT NULL, base_pos FLOAT NULL, KEY (changed_on)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+}
+if ($authed && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && (isset($_POST['addchange']) || isset($_POST['delchange']))) {
+    if (!hash_equals($_SESSION['csrf'], (string) ($_POST['csrf'] ?? ''))) { http_response_code(400); exit('Bad request'); }
+    if (isset($_POST['delchange'])) {
+        db()->prepare('DELETE FROM seo_changes WHERE id=?')->execute([(int) $_POST['delchange']]);
+    } else {
+        $page = trim((string) $_POST['page']);
+        if ($page !== '' && $page[0] === '/') $page = SITE_URL . $page;
+        $day  = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $_POST['changed_on']) ? $_POST['changed_on'] : date('Y-m-d');
+        $kind = isset(CHANGE_KINDS[$_POST['kind'] ?? '']) ? $_POST['kind'] : 'other';
+        $note = mb_substr(trim((string) $_POST['note']), 0, 1000);
+        $base = [null, null, null, null];
+        if ($page !== '' && gsc_configured()) {
+            try { $b = gsc_page_stats($page); $base = [$b['clicks'], $b['impressions'], $b['ctr'], $b['position']]; }
+            catch (Throwable $ex) { $_SESSION['changeMsg'] = 'Saved without baseline: ' . $ex->getMessage(); }
+        }
+        if ($note !== '') db()->prepare('INSERT INTO seo_changes (changed_on, page, kind, note, base_clicks, base_impr, base_ctr, base_pos) VALUES (?,?,?,?,?,?,?,?)')
+            ->execute([$day, $page, $kind, $note, ...$base]);
+    }
+    redirect($self . '#changes', 302);
+}
+$changeMsg = $_SESSION['changeMsg'] ?? ''; unset($_SESSION['changeMsg']);
+$changes = $authed ? db()->query('SELECT * FROM seo_changes ORDER BY changed_on DESC, id DESC LIMIT 200')->fetchAll() : [];
 $gscReady = $authed && gsc_configured();
 $gsc = $authed ? ($_SESSION['gsc'] ?? null) : null;
 $scan = $authed ? ($_SESSION['scan'] ?? null) : null;
