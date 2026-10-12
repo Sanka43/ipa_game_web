@@ -911,7 +911,5 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
 }
 
 /* Glossy blue dot trailing the mouse cursor */
-.cursor-dot{position:fixed;top:0;left:0;width:18px;height:18px;border-radius:50%;pointer-events:none;z-index:9999;opacity:0;transition:opacity .25s;
-  background:radial-gradient(circle at 30% 28%,#fff 0,rgba(255,255,255,.85) 12%,#7cc4ff 30%,#1e7bff 62%,#0b3fb8 100%);
-  box-shadow:0 0 10px rgba(30,123,255,.7),0 0 22px rgba(30,123,255,.35),inset -2px -3px 5px rgba(0,30,120,.45);will-change:transform}
+.cursor-dot{position:fixed;top:0;left:0;width:12px;height:12px;border-radius:50%;pointer-events:none;z-index:9999;opacity:0;transition:opacity .25s;background:#1e7bff;will-change:transform}
 .cursor-dot.is-on{opacity:1}
