@@ -41,20 +41,46 @@ function excerpt(?string $s, int $len): string
     $s = trim(preg_replace('/\s+/', ' ', (string) $s));
     return mb_strlen($s) > $len ? rtrim(mb_substr($s, 0, $len - 1), " ,.;:-") . '…' : $s;
 }
-/** Plain text with line breaks → paragraphs and bullet lists. */
+/** Escape, then apply inline formatting: *bold*, **bold**, _italic_. */
+function inline_fmt(string $s): string
+{
+    $s = e($s);
+    $s = preg_replace('/\*\*(?=\S)(.+?)(?<=\S)\*\*/u', '<strong>$1</strong>', $s);
+    $s = preg_replace('/(?<![\w*])\*(?=[^\s*])(.+?)(?<=[^\s*])\*(?![\w*])/u', '<strong>$1</strong>', $s);
+    return preg_replace('/(?<![\w_])_(?=[^\s_])(.+?)(?<=[^\s_])_(?![\w_])/u', '<em>$1</em>', $s);
+}
+/**
+ * Admin text → HTML. Paragraphs, bullet lists (- • ● or "* "), headings
+ * (# → h2, ## → h3, ### → h4; the page already has its own h1) and inline *bold* / _italic_.
+ */
 function text_to_html(?string $s): string
 {
+    $bulletRe = '/^(?:[-•●]|\*(?=\s))\s*/u';
     $out = '';
     foreach (preg_split("/\n\s*\n/", trim((string) $s)) as $block) {
         $lines = array_filter(array_map('trim', explode("\n", $block)), 'strlen');
-        if (!$lines) continue;
-        $bullets = array_filter($lines, fn($l) => preg_match('/^[-•*●]\s*/u', $l));
-        if (count($bullets) >= 2 && count($bullets) >= count($lines) - 1) {
-            $head = preg_match('/^[-•*●]/u', reset($lines)) ? '' : '<p><strong>' . e(array_shift($lines)) . '</strong></p>';
-            $out .= $head . '<ul>' . implode('', array_map(fn($l) => '<li>' . e(preg_replace('/^[-•*●]\s*/u', '', $l)) . '</li>', $lines)) . '</ul>';
-        } else {
-            $out .= '<p>' . implode('<br>', array_map('e', $lines)) . '</p>';
+        $para = [];
+        $flush = function () use (&$para, &$out, $bulletRe) {
+            if (!$para) return;
+            $bullets = array_filter($para, fn($l) => preg_match($bulletRe, $l));
+            if (count($bullets) >= 2 && count($bullets) >= count($para) - 1) {
+                $head = preg_match($bulletRe, reset($para)) ? '' : '<p><strong>' . inline_fmt(array_shift($para)) . '</strong></p>';
+                $out .= $head . '<ul>' . implode('', array_map(fn($l) => '<li>' . inline_fmt(preg_replace($bulletRe, '', $l)) . '</li>', $para)) . '</ul>';
+            } else {
+                $out .= '<p>' . implode('<br>', array_map('inline_fmt', $para)) . '</p>';
+            }
+            $para = [];
+        };
+        foreach ($lines as $l) {
+            if (preg_match('/^(#{1,3})\s+(.+?)\s*#*$/u', $l, $m)) {
+                $flush();
+                $tag = 'h' . (strlen($m[1]) + 1);
+                $out .= "<$tag>" . inline_fmt($m[2]) . "</$tag>";
+            } else {
+                $para[] = $l;
+            }
         }
+        $flush();
     }
     return $out;
 }

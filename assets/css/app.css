@@ -467,6 +467,9 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
 .gsec { padding: 36px 0; border-bottom: 1px solid var(--line); }
 .gsec h2 { font-size: 1.35rem; }
 .gsec .prose h3, .gsec > h3 { font-size: 1rem; color: var(--text); margin-top: 1.4em; }
+.gsec .prose h2 { font-size: 1.2rem; margin-top: 1.6em; }
+.gsec .prose h4 { font-size: .95rem; color: var(--text); margin-top: 1.2em; }
+.gsec .prose > :first-child { margin-top: 0; }
 .gsec > p, .gsec > ol, .gsec > ul { color: #c7cddb; }
 .gsec a { color: var(--cyan); }
 .shots { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: var(--surface-2) transparent; }
