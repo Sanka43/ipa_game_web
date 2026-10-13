@@ -132,7 +132,7 @@ function seo_scan(int $sample): array
     }
     $locs = array_values(array_filter(array_unique($locs), fn($l) => parse_url($l, PHP_URL_HOST) === $host));
 
-    $games = array_values(array_filter($locs, fn($l) => (bool) preg_match('~/ipa-games/[^/]+/[^/]+-ipa/$~', $l)));
+    $games = array_values(array_filter($locs, fn($l) => (bool) preg_match('~/ipa-(games|apps)/[^/]+/[^/]+-ipa/$~', $l)));
     $other = array_values(array_diff($locs, $games));
     shuffle($games);
     $targets = array_merge($other, array_slice($games, 0, $sample));

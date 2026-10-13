@@ -40,7 +40,7 @@
 <div class="wrap dl-grid">
   <!-- File information -->
   <section class="dl-card reveal">
-    <h2 class="h3"><?= $file ? 'File information' : 'Game information' ?></h2>
+    <h2 class="h3"><?= $file ? 'File information' : ucfirst($one) . ' information' ?></h2>
     <dl class="dl-info">
       <?php if ($file): ?><dt>File name</dt><dd><code><?= e($file['name']) ?></code></dd><?php endif; ?>
       <dt>Version</dt><dd><?= e($ver ?: '—') ?></dd>
@@ -111,7 +111,7 @@
 <?php if ($similar): ?>
 <section class="sec">
   <div class="wrap">
-    <div class="sec-head"><h2>More <?= e(strtolower($cat['name'])) ?> IPA games</h2><a class="see" href="<?= category_url($g['category']) ?>">See all →</a></div>
+    <div class="sec-head"><h2>More <?= e(strtolower($cat['name'])) ?> IPA <?= $one ?>s</h2><a class="see" href="<?= category_url($g['category'], $g['type']) ?>">See all →</a></div>
     <?= game_grid($similar) ?>
   </div>
 </section>

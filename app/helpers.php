@@ -14,8 +14,11 @@ function asset(string $path): string
 /** Game name without a trailing "IPA", since titles and headings add their own. */
 function game_name(array $g): string { return preg_replace('/\s+IPA$/i', '', trim($g['name'])); }
 
-function game_url(array $g): string     { return url("ipa-games/{$g['category']}/{$g['slug']}-ipa/"); }
-function category_url(string $c): string { return url("ipa-games/$c/"); }
+/** URL section for an item type: games live under /ipa-games/, apps under /ipa-apps/. */
+function section(?string $type): string { return $type === 'app' ? 'ipa-apps' : 'ipa-games'; }
+
+function game_url(array $g): string     { return url(section($g['type'] ?? 'game') . "/{$g['category']}/{$g['slug']}-ipa/"); }
+function category_url(string $c, string $type = 'game'): string { return url(section($type) . "/$c/"); }
 function guide_url(string $s): string    { return url("guides/$s/"); }
 
 /** App Store CDN images accept any size in the file name: .../512x512bb.jpg */

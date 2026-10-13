@@ -89,6 +89,25 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
           </div>
         </div>
       </div>
+      <?php if (app_category_counts() && array_sum(app_category_counts()) > 0): ?>
+      <div class="nav-item has-mega">
+        <a href="<?= url('ipa-apps/') ?>" class="<?= $nav === 'apps' ? 'on' : '' ?>">IPA Apps</a>
+        <div class="mega">
+          <div class="mega-col">
+            <p class="mega-h">Browse</p>
+            <?php foreach (nav_app_categories(['latest']) as $s): $c = category($s, 'app'); ?>
+              <a href="<?= category_url($s, 'app') ?>"><span><?= $c['icon'] ?></span><?= e($c['h1']) ?></a>
+            <?php endforeach; ?>
+          </div>
+          <div class="mega-col mega-genres">
+            <p class="mega-h">Categories</p>
+            <?php foreach (nav_app_categories(app_genres()) as $s): $c = category($s, 'app'); ?>
+              <a href="<?= category_url($s, 'app') ?>"><span><?= $c['icon'] ?></span><?= e($c['name']) ?></a>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      </div>
+      <?php endif; ?>
       <a href="<?= category_url('latest') ?>" class="<?= $nav === 'latest' ? 'on' : '' ?>">New</a>
       <a href="<?= category_url('offline') ?>" class="<?= $nav === 'offline' ? 'on' : '' ?>">Offline</a>
       <div class="nav-item has-mega">
@@ -104,7 +123,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 
     <form class="topsearch" action="<?= url('search/') ?>" role="search" data-suggest>
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input type="search" name="q" placeholder="Search IPA games…" aria-label="Search games" autocomplete="off" value="<?= e($_GET['q'] ?? '') ?>">
+      <input type="search" name="q" placeholder="Search IPA games &amp; apps…" aria-label="Search games and apps" autocomplete="off" value="<?= e($_GET['q'] ?? '') ?>">
       <div class="suggest" hidden></div>
     </form>
 
@@ -130,6 +149,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
         <p class="foot-h">Browse</p>
         <a href="<?= url('download-ipastore/') ?>">Download IPA Game Store</a>
         <a href="<?= url('ipa-games/') ?>">All IPA Games</a>
+        <?php if (array_sum(app_category_counts()) > 0): ?><a href="<?= url('ipa-apps/') ?>">All IPA Apps</a><?php endif; ?>
         <?php foreach (nav_categories(['latest', 'offline', 'iphone', 'ipad', 'emulator']) as $s): ?>
           <a href="<?= category_url($s) ?>"><?= e(category($s)['h1']) ?></a>
         <?php endforeach; ?>

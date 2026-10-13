@@ -93,19 +93,92 @@ function categories(): array
     ];
 }
 
-function category(string $slug): ?array
+/** Apps live in their own category set (the store admin's app categories), under /ipa-apps/. */
+function app_categories(): array
 {
-    $c = categories()[$slug] ?? null;
+    static $c;
+    return $c ??= [
+        'latest' => [
+            'name' => 'Latest', 'icon' => '✦', 'special' => true,
+            'where' => '1=1', 'order' => 'latest_release_date DESC, id DESC',
+            'title' => 'Latest IPA Apps – New iOS App Releases & Updates',
+            'h1' => 'Latest IPA Apps',
+            'desc' => 'New IPA apps and fresh updates for iPhone and iPad, sorted by release date. Version numbers, file sizes and changelogs for every app.',
+            'intro' => 'The newest app releases and updates in the store, sorted by the day each version landed. Each app page lists the version number, the file size and what changed, so you can see what an update adds before you install it.',
+        ],
+        'communication' => ['name' => 'Communication', 'icon' => '✉',
+            'intro' => 'Messaging, calling, email and social apps. Sign in to your account again after you reinstall, since chat history is usually stored online.'],
+        'entertainment' => ['name' => 'Entertainment', 'icon' => '▶',
+            'intro' => 'Streaming, TV, video and fun apps for your free time. Many need a subscription or an account to unlock all content.'],
+        'graphics-design' => ['name' => 'Graphics & Design', 'icon' => '✎',
+            'intro' => 'Drawing, design, sketching and illustration apps. Most work best on iPad with an Apple Pencil.'],
+        'health-fitness' => ['name' => 'Health & Fitness', 'icon' => '♥',
+            'intro' => 'Workout, step counting, meditation and health tracking apps. Check what data each app asks to read from Apple Health.'],
+        'photo-video' => ['name' => 'Photo & Video', 'icon' => '◉',
+            'intro' => 'Cameras, photo editors, video editors and filter apps. Editing apps can be large downloads, so check the file size first.'],
+        'productivity' => ['name' => 'Productivity', 'icon' => '✓',
+            'intro' => 'Notes, to-do lists, documents, calendars and tools that help you get things done on iPhone and iPad.'],
+        'utilities' => ['name' => 'Utilities', 'icon' => '⚙',
+            'intro' => 'Small tools that do one job well: file managers, calculators, scanners, VPNs and system helpers.'],
+        'education' => ['name' => 'Education', 'icon' => '✐',
+            'intro' => 'Language learning, study aids, reference and kids learning apps for iPhone and iPad.'],
+        'music' => ['name' => 'Music', 'icon' => '♪',
+            'intro' => 'Music players, streaming clients, instruments and audio editors. Use headphones for the best result.'],
+        'emulators' => ['name' => 'Emulators', 'icon' => '◎',
+            'intro' => 'Emulator apps that run classic console and retro games on iPhone and iPad. You need to supply your own legally obtained game files.'],
+    ];
+}
+
+/**
+ * One category page definition. $type 'app' reads app_categories(). With $fallback, a category slug the
+ * admin added that we have no copy for still gets a generic definition instead of null.
+ */
+function category(string $slug, string $type = 'game', bool $fallback = false): ?array
+{
+    $isApp = $type === 'app';
+    $c = ($isApp ? app_categories() : categories())[$slug] ?? null;
+    if (!$c && $fallback) {
+        $c = ['name' => ucwords(str_replace('-', ' ', $slug)), 'icon' => '◇', 'intro' => ''];
+    }
     if (!$c) return null;
+    $noun = $isApp ? 'Apps' : 'Games';
     $c['slug'] = $slug;
     $c['where'] ??= 'category=' . db()->quote($slug);
-    $c['h1'] ??= "{$c['name']} IPA Games";
-    $c['title'] ??= "{$c['name']} IPA Games – Download {$c['name']} Games for iPhone & iPad";
-    $c['desc'] ??= "Browse " . strtolower($c['name']) . " IPA games for iPhone and iPad: versions, file sizes, iOS compatibility and install guides for every game.";
+    $c['h1'] ??= "{$c['name']} IPA $noun";
+    $c['title'] ??= "{$c['name']} IPA $noun – Download {$c['name']} $noun for iPhone & iPad";
+    $c['desc'] ??= "Browse " . strtolower($c['name']) . " IPA " . strtolower($noun) . " for iPhone and iPad: versions, file sizes, iOS compatibility and install guides for every " . ($isApp ? 'app' : 'game') . ".";
+    if (($c['intro'] ?? '') === '') $c['intro'] = $c['desc'];
     return $c;
 }
 
 function genres(): array { return array_keys(array_filter(categories(), fn($c) => empty($c['special']))); }
+function app_genres(): array { return array_keys(array_filter(app_categories(), fn($c) => empty($c['special']))); }
+
+/** schema.org applicationCategory for an app's category slug. */
+function app_schema_category(string $slug): string
+{
+    return ['communication' => 'CommunicationApplication', 'entertainment' => 'EntertainmentApplication', 'graphics-design' => 'DesignApplication',
+            'health-fitness' => 'HealthApplication', 'photo-video' => 'MultimediaApplication', 'productivity' => 'BusinessApplication',
+            'education' => 'EducationalApplication', 'music' => 'MusicApplication'][$slug] ?? 'UtilitiesApplication';
+}
+
+/** Published app count per category slug, cached per request. */
+function app_category_counts(): array
+{
+    static $n;
+    if ($n === null) {
+        $n = genre_counts('app');
+        foreach (app_categories() as $s => $c) if (!empty($c['special'])) $n[$s] = games_count(category($s, 'app')['where'], 'app');
+    }
+    return $n;
+}
+
+/** Apps categories worth linking to (non-empty). */
+function nav_app_categories(array $slugs): array
+{
+    $n = app_category_counts();
+    return array_values(array_filter($slugs, fn($s) => ($n[$s] ?? 0) > 0));
+}
 
 /** Published game count per category slug (genres and special pages), cached per request. */
 function category_counts(): array

@@ -3,7 +3,7 @@
   <div class="pagehead-glow" aria-hidden="true"></div>
   <div class="wrap">
     <?= breadcrumbs($crumbs) ?>
-    <p class="kicker reveal"><?= $cat['icon'] ?> <?= number_format($total) ?> games</p>
+    <p class="kicker reveal"><?= $cat['icon'] ?> <?= number_format($total) ?> <?= $noun ?></p>
     <h1 class="reveal"><?= e($cat['h1']) ?></h1>
     <p class="lead reveal"><?= e($cat['intro']) ?></p>
     <?php if (!empty($cat['adult'])): ?><p class="badge-warn reveal">17+ · Simulated gambling</p><?php endif; ?>
@@ -26,7 +26,7 @@
     <?php else: ?>
       <div class="empty-state reveal">
         <p class="big">◎</p>
-        <h2>No games here yet</h2>
+        <h2>No <?= $noun ?> here yet</h2>
         <p>We are adding <?= e(strtolower($cat['name'])) ?> titles now. In the meantime, learn how sideloading works, so you are ready when they arrive.</p>
         <a class="btn btn-primary" href="<?= guide_url('how-to-install-ipa-on-iphone') ?>">How to install IPA files</a>
       </div>
@@ -38,8 +38,8 @@
   <section class="sec-mini">
     <h2 class="h3">More categories</h2>
     <div class="chips">
-      <?php foreach (nav_categories(array_keys(categories())) as $s): if ($s === $cat['slug']) continue; $c = category($s); ?>
-        <a class="chip" href="<?= category_url($s) ?>"><?= $c['icon'] ?> <?= e($c['h1']) ?></a>
+      <?php foreach (($isApp ? nav_app_categories(array_keys(app_categories())) : nav_categories(array_keys(categories()))) as $s): if ($s === $cat['slug']) continue; $c = category($s, $kind); ?>
+        <a class="chip" href="<?= category_url($s, $kind) ?>"><?= $c['icon'] ?> <?= e($c['h1']) ?></a>
       <?php endforeach; ?>
     </div>
   </section>

@@ -1,14 +1,17 @@
 <?php
 /** @var string $catSlug  @var string $gameSlug */
 $g = game_by_slug($gameSlug) ?? not_found();
-if ($g['category'] !== $catSlug) redirect(game_url($g));          // one URL per game
+if ($g['category'] !== $catSlug || $g['type'] !== $kind) redirect(game_url($g));   // one URL per item
+$isApp = $g['type'] === 'app';
+$one   = $isApp ? 'app' : 'game';
+$Noun  = $isApp ? 'Apps' : 'Games';
 
 $id        = (int) $g['id'];
 $shots     = game_screenshots($id, 'iphone');
 $ipadShots = game_screenshots($id, 'ipad');
 $versions  = game_versions($id);
 $similar   = similar_games($g);
-$cat       = category($g['category']);
+$cat       = category($g['category'], $g['type'], true);
 $latest    = $versions[0] ?? null;
 
 $name  = game_name($g);
@@ -34,36 +37,36 @@ $guideSlugs = array_values(array_unique(array_filter([
     'ipa-installation-failed',
 ], fn($s) => guide($s))));
 
-$crumbs = [['Home', url()], ['IPA Games', url('ipa-games/')], [$cat['h1'], category_url($g['category'])], ["$name IPA", game_url($g)]];
+$crumbs = [['Home', url()], ["IPA $Noun", url(section($g['type']) . '/')], [$cat['h1'], category_url($g['category'], $g['type'])], ["$name IPA", game_url($g)]];
 
 $n = e($name);
 $faq = [
     ["How do I get $name on iPhone?", !$free && $storeHref
-        ? "$n is a paid game. Buy and install it from its <a href=\"$storeHref\" rel=\"nofollow noopener\" target=\"_blank\">App Store listing</a>. Updates then arrive automatically."
+        ? "$n is a paid $one. Buy and install it from its <a href=\"$storeHref\" rel=\"nofollow noopener\" target=\"_blank\">App Store listing</a>. Updates then arrive automatically."
         : "Tap <strong>Get on IPA Game Store</strong> to open the <a href=\"" . game_url($g) . "download/\">$n download page</a>, then add the free IPA Game Store app to your Home Screen and find $n there." . ($storeHref ? " $n is also on the <a href=\"$storeHref\" rel=\"nofollow noopener\" target=\"_blank\">App Store</a>." : '') . " To sideload an IPA yourself, see our <a href=\"" . guide_url('how-to-install-ipa-on-iphone') . "\">install guide</a>."],
-    ["Is $name free?", $free ? "Yes, $n is free to download. It may offer optional in-app purchases." : "No. $n is a paid game on the App Store."],
+    ["Is $name free?", $free ? "Yes, $n is free to download. It may offer optional in-app purchases." : "No. $n is a paid $one on the App Store."],
     ["What iOS version does $name need?", $ios ? "$n $ver needs $ios or later. It runs on $devs." : "Check the App Store listing for current requirements."],
-    ["How big is $name?", "The $ver download is about $size. Many games download more content the first time you open them, so leave some extra free space."],
+    ["How big is $name?", "The $ver download is about $size. Many {$one}s download more content the first time you open them, so leave some extra free space."],
     ["Does $name work on iPad?", $g['is_ipad'] ? "Yes. $n supports iPad natively" . ($ipadShots ? ', with a layout made for the larger screen.' : '.') : "$n is built for iPhone. It can still run on iPad in iPhone compatibility mode."],
 ];
 if ($g['is_offline']) $faq[] = ["Can I play $name offline?", "Yes. The developer says $n supports offline play. You may need to connect once to download content on first launch."];
 
 [$title, $metaDesc] = game_seo($g, $isIpa);   // generated from the game data
 
-render('game', compact('g', 'shots', 'ipadShots', 'versions', 'similar', 'cat', 'latest', 'name', 'ver', 'size', 'ios', 'devs', 'free', 'crumbs', 'faq', 'storeHref', 'getHref', 'getLabel', 'hasFile', 'isIpa', 'guideSlugs'), [
+render('game', compact('g', 'isApp', 'one', 'shots', 'ipadShots', 'versions', 'similar', 'cat', 'latest', 'name', 'ver', 'size', 'ios', 'devs', 'free', 'crumbs', 'faq', 'storeHref', 'getHref', 'getLabel', 'hasFile', 'isIpa', 'guideSlugs'), [
     'title'       => $title,
     'description' => $metaDesc,
-    'canonical'   => abs_url("ipa-games/{$g['category']}/{$g['slug']}-ipa/"),
+    'canonical'   => abs_url(section($g['type']) . "/{$g['category']}/{$g['slug']}-ipa/"),
     'robots'      => !empty($g['seo_noindex']) ? 'noindex, follow' : null,
     'og_image'    => img($g['icon'], '1200x630'),
-    'nav'         => 'games',
+    'nav'         => $isApp ? 'apps' : 'games',
     'body_class'  => 'is-game',
     'preload'     => img($ipadShots[0] ?? $shots[0] ?? $g['icon'], '1400x0w'),
     'schema'      => [
         array_filter([
             '@context' => 'https://schema.org', '@type' => 'SoftwareApplication',
             'name' => $name, 'operatingSystem' => 'iOS' . ($g['min_ios'] ? " {$g['min_ios']}+" : ''),
-            'applicationCategory' => 'GameApplication', 'applicationSubCategory' => $cat['name'],
+            'applicationCategory' => $isApp ? app_schema_category($g['category']) : 'GameApplication', 'applicationSubCategory' => $cat['name'],
             'softwareVersion' => ltrim((string) $g['latest_version'], 'vV'), 'fileSize' => $size,
             'datePublished' => $g['latest_release_date'], 'dateModified' => $g['verified_at'] ?? null, 'contentRating' => $g['content_rating'],
             'image' => img($g['icon'], '512x512'), 'screenshot' => array_map(fn($s) => img($s, '600x0w'), array_slice($shots, 0, 4)),

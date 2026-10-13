@@ -1,24 +1,26 @@
 <?php
 // Data access. The games table is shared with the ipagame.store app (which also stores apps),
-// so every public query is limited to published items of type game.
+// so the public queries are limited to published items; games and apps are told apart by `type`.
 
-const CARD_COLS = 'id, slug, name, category, developer, icon, short_description, latest_version, latest_size_mb,
+const CARD_COLS = 'id, slug, type, name, category, developer, icon, short_description, latest_version, latest_size_mb,
                    latest_release_date, rating_value, rating_count, is_offline, min_ios';
 
-function games_where(string $where, string $order = 'rating_count DESC', int $limit = 12, int $offset = 0): array
+function games_where(string $where, string $order = 'rating_count DESC', int $limit = 12, int $offset = 0, string $type = 'game'): array
 {
-    $sql = 'SELECT ' . CARD_COLS . " FROM games WHERE status='published' AND type='game' AND ($where) ORDER BY $order LIMIT $limit OFFSET $offset";
+    $type = db()->quote($type === 'app' ? 'app' : 'game');
+    $sql = 'SELECT ' . CARD_COLS . " FROM games WHERE status='published' AND type=$type AND ($where) ORDER BY $order LIMIT $limit OFFSET $offset";
     return db()->query($sql)->fetchAll();
 }
 
-function games_count(string $where): int
+function games_count(string $where, string $type = 'game'): int
 {
-    return (int) db()->query("SELECT COUNT(*) FROM games WHERE status='published' AND type='game' AND ($where)")->fetchColumn();
+    $type = db()->quote($type === 'app' ? 'app' : 'game');
+    return (int) db()->query("SELECT COUNT(*) FROM games WHERE status='published' AND type=$type AND ($where)")->fetchColumn();
 }
 
 function game_by_slug(string $slug): ?array
 {
-    $st = db()->prepare("SELECT * FROM games WHERE slug=? AND status='published' AND type='game'");
+    $st = db()->prepare("SELECT * FROM games WHERE slug=? AND status='published'");
     $st->execute([$slug]);
     return $st->fetch() ?: null;
 }
@@ -39,8 +41,8 @@ function game_versions(int $id): array
 
 function similar_games(array $g, int $limit = 8): array
 {
-    $st = db()->prepare('SELECT ' . CARD_COLS . " FROM games WHERE status='published' AND type='game' AND category=? AND id<>? ORDER BY rating_count DESC LIMIT $limit");
-    $st->execute([$g['category'], $g['id']]);
+    $st = db()->prepare('SELECT ' . CARD_COLS . " FROM games WHERE status='published' AND type=? AND category=? AND id<>? ORDER BY rating_count DESC LIMIT $limit");
+    $st->execute([($g['type'] ?? 'game') === 'app' ? 'app' : 'game', $g['category'], $g['id']]);
     return $st->fetchAll();
 }
 
@@ -62,20 +64,20 @@ function first_screenshots(array $ids): array
 }
 
 /** One poster image (first screenshot of the top game) per genre, in one query. */
-function genre_posters(array $slugs): array
+function genre_posters(array $slugs, string $type = 'game'): array
 {
     $out = array_fill_keys($slugs, '');
     if (!$slugs) return $out;
     $in = implode(',', array_map(fn($s) => db()->quote($s), $slugs));
     $rows = db()->query("SELECT g.category, s.url FROM games g JOIN game_screenshots s ON s.game_id=g.id AND s.sort=0 AND s.device='iphone'
-                         WHERE g.status='published' AND g.type='game' AND g.category IN ($in) ORDER BY g.rating_count DESC")->fetchAll();
+                         WHERE g.status='published' AND g.type=" . db()->quote($type === 'app' ? 'app' : 'game') . " AND g.category IN ($in) ORDER BY g.rating_count DESC")->fetchAll();
     foreach ($rows as $r) if ($out[$r['category']] === '') $out[$r['category']] = $r['url'];
     return $out;
 }
 
-function genre_counts(): array
+function genre_counts(string $type = 'game'): array
 {
-    return db()->query("SELECT category, COUNT(*) n FROM games WHERE status='published' AND type='game' GROUP BY category")->fetchAll(PDO::FETCH_KEY_PAIR);
+    return db()->query("SELECT category, COUNT(*) n FROM games WHERE status='published' AND type=" . db()->quote($type === 'app' ? 'app' : 'game') . ' GROUP BY category')->fetchAll(PDO::FETCH_KEY_PAIR);
 }
 
 function search_games(string $q, int $limit = 24, int $offset = 0): array
@@ -83,7 +85,7 @@ function search_games(string $q, int $limit = 24, int $offset = 0): array
     $q = trim($q);
     if (mb_strlen($q) < 2) return [[], 0];
     $like = '%' . addcslashes($q, '%_\\') . '%';
-    $where = "status='published' AND type='game' AND (name LIKE ? OR developer LIKE ?)";
+    $where = "status='published' AND (name LIKE ? OR developer LIKE ?)";   // games and apps
     $st = db()->prepare("SELECT COUNT(*) FROM games WHERE $where");
     $st->execute([$like, $like]);
     $total = (int) $st->fetchColumn();

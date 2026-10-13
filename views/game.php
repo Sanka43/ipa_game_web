@@ -3,7 +3,7 @@ $backdrop = $ipadShots[0] ?? $shots[0] ?? $g['icon'];
 $ext      = $getHref === $storeHref ? ' rel="nofollow noopener" target="_blank"' : '';
 $langs    = array_filter(explode(',', $g['languages']));
 ?>
-<!-- ═══ GAME HERO ═══ -->
+<!-- ═══ HERO ═══ -->
 <section class="ghero">
   <div class="ghero-bg" aria-hidden="true" style="background-image:url('<?= e(img($backdrop, '1400x0w')) ?>')"></div>
   <div class="ghero-shade" aria-hidden="true"></div>
@@ -12,7 +12,7 @@ $langs    = array_filter(explode(',', $g['languages']));
     <div class="ghero-in">
       <img class="ghero-icon reveal" src="<?= e(img($g['icon'], '360x360')) ?>" alt="<?= e($name) ?> IPA icon" width="180" height="180" fetchpriority="high">
       <div class="ghero-copy">
-        <p class="kicker reveal"><a href="<?= category_url($g['category']) ?>"><?= $cat['icon'] ?> <?= e($cat['name']) ?> game</a><?= $g['is_offline'] ? ' · ✈ Offline' : '' ?></p>
+        <p class="kicker reveal"><a href="<?= category_url($g['category'], $g['type']) ?>"><?= $cat['icon'] ?> <?= e($cat['name']) ?> <?= $one ?></a><?= $g['is_offline'] ? ' · ✈ Offline' : '' ?></p>
         <h1 class="reveal"><?= e($name) ?><?php if ($isIpa): ?> <span class="grad">IPA</span><?php endif; ?></h1>
         <p class="ghero-dev reveal">by <strong><?= e($g['developer']) ?></strong></p>
         <ul class="ghero-stats reveal">
@@ -176,7 +176,7 @@ $langs    = array_filter(explode(',', $g['languages']));
         <dt>Requires</dt><dd><?= e($ios ? "$ios or later" : '—') ?></dd>
         <dt>Compatible</dt><dd><?= e($devs) ?></dd>
         <dt>Developer</dt><dd><?= e($g['developer']) ?></dd>
-        <dt>Category</dt><dd><a href="<?= category_url($g['category']) ?>"><?= e($cat['name']) ?></a></dd>
+        <dt>Category</dt><dd><a href="<?= category_url($g['category'], $g['type']) ?>"><?= e($cat['name']) ?></a></dd>
         <dt>Price</dt><dd><?= $free ? 'Free' : '$' . e($g['price']) ?></dd>
         <dt>Offline</dt><dd><?= $g['is_offline'] ? 'Yes' : 'Online required' ?></dd>
         <dt>Updated</dt><dd><?= e(date_label($g['latest_release_date'])) ?></dd>
@@ -195,7 +195,7 @@ $langs    = array_filter(explode(',', $g['languages']));
 <?php if ($similar): ?>
 <section class="sec">
   <div class="wrap">
-    <div class="sec-head"><h2>More <?= e(strtolower($cat['name'])) ?> IPA games</h2><a class="see" href="<?= category_url($g['category']) ?>">See all →</a></div>
+    <div class="sec-head"><h2>More <?= e(strtolower($cat['name'])) ?> IPA <?= $one ?>s</h2><a class="see" href="<?= category_url($g['category'], $g['type']) ?>">See all →</a></div>
     <?= game_grid($similar) ?>
   </div>
 </section>
