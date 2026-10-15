@@ -157,8 +157,9 @@ code, pre { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-s
 .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: .82rem; color: var(--muted); padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(255,255,255,.04); backdrop-filter: blur(10px); margin: 0 0 24px; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 12px var(--ok); animation: pulse 2s infinite; }
 @keyframes pulse { 50% { opacity: .35; } }
-.hero-title { font-size: clamp(2.4rem, 6.4vw, 5.2rem); font-weight: 800; line-height: 1; letter-spacing: -.03em; margin-bottom: 24px; }
-.hero-title .line { display: block; }
+.hero-title { font-size: clamp(2rem, 4.6vw, 4.4rem); font-weight: 800; line-height: 1.08; letter-spacing: -.03em; margin-bottom: 24px; }
+.hero-title .line { display: block; white-space: nowrap; }
+.hero-title .line.grad { font-size: .75em; padding-bottom: .08em; }
 .hero-sub { font-size: 1.12rem; color: #b9c0d0; max-width: 520px; margin: 0 0 32px; }
 .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; }
 .hero-social { display: flex; align-items: center; gap: 10px; margin-top: 28px; }
