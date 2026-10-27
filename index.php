@@ -76,7 +76,7 @@ try {
                 }
                 $file = ipastore_profile();
                 if ($file) { $from = from_slug(); $fg = $from ? game_by_slug($from) : null; track_download('store', $fg ? (int) $fg['id'] : 0); }
-                redirect($file ? $file['url'] : url('download-ipastore/'), 302);
+                serve_ipastore_profile();
             }
             // The actual IPA file, behind a download counter. No file yet → back to the download page.
             $g = isset($seg[1]) ? game_by_slug($seg[1]) : null;

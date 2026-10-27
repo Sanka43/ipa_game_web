@@ -10,6 +10,13 @@ return [
     ],
     'site_url' => 'https://ipagame.store',
     'debug'    => false,   // hide error details from visitors
+    // SSL certificate settings for auto-signing the .mobileconfig profile (Verified badge).
+    // You can paste your CRT/KEY into app/ssl/ (auto-detected), or set explicit paths here:
+    'ssl' => [
+        'cert'  => 'app/ssl/cert.crt',
+        'key'   => 'app/ssl/cert.key',
+        'chain' => 'app/ssl/chain.crt',
+    ],
     // Search Console in /seo-health/. The JSON key is uploaded by hand, never committed.
     'gsc' => ['key_file' => 'app/gsc-key.json', 'site' => 'sc-domain:ipagame.store'],
     // Access key for /seo-health/ (pick a long random string; keep it out of git).

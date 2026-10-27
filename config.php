@@ -23,6 +23,13 @@ $config = [
         'file'    => 'downloads/ipastore.mobileconfig',
         'opens'   => 'app.ipagame.store',
     ],
+    // SSL certificate settings for auto-signing .mobileconfig (iOS "Verified" badge).
+    // If files are placed in app/ssl/ (cert.crt, cert.key, chain.crt), they are auto-detected.
+    'ssl' => [
+        'cert'  => '', // path to SSL certificate (.crt / .pem)
+        'key'   => '', // path to private key (.key / .pem)
+        'chain' => '', // path to CA bundle / intermediate chain (optional)
+    ],
     // Social links shown in the home hero. Empty = button hidden. '#' = placeholder.
     'social' => [
         'telegram' => '#',

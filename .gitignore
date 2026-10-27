@@ -4,3 +4,7 @@ web.zip
 *.ipa
 database/export/
 app/gsc-key.json
+app/ssl/
+*.key
+*.pem
+*.crt
