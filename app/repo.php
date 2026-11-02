@@ -345,11 +345,18 @@ function game_seo(array $g, bool $isIpa): array
     $size = size_label($g['latest_size_mb']);
     $ios  = $g['min_ios'] ? "iOS {$g['min_ios']}" : '';
 
-    $desc = excerpt("$name $ver for iPhone and iPad: $size" . ($ios ? ", $ios or later" : '') . ". Screenshots, what's new, install guide, safety info and full update history.", 158);
+    $desc = excerpt("$name $ver IPA file download for iPhone and iPad: $size" . ($ios ? ", $ios or later" : '') . ". Verified IPA package, screenshots, LiveContainer & SideStore install guide.", 158);
 
-    // Keep the title within ~60 characters: the version (and then the brand suffix) drop off first.
-    $title = $name . ($isIpa ? ' IPA' : '') . ' for iPhone & iPad';
-    if ($ver && mb_strlen("$title ($ver) | " . SITE_NAME) <= 60) $title .= " ($ver)";
+    // Prioritize high-intent keyword 'IPA Download' while keeping within ~60 characters
+    $title = "$name IPA Download for iPhone & iPad";
+    if ($ver && mb_strlen("$title ($ver)") <= 60) {
+        $title .= " ($ver)";
+    } elseif (mb_strlen($title) > 60) {
+        $title = "$name IPA for iPhone & iPad";
+        if (mb_strlen($title) > 60) {
+            $title = excerpt("$name IPA", 55);
+        }
+    }
     return [$title, $desc];
 }
 

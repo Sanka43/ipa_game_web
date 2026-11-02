@@ -13,7 +13,7 @@ $langs    = array_filter(explode(',', $g['languages']));
       <img class="ghero-icon reveal" src="<?= e(img($g['icon'], '360x360')) ?>" alt="<?= e($name) ?> IPA icon" width="180" height="180" fetchpriority="high">
       <div class="ghero-copy">
         <p class="kicker reveal"><a href="<?= category_url($g['category'], $g['type']) ?>"><?= $cat['icon'] ?> <?= e($cat['name']) ?> <?= $one ?></a><?= $g['is_offline'] ? ' · ✈ Offline' : '' ?></p>
-        <h1 class="reveal"><?= e($name) ?><?php if ($isIpa): ?> <span class="grad">IPA</span><?php endif; ?></h1>
+        <h1 class="reveal"><?= e($name) ?> <span class="grad">IPA</span></h1>
         <p class="ghero-dev reveal">by <strong><?= e($g['developer']) ?></strong></p>
         <ul class="ghero-stats reveal">
           <?php if ($g['rating_count'] > 0): ?><li><b><?= number_format((float) $g['rating_value'], 1) ?> <?= stars((float) $g['rating_value']) ?></b><small><?= compact_num($g['rating_count']) ?> ratings</small></li><?php endif; ?>
@@ -76,9 +76,9 @@ $langs    = array_filter(explode(',', $g['languages']));
       <h3>Method <?= ++$m ?>: Download the IPA from IPA Game Store</h3>
       <ol class="steps">
         <li>Tap <strong>Get on IPA Game Store</strong> above to open the <?= e($name) ?> download page, then download the <?= e($size) ?> IPA file.</li>
-        <li>Install a signing tool: <a href="<?= guide_url('install-ipa-with-altstore') ?>">AltStore</a> (needs a computer) or <a href="<?= guide_url('install-ipa-with-sidestore') ?>">SideStore</a> (installs on the phone after a one-time setup).</li>
+        <li>Install a signing tool: <a href="<?= guide_url('install-ipa-with-livecontainer') ?>">LiveContainer</a> (bypasses 3-app limit), <a href="<?= guide_url('install-ipa-with-sidestore') ?>">SideStore</a> or <a href="<?= guide_url('install-ipa-with-altstore') ?>">AltStore</a>.</li>
         <li>Save the <code>.ipa</code> file to the Files app, then open it with your signing tool.</li>
-        <li>On iOS 16 or later, turn on <em>Settings › Privacy &amp; Security › Developer Mode</em> and restart.</li>
+        <li>On iOS 16 to 26, turn on <em>Settings › Privacy &amp; Security › Developer Mode</em> and restart.</li>
         <li>Open the game. Apps signed with a free Apple ID have to be refreshed every 7 days.</li>
       </ol>
       <?php elseif ($free): ?>
@@ -95,7 +95,7 @@ $langs    = array_filter(explode(',', $g['languages']));
       <?php endif; ?>
       <?php if ($free && !$hasFile): ?>
         <h3>Method <?= ++$m ?>: Sideload an IPA you own</h3>
-        <p>If you have your own copy of the IPA file, sign and install it with <a href="<?= guide_url('install-ipa-with-altstore') ?>">AltStore</a> or <a href="<?= guide_url('install-ipa-with-sidestore') ?>">SideStore</a>. Our <a href="<?= guide_url('how-to-install-ipa-on-iphone') ?>">IPA install guide</a> compares every method.</p>
+        <p>If you have your own copy of the IPA file, sign and install it with <a href="<?= guide_url('install-ipa-with-livecontainer') ?>">LiveContainer</a>, <a href="<?= guide_url('install-ipa-with-sidestore') ?>">SideStore</a> or <a href="<?= guide_url('install-ipa-with-altstore') ?>">AltStore</a>. Our <a href="<?= guide_url('how-to-install-ipa-on-iphone') ?>">IPA install guide</a> compares every method.</p>
       <?php endif; ?>
       <p class="muted small">Having trouble? See <a href="<?= guide_url('ipa-installation-failed') ?>">why an IPA installation fails</a> or <a href="<?= guide_url('install-ipa-on-ipad') ?>">installing IPA on iPad</a>.</p>
       <div id="container-911b8b732262ab1a6da784c794f8780e"></div>

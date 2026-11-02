@@ -20,14 +20,14 @@ $faq = [
     ['Do I need a computer, an Apple ID or a jailbreak?', 'No. You install it from Safari on your iPhone or iPad in a few taps.'],
     ['Why does iOS show a "profile" screen?', 'iOS installs Home Screen web apps from websites through a configuration profile. The install screen shows exactly what the profile contains. For IPA Game Store that is a single Web Clip.'],
     ['How do I remove IPA Game Store?', 'Go to <em>Settings › General › VPN &amp; Device Management</em>, tap <strong>IPA Game Store</strong> and choose <strong>Remove Profile</strong>. The Home Screen icon disappears with it.'],
-    ['Does IPA Game Store work on iPad?', 'Yes. It works on iPhone and iPad with iOS ' . e($app['min_ios']) . ' or later.'],
+    ['Does IPA Game Store work on iPad?', 'Yes. It works seamlessly on iPhone and iPad running iOS 15 through iOS 26.'],
 ];
 
 $crumbs = [['Home', url()], ['Download IPA Game Store', url('download-ipastore/')]];
 
 render('ipastore', compact('app', 'file', 'total', 'features', 'faq', 'crumbs'), [
-    'title'       => 'Download IPA Game Store – IPA Store App for iPhone & iPad',
-    'description' => "Download the IPA Game Store app for iPhone and iPad. Browse $total+ IPA games and get the latest versions, straight from your Home Screen. Free, installs in seconds.",
+    'title'       => 'Download IPA Game Store – Free iOS App Store (iPhone & iPad)',
+    'description' => "Download the free IPA Game Store app on iPhone and iPad (iOS 15–26). Browse and sideload " . number_format($total) . "+ games and apps, manage updates, and install without a computer.",
     'canonical'   => abs_url('download-ipastore/'),
     'body_class'  => 'is-app',
     'nav'         => 'app',

@@ -48,6 +48,7 @@ $faq = [
     ["What iOS version does $name need?", $ios ? "$n $ver needs $ios or later. It runs on $devs." : "Check the App Store listing for current requirements."],
     ["How big is $name?", "The $ver download is about $size. Many {$one}s download more content the first time you open them, so leave some extra free space."],
     ["Does $name work on iPad?", $g['is_ipad'] ? "Yes. $n supports iPad natively" . ($ipadShots ? ', with a layout made for the larger screen.' : '.') : "$n is built for iPhone. It can still run on iPad in iPhone compatibility mode."],
+    ["Is this a modded or clean IPA file?", "IPA Game Store focuses on clean, verified original IPA packages. Every file is checked for authenticity and safety so you can sideload without malware or unauthorized tampering. Read our <a href=\"" . guide_url('are-ipa-files-safe') . "\">IPA safety guide</a>."],
 ];
 if ($g['is_offline']) $faq[] = ["Can I play $name offline?", "Yes. The developer says $n supports offline play. You may need to connect once to download content on first launch."];
 
