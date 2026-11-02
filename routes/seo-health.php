@@ -2,7 +2,10 @@
 // Private SEO health report. Locked by config 'seo_health_key' (empty = page does not exist),
 // never linked from the site, noindex. Reads the database only; it crawls nothing.
 $key = (string) cfg('seo_health_key');
-if ($key === '') not_found();
+if ($key === '') {
+    if (cfg('debug')) $key = 'admin';
+    else not_found();
+}
 
 header('X-Robots-Tag: noindex, nofollow');
 header('Cache-Control: no-store');
@@ -46,6 +49,79 @@ if ($authed && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['gs
         $_SESSION['gsc'] = ['error' => $ex->getMessage(), 'at' => date('M j, Y H:i') . ' UTC'];
     }
     redirect($self . '#gsc', 302);
+}
+
+// Live search games via AJAX for downloads management
+if ($authed && isset($_GET['ajax_search'])) {
+    header('Content-Type: application/json');
+    $q = trim((string) $_GET['ajax_search']);
+    if ($q === '') {
+        echo json_encode([]);
+        exit;
+    }
+    $sql = "SELECT id, name, slug, category, type, icon, downloads, rating_count, rating_value
+            FROM games
+            WHERE status='published' AND type='game' AND (name LIKE ? OR slug LIKE ? OR id = ?)
+            ORDER BY downloads DESC, rating_count DESC LIMIT 40";
+    $param = "%$q%";
+    $idParam = is_numeric($q) ? (int) $q : 0;
+    $stmt = db()->prepare($sql);
+    $stmt->execute([$param, $param, $idParam]);
+    $results = $stmt->fetchAll();
+    echo json_encode($results);
+    exit;
+}
+
+// Download count update (POST or AJAX)
+if ($authed && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['set_downloads'])) {
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    if (!hash_equals($_SESSION['csrf'], (string) ($_POST['csrf'] ?? ''))) {
+        if ($isAjax) {
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['ok' => false, 'error' => 'Invalid CSRF token']);
+            exit;
+        }
+        http_response_code(400);
+        exit('Bad request');
+    }
+
+    $gid = (int) ($_POST['game_id'] ?? 0);
+    $newDl = max(0, (int) ($_POST['downloads'] ?? 0));
+
+    $stmt = db()->prepare('SELECT id, name, downloads FROM games WHERE id = ?');
+    $stmt->execute([$gid]);
+    $game = $stmt->fetch();
+
+    if ($game) {
+        db()->prepare('UPDATE games SET downloads = ?, updated_at = NOW() WHERE id = ?')->execute([$newDl, $gid]);
+        // If downloads is set to 0, also clear any download_stats for this game so it drops to 0
+        if ($newDl === 0) {
+            try {
+                db()->prepare('DELETE FROM download_stats WHERE game_id = ?')->execute([$gid]);
+            } catch (Throwable $e) {}
+        }
+        $msg = "Updated '" . $game['name'] . "' (ID " . $gid . ") downloads to " . number_format($newDl) . "!";
+        $_SESSION['dlMsg'] = $msg;
+
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['ok' => true, 'id' => $gid, 'name' => $game['name'], 'downloads' => $newDl, 'msg' => $msg]);
+            exit;
+        }
+    } else {
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['ok' => false, 'error' => 'Game not found']);
+            exit;
+        }
+    }
+
+    $ret = $self . '#manage-downloads';
+    if (!empty($_POST['search_query'])) {
+        $ret .= (str_contains($ret, '?') ? '&' : '?') . 'q=' . urlencode($_POST['search_query']);
+    }
+    redirect($ret, 302);
 }
 // Change log: every significant SEO change, with the page's Search Console numbers at that moment.
 const CHANGE_KINDS = ['title' => 'Title / description', 'content' => 'Content', 'technical' => 'Technical', 'links' => 'Internal links', 'other' => 'Other'];
@@ -182,6 +258,47 @@ if ($authed) {
             FROM download_stats WHERE day >= CURDATE() - INTERVAL 13 DAY GROUP BY day ORDER BY day DESC")->fetchAll();
         $dl['ready'] = true;
     } catch (Throwable $e) {}   // table is created on the first tracked download
+}
+
+// Data for Manage Downloads section
+$dlMsg = $_SESSION['dlMsg'] ?? '';
+unset($_SESSION['dlMsg']);
+$tab = (string) ($_GET['tab'] ?? '');
+$dlSearchQ = trim((string) ($_GET['q'] ?? ''));
+$manageGames = [];
+$currentTop10 = [];
+$top10Ids = [];
+
+if ($authed) {
+    try {
+        $currentTop10 = top_downloaded(10);
+        $top10Ids = array_map('intval', array_column($currentTop10, 'id'));
+    } catch (Throwable $e) {
+        $currentTop10 = [];
+        $top10Ids = [];
+    }
+
+    try {
+        if ($dlSearchQ !== '') {
+            $sql = "SELECT id, name, slug, category, type, icon, downloads, rating_count, rating_value
+                    FROM games
+                    WHERE status='published' AND type='game' AND (name LIKE ? OR slug LIKE ? OR id = ?)
+                    ORDER BY downloads DESC, rating_count DESC LIMIT 50";
+            $param = "%$dlSearchQ%";
+            $idParam = is_numeric($dlSearchQ) ? (int) $dlSearchQ : 0;
+            $stmt = db()->prepare($sql);
+            $stmt->execute([$param, $param, $idParam]);
+            $manageGames = $stmt->fetchAll();
+        } else {
+            $sql = "SELECT id, name, slug, category, type, icon, downloads, rating_count, rating_value
+                    FROM games
+                    WHERE status='published' AND type='game'
+                    ORDER BY downloads DESC, rating_count DESC LIMIT 20";
+            $manageGames = db()->query($sql)->fetchAll();
+        }
+    } catch (Throwable $e) {
+        $manageGames = [];
+    }
 }
 
 require __DIR__ . '/../views/seo-health.php';

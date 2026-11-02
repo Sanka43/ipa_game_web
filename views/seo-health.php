@@ -26,17 +26,23 @@ li small{color:var(--mut);word-break:break-word}
 .tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin:18px 0 4px;flex-wrap:wrap}.tabs a{padding:10px 16px;border-radius:10px 10px 0 0;text-decoration:none;color:var(--mut);font-weight:600;border:1px solid transparent;border-bottom:0}.tabs a.on{color:var(--fg);background:var(--card);border-color:var(--line);box-shadow:inset 0 -2px 0 var(--in)}
 .js .tab{display:none}.js .tab.on{display:block}
 form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg)}button{cursor:pointer;background:var(--in);color:#111;border:0;font-weight:700}
+.dl-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.dl-card:hover{border-color:var(--mut)}
+.dl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin:10px 0}
+.dl-top-item{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.dl-num-input{width:130px;padding:8px 10px;font-weight:700;font-size:1rem;text-align:right;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
 </style></head><body><main>
 <?php if (!$authed): ?>
   <form class="login" method="post" action="<?= e($self) ?>">
     <h1>SEO health</h1>
     <input type="password" name="key" placeholder="Access key" autocomplete="current-password" autofocus required>
+    <?php if (cfg('debug') && (string) cfg('seo_health_key') === ''): ?><p class="mut" style="font-size:.8rem;margin:0">Local dev key: <code>admin</code></p><?php endif; ?>
     <?php if ($loginError): ?><p class="mut" role="alert">Wrong key.</p><?php endif; ?>
     <button type="submit">Open report</button>
   </form>
 <?php else: ?>
   <div class="top"><div><h1>SEO health report</h1><p class="mut">Checked from the database on <?= e(date('M j, Y H:i')) ?> UTC. Fix the red items first.</p></div><a href="<?= e($self) ?>?logout=1">Log out</a></div>
-  <nav class="tabs" role="tablist"><a href="#live">Live checks</a><a href="#gsc">Search Console</a><a href="#db">Database checks</a><a href="#downloads">Downloads</a><a href="#changes">Change log</a></nav>
+  <nav class="tabs" role="tablist"><a href="#live">Live checks</a><a href="#gsc">Search Console</a><a href="#db">Database checks</a><a href="#downloads">Downloads</a><a href="#manage-downloads">Manage Downloads</a><a href="#changes">Change log</a></nav>
   <section id="live" class="tab">
     <h2>Live checks</h2>
     <p class="mut">Requests the sitemap and the pages in it over HTTP, like a crawler: status, redirects, noindex, canonical, title, H1, JSON-LD, alt. Can take up to a minute.</p>
@@ -128,6 +134,114 @@ form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{f
       </details>
     <?php endif; ?>
   </section>
+  <section id="manage-downloads" class="tab">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;margin:28px 0 8px">
+      <div>
+        <h2 style="margin:0 0 4px">Manage Game Downloads</h2>
+        <p class="mut" style="margin:0">Find any game to view and change its download count. Updates will instantly change rankings in the Home page <b>Top 10 Most Downloaded IPA Games</b> section.</p>
+      </div>
+    </div>
+
+    <?php if ($dlMsg): ?>
+      <p id="dl-status-banner" style="background:#0d3329;color:#3df5b8;border:1px solid #1f6b52;border-radius:8px;padding:12px 16px;margin:16px 0;font-weight:600">✔ <?= e($dlMsg) ?></p>
+    <?php endif; ?>
+
+    <!-- Current Top 10 Live Preview -->
+    <details open style="margin-bottom:20px">
+      <summary>
+        <span class="pill high">Live Top 10</span>
+        Home Page Current Ranking
+        <span class="n"><?= count($currentTop10) ?></span>
+      </summary>
+      <p class="hint">The 10 games currently appearing on the Home page "Top 10 Most Downloaded IPA Games" chart.</p>
+      <div style="padding:0 14px 14px">
+        <div class="dl-grid">
+          <?php foreach ($currentTop10 as $idx => $tg): ?>
+            <div class="dl-top-item">
+              <span style="font-size:1.15rem;font-weight:800;color:var(--in);width:24px;text-align:center;flex-shrink:0"><?= $idx + 1 ?></span>
+              <?php if (!empty($tg['icon'])): ?>
+                <img src="<?= e(img($tg['icon'], '80x80')) ?>" alt="" style="width:38px;height:38px;border-radius:8px;object-fit:cover;background:#222;flex-shrink:0" onerror="this.style.display='none'">
+              <?php endif; ?>
+              <div style="flex:1;min-width:0">
+                <a href="<?= e(game_url($tg)) ?>" target="_blank" rel="noopener" style="font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?= e($tg['name']) ?></a>
+                <small class="mut"><?= number_format((int) $tg['dl']) ?> dl · ★ <?= number_format((float) $tg['rating_value'], 1) ?></small>
+              </div>
+              <button type="button" onclick="selectGameForEdit(<?= (int) $tg['id'] ?>, '<?= e(addslashes($tg['name'])) ?>')" style="padding:4px 10px;font-size:.75rem;cursor:pointer">Edit</button>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      </div>
+    </details>
+
+    <!-- Game Finder / Search -->
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:20px 0">
+      <h3 style="margin:0 0 10px;font-size:1rem">Find Game</h3>
+      <form method="get" action="<?= e($self) ?>" id="dl-search-form" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input type="hidden" name="tab" value="manage-downloads">
+        <input type="text" id="dl-search-input" name="q" placeholder="Type game name, slug, or ID (e.g. Minecraft, Roblox, 13)..." value="<?= e($dlSearchQ) ?>" autocomplete="off" style="flex:1;min-width:240px;padding:10px 14px">
+        <button type="submit">Search</button>
+        <?php if ($dlSearchQ !== ''): ?>
+          <a href="<?= e($self) ?>#manage-downloads" style="color:var(--mut);text-decoration:none;padding:10px 14px;border:1px solid var(--line);border-radius:8px">Reset</a>
+        <?php endif; ?>
+      </form>
+      <p class="mut" style="margin:8px 0 0;font-size:.8rem">Search as you type (live search) or click Search / press Enter.</p>
+    </div>
+
+    <!-- Results List -->
+    <div id="dl-results-container">
+      <h3 style="margin:16px 0 10px;font-size:1rem" id="dl-results-heading">
+        <?= $dlSearchQ !== '' ? 'Search Results for "' . e($dlSearchQ) . '" (' . count($manageGames) . ' found)' : 'Top Downloaded Games (' . count($manageGames) . ' shown)' ?>
+      </h3>
+
+      <?php if (empty($manageGames)): ?>
+        <p class="mut" id="dl-no-games" style="padding:20px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:10px">No games found matching your search. Try another name or ID.</p>
+      <?php else: ?>
+        <div id="dl-games-list" style="display:grid;gap:10px">
+          <?php foreach ($manageGames as $g):
+            $topRankIndex = array_search($g['id'], $top10Ids, true);
+            $isTop10 = ($topRankIndex !== false);
+          ?>
+            <div class="dl-card dl-item" id="game-card-<?= (int) $g['id'] ?>">
+              <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:260px">
+                <?php if (!empty($g['icon'])): ?>
+                  <img src="<?= e(img($g['icon'], '80x80')) ?>" alt="" style="width:48px;height:48px;border-radius:10px;object-fit:cover;background:#222;flex-shrink:0" onerror="this.style.display='none'">
+                <?php endif; ?>
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                    <a href="<?= e(game_url($g)) ?>" target="_blank" rel="noopener" style="font-weight:700;font-size:1rem;color:var(--fg);text-decoration:none">
+                      <?= e($g['name']) ?>
+                    </a>
+                    <?php if ($isTop10): ?>
+                      <span class="pill high" title="Ranked in Home page Top 10">Top #<?= $topRankIndex + 1 ?></span>
+                    <?php endif; ?>
+                    <span class="mut" style="font-size:.75rem">ID: <?= (int) $g['id'] ?></span>
+                  </div>
+                  <div class="mut" style="font-size:.8rem;margin-top:2px">
+                    Category: <span style="color:var(--fg)"><?= e(ucfirst($g['category'])) ?></span> ·
+                    Ratings: <span style="color:var(--fg)"><?= compact_num($g['rating_count']) ?></span> (★ <?= number_format((float) $g['rating_value'], 1) ?>)
+                  </div>
+                </div>
+              </div>
+
+              <!-- Download update form -->
+              <form method="post" action="<?= e($self) ?>#manage-downloads" class="dl-form-async" data-game-id="<?= (int) $g['id'] ?>" style="display:flex;align-items:center;gap:10px;margin:0">
+                <input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
+                <input type="hidden" name="set_downloads" value="1">
+                <input type="hidden" name="game_id" value="<?= (int) $g['id'] ?>">
+                <input type="hidden" name="search_query" value="<?= e($dlSearchQ) ?>">
+                <div style="text-align:right">
+                  <span class="mut" style="display:block;font-size:.75rem">Downloads Count</span>
+                  <input type="number" name="downloads" id="input-dl-<?= (int) $g['id'] ?>" class="dl-num-input" value="<?= (int) $g['downloads'] ?>" min="0" step="1" required>
+                </div>
+                <button type="submit" style="padding:10px 18px;height:42px;margin-top:14px" class="save-btn">Save</button>
+                <span class="save-feedback" id="feedback-<?= (int) $g['id'] ?>" style="display:none;font-weight:bold;color:#3df5b8;font-size:.85rem">✓</span>
+              </form>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+    </div>
+  </section>
   <section id="changes" class="tab">
     <h2>Change log</h2>
     <p class="mut">Record every significant SEO change. With Search Console connected, the page's clicks, impressions, CTR and position for the last 28 days are saved as the baseline. Load Search Console data on its tab and the "now" numbers appear here. Wait 2–4 weeks before judging a change.</p>
@@ -161,10 +275,175 @@ form.login{max-width:340px;margin:15vh auto;display:grid;gap:10px}input,button{f
     <?php endif; ?>
   </section>
   <script>
-  (function(){var ids=['live','gsc','db','downloads','changes'];function show(){var h=location.hash.slice(1);if(ids.indexOf(h)<0)h='live';
-    ids.forEach(function(i){document.getElementById(i).classList.toggle('on',i===h)});
-    document.querySelectorAll('.tabs a').forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+h)});}
-  document.documentElement.classList.add('js');window.addEventListener('hashchange',show);show();})();
+  (function(){
+    var ids = ['live','gsc','db','downloads','manage-downloads','changes'];
+    var defaultTab = <?= (!empty($dlSearchQ) || !empty($dlMsg) || ($tab ?? '') === 'manage-downloads') ? "'manage-downloads'" : "'live'" ?>;
+    function show(){
+      var h = location.hash.slice(1) || defaultTab;
+      if (ids.indexOf(h) < 0) h = defaultTab;
+      ids.forEach(function(i){
+        var el = document.getElementById(i);
+        if (el) el.classList.toggle('on', i === h);
+      });
+      document.querySelectorAll('.tabs a').forEach(function(a){
+        a.classList.toggle('on', a.getAttribute('href') === '#' + h);
+      });
+    }
+    document.documentElement.classList.add('js');
+    window.addEventListener('hashchange', show);
+    show();
+  })();
+
+  function escapeHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s || '';
+    return d.innerHTML;
+  }
+
+  function selectGameForEdit(id, name) {
+    var inp = document.getElementById('input-dl-' + id);
+    if (inp) {
+      inp.scrollIntoView({behavior: 'smooth', block: 'center'});
+      inp.focus();
+      inp.select();
+    } else {
+      var search = document.getElementById('dl-search-input');
+      if (search) {
+        search.value = name;
+        document.getElementById('dl-search-form').submit();
+      }
+    }
+  }
+
+  // Live search games via AJAX
+  (function(){
+    var searchTimer = null;
+    var searchInput = document.getElementById('dl-search-input');
+    var resultsList = document.getElementById('dl-games-list');
+    var resultsHeading = document.getElementById('dl-results-heading');
+    var noGamesMsg = document.getElementById('dl-no-games');
+    var top10Ids = <?= json_encode($top10Ids) ?>;
+    var csrfToken = <?= json_encode($_SESSION['csrf']) ?>;
+    var selfUrl = <?= json_encode($self) ?>;
+
+    function bindForms() {
+      document.querySelectorAll('.dl-form-async').forEach(function(form) {
+        if (form.getAttribute('data-bound')) return;
+        form.setAttribute('data-bound', '1');
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var btn = form.querySelector('button');
+          var gid = form.getAttribute('data-game-id');
+          var fb = document.getElementById('feedback-' + gid);
+          var origText = btn.textContent;
+          btn.disabled = true;
+          btn.textContent = 'Saving…';
+
+          var fd = new FormData(form);
+          fetch(form.action, {
+            method: 'POST',
+            body: fd,
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+          })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            btn.disabled = false;
+            btn.textContent = origText;
+            if (res.ok) {
+              if (fb) {
+                fb.textContent = '✓ Saved (' + Number(res.downloads).toLocaleString() + ')';
+                fb.style.display = 'inline';
+                setTimeout(function() { fb.style.display = 'none'; }, 3000);
+              }
+            } else {
+              alert('Error: ' + (res.error || 'Failed to update'));
+            }
+          })
+          .catch(function() {
+            btn.disabled = false;
+            btn.textContent = origText;
+            form.submit();
+          });
+        });
+      });
+    }
+
+    bindForms();
+
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimer);
+        var q = searchInput.value.trim();
+        if (q.length < 2) return;
+
+        searchTimer = setTimeout(function() {
+          fetch(selfUrl + '?ajax_search=' + encodeURIComponent(q), {
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+          })
+          .then(function(r){ return r.json(); })
+          .then(function(games) {
+            if (!resultsHeading) return;
+            resultsHeading.textContent = 'Search Results for "' + q + '" (' + games.length + ' found)';
+            if (!resultsList) {
+              var container = document.getElementById('dl-results-container');
+              if (container) {
+                resultsList = document.createElement('div');
+                resultsList.id = 'dl-games-list';
+                resultsList.style.display = 'grid';
+                resultsList.style.gap = '10px';
+                container.appendChild(resultsList);
+              }
+            }
+            if (!resultsList) return;
+            if (noGamesMsg) noGamesMsg.style.display = games.length === 0 ? 'block' : 'none';
+            if (games.length === 0) {
+              resultsList.innerHTML = '<p class="mut" style="padding:20px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:10px">No games found matching "' + escapeHtml(q) + '".</p>';
+              return;
+            }
+            var html = '';
+            games.forEach(function(g) {
+              var gid = parseInt(g.id);
+              var topRankIdx = top10Ids.indexOf(gid);
+              var topBadge = topRankIdx >= 0 ? '<span class="pill high" title="Ranked in Home page Top 10">Top #' + (topRankIdx + 1) + '</span>' : '';
+              var iconHtml = g.icon ? '<img src="' + escapeHtml(g.icon) + '" alt="" style="width:48px;height:48px;border-radius:10px;object-fit:cover;background:#222;flex-shrink:0" onerror="this.style.display=\'none\'">' : '';
+              var gamePageUrl = <?= json_encode(url('ipa-games/')) ?> + encodeURIComponent(g.category) + '/' + encodeURIComponent(g.slug) + '-ipa/';
+
+              html += '<div class="dl-card dl-item" id="game-card-' + gid + '">' +
+                '<div style="display:flex;align-items:center;gap:14px;flex:1;min-width:260px">' +
+                  iconHtml +
+                  '<div>' +
+                    '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
+                      '<a href="' + gamePageUrl + '" target="_blank" rel="noopener" style="font-weight:700;font-size:1rem;color:var(--fg);text-decoration:none">' + escapeHtml(g.name) + '</a>' +
+                      topBadge +
+                      '<span class="mut" style="font-size:.75rem">ID: ' + gid + '</span>' +
+                    '</div>' +
+                    '<div class="mut" style="font-size:.8rem;margin-top:2px">' +
+                      'Category: <span style="color:var(--fg)">' + escapeHtml(g.category.charAt(0).toUpperCase() + g.category.slice(1)) + '</span> · ' +
+                      'Ratings: <span style="color:var(--fg)">' + Number(g.rating_count || 0).toLocaleString() + '</span> (★ ' + parseFloat(g.rating_value || 0).toFixed(1) + ')' +
+                    '</div>' +
+                  '</div>' +
+                '</div>' +
+                '<form method="post" action="' + selfUrl + '#manage-downloads" class="dl-form-async" data-game-id="' + gid + '" style="display:flex;align-items:center;gap:10px;margin:0">' +
+                  '<input type="hidden" name="csrf" value="' + csrfToken + '">' +
+                  '<input type="hidden" name="set_downloads" value="1">' +
+                  '<input type="hidden" name="game_id" value="' + gid + '">' +
+                  '<div style="text-align:right">' +
+                    '<span class="mut" style="display:block;font-size:.75rem">Downloads Count</span>' +
+                    '<input type="number" name="downloads" id="input-dl-' + gid + '" class="dl-num-input" value="' + parseInt(g.downloads || 0) + '" min="0" step="1" required>' +
+                  '</div>' +
+                  '<button type="submit" style="padding:10px 18px;height:42px;margin-top:14px" class="save-btn">Save</button>' +
+                  '<span class="save-feedback" id="feedback-' + gid + '" style="display:none;font-weight:bold;color:#3df5b8;font-size:.85rem">✓</span>' +
+                '</form>' +
+              '</div>';
+            });
+            resultsList.innerHTML = html;
+            bindForms();
+          })
+          .catch(function() {});
+        }, 250);
+      });
+    }
+  })();
   </script>
 <?php endif; ?>
 </main></body></html>
