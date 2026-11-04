@@ -10,6 +10,8 @@ return [
     ],
     'site_url' => 'https://ipagame.store',
     'debug'    => false,   // hide error details from visitors
+    // Halloween seasonal theme overlay (true = enabled across entire site, false = disabled, 'auto' = Oct 15 - Nov 5)
+    'halloween_mode' => true,
     // SSL certificate settings for auto-signing the .mobileconfig profile (Verified badge).
     // You can paste your CRT/KEY into app/ssl/ (auto-detected), or set explicit paths here:
     'ssl' => [

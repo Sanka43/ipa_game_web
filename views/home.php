@@ -11,6 +11,13 @@
 
   <div class="wrap hero-in">
     <div class="hero-copy">
+      <?php if (is_halloween()): ?>
+      <div class="halloween-pill reveal">
+        <span class="halloween-pill-icon">🎃</span>
+        <span><b>Halloween Season Live</b> · Spooky &amp; Trending IPA Games</span>
+        <span class="halloween-pill-ghost">👻</span>
+      </div>
+      <?php endif; ?>
       <h1 class="hero-title reveal">
         <span class="line">Free IPA Games</span>
         <span class="line grad">for iPhone &amp; iPad</span>
@@ -61,8 +68,19 @@
 
 <!-- ═══ MARQUEE ═══ -->
 <div class="marquee" aria-hidden="true"><div class="marquee-track">
-  <?php for ($k = 0; $k < 2; $k++) foreach (['Free IPA Games', 'iOS Games IPA', 'Offline IPA Games', 'No Jailbreak Sideload', 'IPA Racing Games', 'LiveContainer & SideStore', 'IPA Puzzle Games', 'Latest iOS Releases', 'IPA Games for iPad', 'Top Action IPA', 'iOS 15–26 Compatible'] as $w): ?>
-    <span><?= e($w) ?></span><i>✦</i>
+  <?php
+  $hTrack = is_halloween() ? [
+      '🎃 Halloween Spooky Season', 'Free IPA Games', '🦇 Horror & Thriller IPA', 'iOS Games IPA',
+      'Offline IPA Games', '👻 Trick or Treat Gaming', 'No Jailbreak Sideload', 'IPA Racing Games',
+      'LiveContainer & SideStore', 'IPA Puzzle Games', '🕷️ Latest iOS Releases', 'iOS 15–26 Compatible'
+  ] : [
+      'Free IPA Games', 'iOS Games IPA', 'Offline IPA Games', 'No Jailbreak Sideload',
+      'IPA Racing Games', 'LiveContainer & SideStore', 'IPA Puzzle Games', 'Latest iOS Releases',
+      'IPA Games for iPad', 'Top Action IPA', 'iOS 15–26 Compatible'
+  ];
+  $hSep = is_halloween() ? '🎃' : '✦';
+  for ($k = 0; $k < 2; $k++) foreach ($hTrack as $w): ?>
+    <span><?= e($w) ?></span><i><?= $hSep ?></i>
   <?php endforeach; ?>
 </div></div>
 

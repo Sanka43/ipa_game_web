@@ -8,6 +8,7 @@ $canonical = $meta['canonical'] ?? null;
 $ogImage   = $meta['og_image'] ?? abs_url('assets/img/og-default.jpg');
 $bodyClass = $meta['body_class'] ?? '';
 $nav       = $meta['nav'] ?? '';
+$isHalloween = is_halloween();
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -45,6 +46,8 @@ $nav       = $meta['nav'] ?? '';
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="<?= asset('css/app.css') ?>">
+<?php if ($isHalloween): ?><link rel="stylesheet" href="<?= asset('css/halloween.css') ?>">
+<?php endif; ?>
 <?php foreach ($meta['schema'] ?? [] as $s) echo json_ld($s), "\n"; ?>
 <?php $gaId = cfg('debug') ? '' : (string) cfg('ga_id'); $clarityId = cfg('debug') ? '' : (string) cfg('clarity_id'); ?>
 <?php if ($gaId || $clarityId): ?>
@@ -60,15 +63,21 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <?php endif; ?>
 <?php endif; ?>
 </head>
-<body class="<?= e($bodyClass) ?>">
+<body class="<?= e(trim($bodyClass . ($isHalloween ? ' halloween-theme' : ''))) ?>">
 <a class="skip" href="#main">Skip to content</a>
 <div class="grain" aria-hidden="true"></div>
+<?php if ($isHalloween): ?>
+<div class="halloween-decorations" aria-hidden="true">
+  <div class="halloween-web web-top-left"></div>
+  <div class="halloween-web web-top-right"></div>
+</div>
+<?php endif; ?>
 
 <header class="topbar" id="topbar">
   <div class="wrap topbar-in">
     <a class="brand" href="<?= url() ?>" aria-label="<?= e(SITE_NAME) ?> home">
       <img class="brand-mark" src="<?= asset('img/logo-128.webp') ?>" alt="" width="40" height="40">
-      <span class="brand-text">IPA GAME <b>STORE</b></span>
+      <span class="brand-text">IPA GAME <b>STORE</b></span><?php if ($isHalloween): ?><span class="halloween-brand-badge" title="Halloween Special" aria-hidden="true">🎃</span><?php endif; ?>
     </a>
 
     <nav class="mainnav" id="mainnav" aria-label="Main">
@@ -142,7 +151,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
   <div class="wrap">
     <div class="foot-top">
       <div class="foot-brand">
-        <a class="brand" href="<?= url() ?>"><img class="brand-mark" src="<?= asset('img/logo-128.webp') ?>" alt="" width="40" height="40"><span class="brand-text">IPA GAME <b>STORE</b></span></a>
+        <a class="brand" href="<?= url() ?>"><img class="brand-mark" src="<?= asset('img/logo-128.webp') ?>" alt="" width="40" height="40"><span class="brand-text">IPA GAME <b>STORE</b></span><?php if ($isHalloween): ?><span class="halloween-brand-badge" title="Halloween Special" aria-hidden="true">🎃</span><?php endif; ?></a>
         <p>IPA games for iPhone and iPad, with versions, file sizes and install guides.</p>
       </div>
       <nav aria-label="Browse">
@@ -186,6 +195,8 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <?php endforeach; ?>
 <script src="<?= asset('js/app.js') ?>" defer></script>
 <script src="<?= asset('js/cursor-dot.js') ?>" defer></script>
+<?php if ($isHalloween): ?><script src="<?= asset('js/halloween.js') ?>" defer></script>
+<?php endif; ?>
 <?php if ($bodyClass !== 'is-home'): ?><script src="<?= asset('js/ad.js') ?>" defer></script>
 <?php endif; ?>
 </body>

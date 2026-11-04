@@ -174,3 +174,16 @@ function source_box(array $g, bool $hasFile, ?array $file = null): string
     return '<dl class="dl-info source-box">' . $rows . '</dl><p class="muted small">' . e($s['text'])
          . ' <a href="' . url('how-we-verify/') . '">How we check files</a> · <a href="' . url('dmca/') . '">Report a problem</a></p>';
 }
+
+
+/** Checks whether seasonal Halloween mode is active. */
+function is_halloween(): bool
+{
+    $mode = cfg('halloween_mode');
+    if ($mode === true) return true;
+    if ($mode === false || $mode === null) return false;
+    // 'auto' mode: active between October 15 and November 5
+    $m = (int) date('n');
+    $d = (int) date('j');
+    return ($m === 10 && $d >= 15) || ($m === 11 && $d <= 5);
+}

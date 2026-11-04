@@ -46,6 +46,8 @@ $config = [
     // Search Console API for /seo-health/ (set in config.live.php). key_file: service-account JSON, path relative to the site root
     // or absolute (keep it in app/, which the web server blocks). site: 'sc-domain:ipagame.store' (Domain property) or 'https://ipagame.store/'.
     'gsc' => ['key_file' => '', 'site' => ''],
+    // Halloween seasonal theme overlay (true = enabled across entire site, false = disabled, 'auto' = Oct 15 - Nov 5)
+    'halloween_mode' => true,
     'debug'     => true,
 ];
 
