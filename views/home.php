@@ -11,13 +11,6 @@
 
   <div class="wrap hero-in">
     <div class="hero-copy">
-      <?php if (is_halloween()): ?>
-      <div class="halloween-pill reveal">
-        <span class="halloween-pill-icon">🎃</span>
-        <span><b>Halloween Season Live</b> · Spooky &amp; Trending IPA Games</span>
-        <span class="halloween-pill-ghost">👻</span>
-      </div>
-      <?php endif; ?>
       <h1 class="hero-title reveal">
         <span class="line">Free IPA Games</span>
         <span class="line grad">for iPhone &amp; iPad</span>
