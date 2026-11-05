@@ -11,12 +11,20 @@ $genreList = $isApp ? app_genres() : genres();
   <div class="wrap">
     <?= breadcrumbs($crumbs) ?>
     <h1 class="reveal">IPA <?= $Noun ?></h1>
-    <p class="lead reveal"><?= number_format($total) ?> iOS <?= $noun ?> for iPhone and iPad. Pick a category below, or scroll down for the most-played <?= $noun ?>. Every <?= $one ?> has its own page with the version, the file size, iOS compatibility and install steps.</p>
+    <p class="lead reveal"><?= number_format($total) ?> iOS <?= $noun ?> for iPhone and iPad. Browse the most-played <?= $noun ?> below, or filter by category. Every <?= $one ?> has its own page with the version, the file size, iOS compatibility and install steps.</p>
     <div class="chips reveal">
       <?php foreach (($isApp ? nav_app_categories($specials) : nav_categories($specials)) as $s): $c = category($s, $kind); ?>
         <a class="chip" href="<?= category_url($s, $kind) ?>"><?= $c['icon'] ?> <?= e($c['name']) ?></a>
       <?php endforeach; ?>
     </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><h2><?= $page > 1 ? "Most played iOS $noun — page $page" : "Most played iOS $noun" ?></h2><small class="muted"><?= number_format($total) ?> <?= $noun ?></small></div>
+    <?= game_grid($games) ?>
+    <?= pager($page, $pages, $base) ?>
   </div>
 </section>
 
@@ -35,17 +43,7 @@ $genreList = $isApp ? app_genres() : genres();
     </div>
   </div>
 </section>
-<?php endif; ?>
 
-<section class="sec">
-  <div class="wrap">
-    <div class="sec-head"><h2><?= $page > 1 ? "Most played iOS $noun — page $page" : "Most played iOS $noun" ?></h2><small class="muted"><?= number_format($total) ?> <?= $noun ?></small></div>
-    <?= game_grid($games) ?>
-    <?= pager($page, $pages, $base) ?>
-  </div>
-</section>
-
-<?php if ($page === 1): ?>
 <div class="wrap"><?= guide_cards(['how-to-install-ipa-on-iphone', 'install-ipa-with-altstore', 'install-ipa-with-sidestore', 'are-ipa-files-safe']) ?></div>
 <div class="wrap"><div id="container-911b8b732262ab1a6da784c794f8780e"></div></div>
 <section class="sec"><div class="wrap prose-wrap"><?= faq_block($faq) ?></div></section>
