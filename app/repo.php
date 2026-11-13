@@ -138,6 +138,112 @@ function is_file_xml(string $path): bool
 }
 
 /**
+ * Resolves intermediate CA certificates chain for a leaf SSL certificate.
+ * Checks: 1) explicit chain path, 2) multi-cert leaf file, 3) app/ssl/ directory,
+ * 4) cPanel cabundles, 5) automatic AIA (Authority Information Access) resolution.
+ */
+function ipastore_resolve_chain(string $certPath, ?string $explicitChain = null): ?string
+{
+    if ($explicitChain && is_file($explicitChain) && filesize($explicitChain) > 200) {
+        return $explicitChain;
+    }
+
+    $cacheFile = __DIR__ . '/../downloads/.chain_cache.crt';
+
+    $certData = @file_get_contents($certPath);
+    if (!$certData) return null;
+
+    // 1. If certificate file itself has multiple PEM blocks, extract intermediate certs
+    if (preg_match_all('~-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----~s', $certData, $matches)) {
+        if (count($matches[0]) > 1) {
+            $chainBlocks = array_slice($matches[0], 1);
+            @file_put_contents($cacheFile, implode("\n", $chainBlocks) . "\n");
+            return $cacheFile;
+        }
+    }
+
+    // 2. Default app/ssl/ directory
+    $dir = __DIR__ . '/ssl/';
+    foreach (['chain.crt', 'chain.pem', 'ca.crt', 'cabundle.crt'] as $ch) {
+        if (is_file($dir . $ch) && filesize($dir . $ch) > 200) {
+            return $dir . $ch;
+        }
+    }
+
+    // 3. cPanel common CA bundle locations
+    $home = getenv('HOME') ?: '';
+    if (!$home && function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
+        $pw = @posix_getpwuid(posix_geteuid());
+        $home = $pw['dir'] ?? '';
+    }
+    if ($home) {
+        $base = basename($certPath, '.crt');
+        $cpanelPaths = [
+            $home . '/ssl/certs/' . $base . '.cabundle',
+            $home . '/ssl/certs/cabundle.crt',
+            $home . '/ssl/certs/ca.crt',
+        ];
+        foreach (glob($home . '/ssl/certs/*.cabundle') ?: [] as $f) { $cpanelPaths[] = $f; }
+        foreach (glob($home . '/ssl/cabundles/*.cabundle') ?: [] as $f) { $cpanelPaths[] = $f; }
+        foreach (glob('/var/cpanel/ssl/installed/cabundles/*.cabundle') ?: [] as $f) { $cpanelPaths[] = $f; }
+
+        foreach ($cpanelPaths as $cp) {
+            if (is_file($cp) && filesize($cp) > 200) {
+                return $cp;
+            }
+        }
+    }
+
+    // 4. AIA (Authority Information Access) recursive resolution and caching
+    if (is_file($cacheFile) && filesize($cacheFile) > 500 && (time() - filemtime($cacheFile)) < (30 * 86400)) {
+        return $cacheFile;
+    }
+
+    $currentPem  = $certData;
+    $chainPems   = [];
+    $visitedUrls = [];
+
+    for ($depth = 0; $depth < 4; $depth++) {
+        $x509 = @openssl_x509_parse($currentPem);
+        if (!$x509) break;
+
+        // Stop if root self-signed certificate (subject == issuer)
+        if (!empty($x509['subject']) && $x509['subject'] === ($x509['issuer'] ?? [])) {
+            break;
+        }
+
+        $aia = $x509['extensions']['authorityInfoAccess'] ?? '';
+        if (!$aia || !preg_match('~CA Issuers - URI:(https?://[^\s\r\n]+)~i', $aia, $m)) {
+            break;
+        }
+
+        $url = trim($m[1]);
+        if (isset($visitedUrls[$url])) break;
+        $visitedUrls[$url] = true;
+
+        $ctx = stream_context_create([
+            'http' => ['timeout' => 6, 'user_agent' => 'IPAStoreProfileSigner/1.0']
+        ]);
+        $raw = @file_get_contents($url, false, $ctx);
+        if (!$raw) break;
+
+        $pem = str_contains($raw, '-----BEGIN CERTIFICATE-----')
+            ? $raw
+            : "-----BEGIN CERTIFICATE-----\n" . chunk_split(base64_encode($raw), 64, "\n") . "-----END CERTIFICATE-----\n";
+
+        $chainPems[] = trim($pem);
+        $currentPem  = $pem;
+    }
+
+    if (!empty($chainPems)) {
+        @file_put_contents($cacheFile, implode("\n", $chainPems) . "\n");
+        return $cacheFile;
+    }
+
+    return null;
+}
+
+/**
  * Resolves SSL certificate and private key paths for auto-signing .mobileconfig.
  * Looks in: 1) config 'ssl', 2) app/ssl/ directory, 3) standard cPanel user SSL directory.
  */
@@ -154,7 +260,8 @@ function ipastore_ssl_config(): ?array
         $keyPath   = (str_starts_with($key, '/')  || preg_match('/^[a-zA-Z]:/', $key))  ? $key  : __DIR__ . '/../' . ltrim($key, '/');
         $chainPath = $chain ? ((str_starts_with($chain, '/') || preg_match('/^[a-zA-Z]:/', $chain)) ? $chain : __DIR__ . '/../' . ltrim($chain, '/')) : null;
         if (is_file($certPath) && is_file($keyPath)) {
-            return ['cert' => $certPath, 'key' => $keyPath, 'chain' => ($chainPath && is_file($chainPath)) ? $chainPath : null];
+            $resolvedChain = ipastore_resolve_chain($certPath, $chainPath);
+            return ['cert' => $certPath, 'key' => $keyPath, 'chain' => $resolvedChain];
         }
     }
 
@@ -174,7 +281,8 @@ function ipastore_ssl_config(): ?array
             if (is_file($dir . $ch)) { $foundChain = $dir . $ch; break; }
         }
         if ($foundCert && $foundKey) {
-            return ['cert' => $foundCert, 'key' => $foundKey, 'chain' => $foundChain];
+            $resolvedChain = ipastore_resolve_chain($foundCert, $foundChain);
+            return ['cert' => $foundCert, 'key' => $foundKey, 'chain' => $resolvedChain];
         }
     }
 
@@ -187,6 +295,7 @@ function ipastore_ssl_config(): ?array
     if ($home && is_dir($home . '/ssl/certs') && is_dir($home . '/ssl/keys')) {
         $host = parse_url(SITE_URL, PHP_URL_HOST) ?: 'ipagame.store';
         $bestCert  = null;
+        $bestScore = 0;
         $bestMtime = 0;
         foreach (glob($home . '/ssl/certs/*.crt') ?: [] as $cFile) {
             $data = @file_get_contents($cFile);
@@ -195,9 +304,16 @@ function ipastore_ssl_config(): ?array
             if (!$x509 || ($x509['validTo_time_t'] ?? 0) < time()) continue;
             $cn  = $x509['subject']['CN'] ?? '';
             $alt = $x509['extensions']['subjectAltName'] ?? '';
-            if ($cn === $host || str_contains($alt, $host)) {
+
+            $score = 0;
+            if ($cn === $host) $score = 100;
+            elseif (preg_match('/(^|,\s*)DNS:' . preg_quote($host, '/') . '($|,)/i', $alt)) $score = 100;
+            elseif (str_contains($cn, $host) || str_contains($alt, $host)) $score = 50;
+
+            if ($score > 0) {
                 $mtime = filemtime($cFile);
-                if ($mtime > $bestMtime) {
+                if ($score > $bestScore || ($score === $bestScore && $mtime > $bestMtime)) {
+                    $bestScore = $score;
                     $bestMtime = $mtime;
                     $bestCert  = $cFile;
                 }
@@ -219,8 +335,8 @@ function ipastore_ssl_config(): ?array
                 }
             }
             if ($matchingKey) {
-                $chain = is_file($home . '/ssl/certs/' . $base . '.cabundle') ? $home . '/ssl/certs/' . $base . '.cabundle' : null;
-                return ['cert' => $bestCert, 'key' => $matchingKey, 'chain' => $chain];
+                $resolvedChain = ipastore_resolve_chain($bestCert, null);
+                return ['cert' => $bestCert, 'key' => $matchingKey, 'chain' => $resolvedChain];
             }
         }
     }
@@ -263,8 +379,11 @@ function ensure_ipastore_profile_signed(): string
         $serveMtime = filemtime($servePath);
         $tmplMtime  = filemtime($tmplPath);
         $certMtime  = filemtime($certFile);
-        // Re-sign if template or certificate was modified
-        if ($serveMtime < $tmplMtime || $serveMtime < $certMtime) {
+        $codeMtime  = filemtime(__FILE__);
+        $chainMtime = ($chainFile && is_file($chainFile)) ? filemtime($chainFile) : 0;
+
+        // Re-sign if template, certificate, chain or repo code was modified
+        if ($serveMtime < $tmplMtime || $serveMtime < $certMtime || $serveMtime < $codeMtime || $serveMtime < $chainMtime) {
             $needsSign = true;
         }
         // Re-sign weekly to track certificate auto-renewals
@@ -273,6 +392,10 @@ function ensure_ipastore_profile_signed(): string
         }
         // Re-sign if currently plain XML (unsigned)
         elseif (is_file_xml($servePath)) {
+            $needsSign = true;
+        }
+        // Re-sign if chain is available but current file is missing it (file without chain is ~59KB vs ~62KB+ with chain)
+        elseif ($chainFile && filesize($servePath) < 61000) {
             $needsSign = true;
         }
     }
